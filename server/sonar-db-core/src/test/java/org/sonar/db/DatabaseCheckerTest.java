@@ -128,9 +128,9 @@ public class DatabaseCheckerTest {
   @Test
   public void fail_if_mysql_less_than_5_6() throws Exception {
     expectedException.expect(MessageException.class);
-    expectedException.expectMessage("Unsupported mysql version: 5.5. Minimal supported version is 5.6.");
+    expectedException.expectMessage("Unsupported mysql version: 5.4. Minimal supported version is 5.5.");
 
-    Database db = mockDb(new MySql(), 5, 5, "5.6");
+    Database db = mockDb(new MySql(), 5, 4, "5.5");
     new DatabaseChecker(db).start();
   }
 
