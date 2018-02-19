@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -198,7 +198,7 @@ public class PermissionIndexerDao {
     if (projectUuids.isEmpty()) {
       sql = StringUtils.replace(SQL_TEMPLATE, "{projectsCondition}", "");
     } else {
-      sql = StringUtils.replace(SQL_TEMPLATE, "{projectsCondition}", " AND (" + repeat("projects.uuid = ?", " or ", projectUuids.size()) + ")");
+      sql = StringUtils.replace(SQL_TEMPLATE, "{projectsCondition}", " AND projects.uuid in (" + repeat("?", ", ", projectUuids.size()) + ")");
     }
     PreparedStatement stmt = dbClient.getMyBatis().newScrollingSelectStatement(session, sql);
     int index = 1;

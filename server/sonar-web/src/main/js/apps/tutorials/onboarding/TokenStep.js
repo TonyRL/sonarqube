@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -23,7 +23,7 @@ import classNames from 'classnames';
 import Step from './Step';
 import { getTokens, generateToken, revokeToken } from '../../../api/user-tokens';
 import AlertErrorIcon from '../../../components/icons-components/AlertErrorIcon';
-import CloseIcon from '../../../components/icons-components/CloseIcon';
+import { DeleteButton } from '../../../components/ui/buttons';
 import { translate } from '../../../helpers/l10n';
 
 /*::
@@ -95,7 +95,7 @@ export default class TokenStep extends React.PureComponent {
     const { tokenName } = this.state;
     if (tokenName) {
       this.setState({ loading: true });
-      generateToken(tokenName).then(
+      generateToken({ name: tokenName }).then(
         ({ token }) => {
           if (this.mounted) {
             this.setState({ loading: false, token });
@@ -110,12 +110,11 @@ export default class TokenStep extends React.PureComponent {
     }
   };
 
-  handleTokenRevoke = (event /*: Event */) => {
-    event.preventDefault();
+  handleTokenRevoke = () => {
     const { tokenName } = this.state;
     if (tokenName) {
       this.setState({ loading: true });
-      revokeToken(tokenName).then(
+      revokeToken({ name: tokenName }).then(
         () => {
           if (this.mounted) {
             this.setState({ loading: false, token: undefined, tokenName: undefined });
@@ -249,9 +248,7 @@ export default class TokenStep extends React.PureComponent {
             {loading ? (
               <i className="spinner text-middle" />
             ) : (
-              <button className="button-clean text-middle" onClick={this.handleTokenRevoke}>
-                <CloseIcon className="icon-red" />
-              </button>
+              <DeleteButton className="button-small text-middle" onClick={this.handleTokenRevoke} />
             )}
           </form>
         ) : (

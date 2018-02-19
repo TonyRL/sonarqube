@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -37,7 +37,6 @@ import org.sonar.server.issue.index.IssueIndex;
 import org.sonar.server.issue.index.IssueIndexDefinition;
 import org.sonar.server.issue.index.IssueIndexer;
 import org.sonar.server.issue.index.IssueIteratorFactory;
-import org.sonar.server.organization.TestDefaultOrganizationProvider;
 import org.sonar.server.permission.index.AuthorizationTypeSupport;
 import org.sonar.server.permission.index.PermissionIndexerDao;
 import org.sonar.server.permission.index.PermissionIndexerTester;
@@ -70,7 +69,7 @@ public class TagsActionTest {
   private IssueIndex issueIndex = new IssueIndex(esTester.client(), System2.INSTANCE, userSession, new AuthorizationTypeSupport(userSession));
   private RuleIndex ruleIndex = new RuleIndex(esTester.client(), System2.INSTANCE);
 
-  private WsActionTester ws = new WsActionTester(new TagsAction(issueIndex, ruleIndex, dbTester.getDbClient(), TestDefaultOrganizationProvider.from(dbTester)));
+  private WsActionTester ws = new WsActionTester(new TagsAction(issueIndex, ruleIndex, dbTester.getDbClient()));
   private OrganizationDto organization;
 
   @Before
@@ -79,7 +78,7 @@ public class TagsActionTest {
   }
 
   @Test
-  public void return_tags_from_issues() throws Exception {
+  public void return_tags_from_issues() {
     userSession.logIn();
     insertIssueWithBrowsePermission(insertRuleWithoutTags(), "tag1", "tag2");
     insertIssueWithBrowsePermission(insertRuleWithoutTags(), "tag3", "tag4", "tag5");
@@ -91,7 +90,7 @@ public class TagsActionTest {
   }
 
   @Test
-  public void return_tags_from_rules() throws Exception {
+  public void return_tags_from_rules() {
     userSession.logIn();
     RuleDefinitionDto r = dbTester.rules().insert(setSystemTags("tag1"));
     ruleIndexer.commitAndIndex(dbTester.getSession(), r.getKey());
@@ -110,7 +109,7 @@ public class TagsActionTest {
   }
 
   @Test
-  public void return_tags_from_issue_and_rule_tags() throws Exception {
+  public void return_tags_from_issue_and_rule_tags() {
     userSession.logIn();
     insertIssueWithBrowsePermission(insertRuleWithoutTags(), "tag1", "tag2");
     insertIssueWithBrowsePermission(insertRuleWithoutTags(), "tag3", "tag4", "tag5");
@@ -127,7 +126,7 @@ public class TagsActionTest {
   }
 
   @Test
-  public void return_limited_size() throws Exception {
+  public void return_limited_size() {
     userSession.logIn();
     insertIssueWithBrowsePermission(insertRuleWithoutTags(), "tag1", "tag2");
     insertIssueWithBrowsePermission(insertRuleWithoutTags(), "tag3", "tag4", "tag5");
@@ -140,7 +139,7 @@ public class TagsActionTest {
   }
 
   @Test
-  public void return_tags_matching_query() throws Exception {
+  public void return_tags_matching_query() {
     userSession.logIn();
     insertIssueWithBrowsePermission(insertRuleWithoutTags(), "tag1", "tag2");
     insertIssueWithBrowsePermission(insertRuleWithoutTags(), "tag12", "tag4", "tag5");
@@ -153,7 +152,7 @@ public class TagsActionTest {
   }
 
   @Test
-  public void do_not_return_issues_without_permission() throws Exception {
+  public void do_not_return_issues_without_permission() {
     userSession.logIn();
     insertIssueWithBrowsePermission(insertRuleWithoutTags(), "tag1", "tag2");
     insertIssueWithoutBrowsePermission(insertRuleWithoutTags(), "tag3", "tag4");
@@ -166,14 +165,27 @@ public class TagsActionTest {
   }
 
   @Test
-  public void empty_list() throws Exception {
+  public void empty_list() {
     userSession.logIn();
     String result = ws.newRequest().execute().getInput();
     assertJson(result).isSimilarTo("{\"tags\":[]}");
   }
 
   @Test
-  public void json_example() throws Exception {
+  public void without_organization_parameter_is_cross_organization() {
+    userSession.logIn();
+    OrganizationDto organization = dbTester.organizations().insert();
+    OrganizationDto anotherOrganization = dbTester.organizations().insert();
+    insertIssueWithBrowsePermission(organization, insertRuleWithoutTags(), "tag1");
+    insertIssueWithBrowsePermission(anotherOrganization, insertRuleWithoutTags(), "tag2");
+
+    String result = ws.newRequest().execute().getInput();
+
+    assertJson(result).isSimilarTo("{\"tags\":[\"tag1\", \"tag2\"]}");
+  }
+
+  @Test
+  public void json_example() {
     userSession.logIn();
     insertIssueWithBrowsePermission(insertRuleWithoutTags(), "convention");
 
@@ -223,12 +235,21 @@ public class TagsActionTest {
     return dbTester.rules().insert(setSystemTags());
   }
 
+  private void insertIssueWithBrowsePermission(OrganizationDto organization, RuleDefinitionDto rule, String... tags) {
+    IssueDto issue = insertIssueWithoutBrowsePermission(organization, rule, tags);
+    grantAccess(issue);
+  }
+
   private void insertIssueWithBrowsePermission(RuleDefinitionDto rule, String... tags) {
     IssueDto issue = insertIssueWithoutBrowsePermission(rule, tags);
     grantAccess(issue);
   }
 
   private IssueDto insertIssueWithoutBrowsePermission(RuleDefinitionDto rule, String... tags) {
+    return insertIssueWithoutBrowsePermission(organization, rule, tags);
+  }
+
+  private IssueDto insertIssueWithoutBrowsePermission(OrganizationDto organization, RuleDefinitionDto rule, String... tags) {
     IssueDto issue = dbTester.issues().insertIssue(organization, i -> i.setRule(rule).setTags(asList(tags)));
     ComponentDto project = dbTester.getDbClient().componentDao().selectByUuid(dbTester.getSession(), issue.getProjectUuid()).get();
     userSession.addProjectPermission(USER, project);

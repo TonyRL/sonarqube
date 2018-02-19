@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -43,8 +43,8 @@ import org.sonar.server.exceptions.NotFoundException;
 import org.sonar.server.tester.UserSessionRule;
 import org.sonar.server.ws.TestRequest;
 import org.sonar.server.ws.WsActionTester;
-import org.sonarqube.ws.WsProjectLinks.Link;
-import org.sonarqube.ws.WsProjectLinks.SearchWsResponse;
+import org.sonarqube.ws.ProjectLinks.Link;
+import org.sonarqube.ws.ProjectLinks.SearchWsResponse;
 
 import static java.lang.String.format;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -53,8 +53,8 @@ import static org.sonar.core.util.Uuids.UUID_EXAMPLE_01;
 import static org.sonar.db.component.ComponentTesting.newPrivateProjectDto;
 import static org.sonar.server.ws.KeyExamples.KEY_PROJECT_EXAMPLE_001;
 import static org.sonar.test.JsonAssert.assertJson;
-import static org.sonarqube.ws.client.projectlinks.ProjectLinksWsParameters.PARAM_PROJECT_ID;
-import static org.sonarqube.ws.client.projectlinks.ProjectLinksWsParameters.PARAM_PROJECT_KEY;
+import static org.sonar.server.projectlink.ws.ProjectLinksWsParameters.PARAM_PROJECT_ID;
+import static org.sonar.server.projectlink.ws.ProjectLinksWsParameters.PARAM_PROJECT_KEY;
 
 public class SearchActionTest {
 
@@ -283,7 +283,7 @@ public class SearchActionTest {
   }
 
   @Test
-  public void fail_when_using_branch_db_uuid() throws Exception {
+  public void fail_when_using_branch_db_uuid() {
     OrganizationDto organization = db.organizations().insert();
     ComponentDto project = db.components().insertMainBranch(organization);
     userSession.logIn().addProjectPermission(UserRole.USER, project);
@@ -330,13 +330,13 @@ public class SearchActionTest {
     return link;
   }
 
-  private SearchWsResponse callByKey(String projectKey) throws IOException {
+  private SearchWsResponse callByKey(String projectKey) {
     return ws.newRequest()
       .setParam(PARAM_PROJECT_KEY, projectKey)
       .executeProtobuf(SearchWsResponse.class);
   }
 
-  private SearchWsResponse callByUuid(String projectUuid) throws IOException {
+  private SearchWsResponse callByUuid(String projectUuid) {
     return ws.newRequest()
       .setParam(PARAM_PROJECT_ID, projectUuid)
       .executeProtobuf(SearchWsResponse.class);

@@ -1,7 +1,7 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2016 SonarSource SA
- * mailto:contact AT sonarsource DOT com
+ * Copyright (C) 2009-2018 SonarSource SA
+ * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -17,6 +17,14 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
+/* eslint-disable import/order */
+import * as React from 'react';
+import { mount } from 'enzyme';
+import App, { Props } from '../App';
+import { Visibility } from '../../../app/types';
+
+jest.mock('react-dom');
+
 jest.mock('lodash', () => {
   const lodash = require.requireActual('lodash');
   lodash.debounce = (fn: Function) => (...args: any[]) => fn(args);
@@ -25,6 +33,7 @@ jest.mock('lodash', () => {
 
 // actual version breaks `mount`
 jest.mock('rc-tooltip', () => ({
+  // eslint-disable-next-line
   default: function Tooltip() {
     return null;
   }
@@ -32,13 +41,9 @@ jest.mock('rc-tooltip', () => ({
 
 jest.mock('../../../api/components', () => ({ getComponents: jest.fn() }));
 
-import * as React from 'react';
-import { mount } from 'enzyme';
-import App, { Props } from '../App';
-
 const getComponents = require('../../../api/components').getComponents as jest.Mock<any>;
 
-const organization = { key: 'org', name: 'org', projectVisibility: 'public' };
+const organization = { key: 'org', name: 'org', projectVisibility: Visibility.Public };
 
 const defaultSearchParameters = {
   organization: 'org',
@@ -81,7 +86,7 @@ it('searches', () => {
   expect(getComponents).lastCalledWith({ ...defaultSearchParameters, q: 'foo', qualifiers: 'TRK' });
 });
 
-it('loads more', async () => {
+it('loads more', () => {
   const wrapper = mountRender();
   wrapper.find('ListFooter').prop<Function>('loadMore')();
   expect(getComponents).lastCalledWith({ ...defaultSearchParameters, p: 2, qualifiers: 'TRK' });
@@ -119,12 +124,15 @@ it('creates project', () => {
   expect(wrapper.find('CreateProjectForm').exists()).toBeFalsy();
 
   wrapper.find('Header').prop<Function>('onProjectCreate')();
+  wrapper.update();
   expect(wrapper.find('CreateProjectForm').exists()).toBeTruthy();
 
   wrapper.find('CreateProjectForm').prop<Function>('onProjectCreated')();
+  wrapper.update();
   expect(getComponents.mock.calls).toHaveLength(2);
 
   wrapper.find('CreateProjectForm').prop<Function>('onClose')();
+  wrapper.update();
   expect(wrapper.find('CreateProjectForm').exists()).toBeFalsy();
 });
 
@@ -138,6 +146,7 @@ it('changes default project visibility', () => {
 function mountRender(props?: { [P in keyof Props]?: Props[P] }) {
   return mount(
     <App
+      currentUser={{ login: 'foo' }}
       hasProvisionPermission={true}
       onVisibilityChange={jest.fn()}
       organization={organization}

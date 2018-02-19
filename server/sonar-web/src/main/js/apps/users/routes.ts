@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -22,7 +22,7 @@ import { RouterState, IndexRouteProps } from 'react-router';
 const routes = [
   {
     getIndexRoute(_: RouterState, callback: (err: any, route: IndexRouteProps) => any) {
-      import('./components/UsersAppContainer').then(i => callback(null, { component: i.default }));
+      import('./UsersAppContainer').then(i => callback(null, { component: i.default }));
     }
   }
 ];

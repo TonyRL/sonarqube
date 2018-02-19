@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -35,6 +35,7 @@ import org.sonar.core.platform.PluginInfo;
 import org.sonar.db.DbClient;
 import org.sonar.db.DbSession;
 import org.sonar.db.plugin.PluginDto;
+import org.sonar.server.plugins.PluginCompression;
 import org.sonar.server.plugins.ServerPluginRepository;
 import org.sonar.server.plugins.UpdateCenterMatrixFactory;
 import org.sonar.updatecenter.common.Plugin;
@@ -57,9 +58,12 @@ public class InstalledAction implements PluginsWsAction {
   private final PluginWSCommons pluginWSCommons;
   private final UpdateCenterMatrixFactory updateCenterMatrixFactory;
   private final DbClient dbClient;
+  private final PluginCompression compression;
 
-  public InstalledAction(ServerPluginRepository pluginRepository, PluginWSCommons pluginWSCommons, UpdateCenterMatrixFactory updateCenterMatrixFactory, DbClient dbClient) {
+  public InstalledAction(ServerPluginRepository pluginRepository, PluginCompression compression, PluginWSCommons pluginWSCommons,
+    UpdateCenterMatrixFactory updateCenterMatrixFactory, DbClient dbClient) {
     this.pluginRepository = pluginRepository;
+    this.compression = compression;
     this.pluginWSCommons = pluginWSCommons;
     this.updateCenterMatrixFactory = updateCenterMatrixFactory;
     this.dbClient = dbClient;
@@ -74,7 +78,8 @@ public class InstalledAction implements PluginsWsAction {
         new Change("6.6", "The 'filename' field is added"),
         new Change("6.6", "The 'fileHash' field is added"),
         new Change("6.6", "The 'sonarLintSupported' field is added"),
-        new Change("6.6", "The 'updatedAt' field is added"))
+        new Change("6.6", "The 'updatedAt' field is added"),
+        new Change("7.0", "The fields 'compressedHash' and 'compressedFilename' are added"))
       .setHandler(this)
       .setResponseExample(Resources.getResource(this.getClass(), "example-installed_plugins.json"));
 
@@ -99,7 +104,7 @@ public class InstalledAction implements PluginsWsAction {
     jsonWriter.beginObject();
 
     List<String> additionalFields = request.paramAsStrings(WebService.Param.FIELDS);
-    writePluginInfoList(jsonWriter, pluginInfoList, additionalFields == null ? Collections.<String>emptyList() : additionalFields, pluginDtosByKey);
+    writePluginInfoList(jsonWriter, pluginInfoList, additionalFields == null ? Collections.emptyList() : additionalFields, pluginDtosByKey);
 
     jsonWriter.endObject();
     jsonWriter.close();
@@ -111,8 +116,8 @@ public class InstalledAction implements PluginsWsAction {
 
   private void writePluginInfoList(JsonWriter jsonWriter, Collection<PluginInfo> pluginInfoList, List<String> additionalFields, Map<String, PluginDto> pluginDtos) {
     Map<String, Plugin> compatiblesPluginsFromUpdateCenter = additionalFields.isEmpty()
-      ? Collections.<String, Plugin>emptyMap()
+      ? Collections.emptyMap()
       : compatiblePluginsByKey(updateCenterMatrixFactory);
-    pluginWSCommons.writePluginInfoList(jsonWriter, pluginInfoList, compatiblesPluginsFromUpdateCenter, ARRAY_PLUGINS, pluginDtos);
+    pluginWSCommons.writePluginInfoList(jsonWriter, pluginInfoList, compatiblesPluginsFromUpdateCenter, ARRAY_PLUGINS, pluginDtos, compression.getPlugins());
   }
 }

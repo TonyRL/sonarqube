@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -132,7 +132,7 @@ public class NewCoverageMeasuresStep implements ComputationStep {
       if (scmInfoRepository == null) {
         return VIEWS_FORMULAS;
       }
-      return Collections.<Formula<?>>singleton(new NewLinesAndConditionsCoverageFormula(scmInfoRepository));
+      return Collections.singleton(new NewLinesAndConditionsCoverageFormula(scmInfoRepository));
     }
 
     /**

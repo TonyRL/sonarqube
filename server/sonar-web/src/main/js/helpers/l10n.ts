@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -42,6 +42,7 @@ export function translate(...keys: string[]): string {
   const messageKey = keys.join('.');
   if (process.env.NODE_ENV === 'development') {
     if (!messages[messageKey]) {
+      // eslint-disable-next-line
       console.error(`No message for: ${messageKey}`);
     }
   }
@@ -59,6 +60,7 @@ export function translateWithParameters(
       .reduce((acc, parameter, index) => acc.replace(`{${index}}`, parameter), message);
   } else {
     if (process.env.NODE_ENV === 'development') {
+      // eslint-disable-next-line
       console.error(`No message for: ${messageKey}`);
     }
     return `${messageKey}.${parameters.join('.')}`;
@@ -172,4 +174,12 @@ export function getLocalizedMetricDomain(domainName: string) {
   const bundleKey = `metric_domain.${domainName}`;
   const fromBundle = translate(bundleKey);
   return fromBundle !== bundleKey ? fromBundle : domainName;
+}
+
+export function getCurrentLocale() {
+  // check `window && window.localStorage` for tests
+  return (
+    (window && window.localStorage && window.localStorage.getItem('l10n.locale')) ||
+    DEFAULT_LANGUAGE
+  );
 }

@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -70,8 +70,12 @@ it('should render switch the default sorting option for anonymous users', () => 
 function shallowRender(props?: {}) {
   return shallow(
     <PageHeader
+      currentUser={{ isLoggedIn: false }}
+      isFavorite={false}
       loading={false}
       onPerspectiveChange={jest.fn()}
+      onQueryChange={jest.fn()}
+      onSonarCloud={false}
       onSortChange={jest.fn()}
       projects={[]}
       query={{ search: 'test' }}

@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -40,7 +40,7 @@ import org.sonar.server.ws.TestRequest;
 import org.sonar.server.ws.WsActionTester;
 import org.sonar.test.JsonAssert;
 import org.sonarqube.ws.MediaTypes;
-import org.sonarqube.ws.WsEditions.FormDataResponse;
+import org.sonarqube.ws.Editions.FormDataResponse;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
@@ -100,7 +100,7 @@ public class FormDataActionTest {
   }
 
   @Test
-  public void verify_example() throws IOException {
+  public void verify_example() {
     userSessionRule.logIn().setSystemAdministrator();
     when(server.getId()).thenReturn("uuid");
     when(stats.getNcloc()).thenReturn(12345L);

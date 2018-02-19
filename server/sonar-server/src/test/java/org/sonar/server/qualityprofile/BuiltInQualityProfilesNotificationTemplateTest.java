@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -17,7 +17,6 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-
 package org.sonar.server.qualityprofile;
 
 import java.util.Date;
@@ -187,7 +186,7 @@ public class BuiltInQualityProfilesNotificationTemplateTest {
 
     EmailMessage emailMessage = underTest.format(notification.serialize());
 
-    assertThat(emailMessage.getMessage()).containsSequence("The following built-in profiles have been updated:\n",
+    assertThat(emailMessage.getMessage()).containsSubsequence("The following built-in profiles have been updated:\n",
       profileTitleText(profileName1, languageKey1, languageName1),
       " 2 new rules\n",
       profileTitleText(profileName2, languageKey2, languageName2),
@@ -211,7 +210,7 @@ public class BuiltInQualityProfilesNotificationTemplateTest {
 
     EmailMessage emailMessage = underTest.format(notification.serialize());
 
-    assertThat(emailMessage.getMessage()).containsSequence(
+    assertThat(emailMessage.getMessage()).containsSubsequence(
       "\"" + profileName2 + "\" - " + languageName1,
       "\"" + profileName1 + "\" - " + languageName2,
       "\"" + profileName3 + "\" - " + languageName2);
@@ -255,7 +254,7 @@ public class BuiltInQualityProfilesNotificationTemplateTest {
 
   private void assertMessage(EmailMessage emailMessage, String expectedProfileDetails) {
     assertThat(emailMessage.getMessage())
-      .containsSequence(
+      .containsSubsequence(
         "The following built-in profiles have been updated:\n\n",
         expectedProfileDetails,
         "\nThis is a good time to review your quality profiles and update them to benefit from the latest evolutions: " + server.getPublicRootUrl() + "/profiles");

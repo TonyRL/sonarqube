@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -19,11 +19,11 @@
  */
 // @flow
 import React from 'react';
-import Select from 'react-select';
 import ProjectActivityEventSelectOption from './ProjectActivityEventSelectOption';
 import ProjectActivityEventSelectValue from './ProjectActivityEventSelectValue';
 import ProjectActivityDateInput from './ProjectActivityDateInput';
 import { EVENT_TYPES, APPLICATION_EVENT_TYPES } from '../utils';
+import Select from '../../../components/controls/Select';
 import { translate } from '../../../helpers/l10n';
 /*:: import type { RawQuery } from '../../../helpers/query'; */
 

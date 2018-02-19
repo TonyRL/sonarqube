@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -43,10 +43,13 @@ export default function ProfileDetails(props: Props) {
           <ProfileRules {...props} />
           <ProfileExporters {...props} />
           {profile.actions &&
-          profile.actions.edit &&
-          !profile.isBuiltIn && (
-            <ProfilePermissions organization={props.organization || undefined} profile={profile} />
-          )}
+            profile.actions.edit &&
+            !profile.isBuiltIn && (
+              <ProfilePermissions
+                organization={props.organization || undefined}
+                profile={profile}
+              />
+            )}
         </div>
         <div className="quality-profile-grid-right">
           <ProfileInheritance {...props} />

@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -66,7 +66,7 @@ public class TestIndexDefinition implements IndexDefinition {
     mapping.keywordFieldBuilder(FIELD_PROJECT_UUID).disableNorms().build();
     mapping.keywordFieldBuilder(FIELD_FILE_UUID).disableNorms().build();
     mapping.keywordFieldBuilder(FIELD_TEST_UUID).disableNorms().build();
-    mapping.keywordFieldBuilder(FIELD_NAME).disableNorms().disableSearch().build();
+    mapping.keywordFieldBuilder(FIELD_NAME).disableNorms().disableSearch().disableSortingAndAggregating().build();
     mapping.keywordFieldBuilder(FIELD_STATUS).disableNorms().disableSearch().build();
     mapping.createLongField(FIELD_DURATION_IN_MS);
     mapping.keywordFieldBuilder(FIELD_MESSAGE).disableNorms().disableSearch().disableSortingAndAggregating().build();

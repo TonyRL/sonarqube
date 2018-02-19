@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -69,7 +69,7 @@ public class EditionPluginDownloaderTest {
   }
 
   @Test
-  public void download_plugin_to_tmp() throws IOException, URISyntaxException {
+  public void download_plugin_to_tmp() throws URISyntaxException {
     List<Release> releases = ImmutableList.of(createRelease("plugin1", "1.0", "http://host/plugin1.jar"),
       createRelease("plugin2", "1.0", "http://host/plugin2.jar"));
 
@@ -85,7 +85,7 @@ public class EditionPluginDownloaderTest {
   }
   
   @Test
-  public void download_plugin_to_tmp_with_file_uri() throws IOException, URISyntaxException {
+  public void download_plugin_to_tmp_with_file_uri() throws IOException {
     File plugin1 = temp.newFile("plugin1.jar");
     File plugin2 = temp.newFile("plugin2.jar");
 

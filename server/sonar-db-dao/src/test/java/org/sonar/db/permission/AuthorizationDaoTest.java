@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -1021,8 +1021,11 @@ public class AuthorizationDaoTest {
     UserDto user3 = db.users().insertUser();
     db.users().insertMember(administratorGroup2, user3);
 
+    ComponentDto project = db.components().insertPrivateProject();
+
     UserDto user4 = db.users().insertUser();
     db.users().insertPermissionOnUser(organization1, user4, ADMINISTER_QUALITY_PROFILES);
+    db.users().insertProjectPermissionOnUser(user4, "admin", project);
     db.users().insertUser();
 
     List<String> logins = underTest.selectGlobalAdministratorLogins(dbSession);

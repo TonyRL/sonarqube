@@ -6,7 +6,7 @@
   <parent>
     <groupId>org.sonarsource.sonarqube</groupId>
     <artifactId>sonarqube</artifactId>
-    <version>6.7.1-SNAPSHOT</version>
+    <version>7.0-SNAPSHOT</version>
   </parent>
   <artifactId>server</artifactId>
   <packaging>pom</packaging>
@@ -23,6 +23,7 @@
     <module>sonar-ce</module>
     <module>sonar-plugin-bridge</module>
     <module>sonar-web</module>
+    <module>sonar-qa-util</module>
   </modules>
 
   <profiles>

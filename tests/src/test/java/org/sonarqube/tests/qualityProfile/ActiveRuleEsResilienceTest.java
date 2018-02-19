@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -30,10 +30,10 @@ import org.junit.rules.DisableOnDebug;
 import org.junit.rules.TestRule;
 import org.junit.rules.Timeout;
 import org.sonarqube.tests.Byteman;
-import org.sonarqube.tests.Tester;
+import org.sonarqube.qa.util.Tester;
 import org.sonarqube.ws.Organizations;
-import org.sonarqube.ws.QualityProfiles;
-import org.sonarqube.ws.client.rule.SearchWsRequest;
+import org.sonarqube.ws.Qualityprofiles;
+import org.sonarqube.ws.client.rules.SearchRequest;
 import util.ItUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -78,7 +78,7 @@ public class ActiveRuleEsResilienceTest {
   @Test
   public void activation_and_deactivation_of_rule_is_resilient_to_indexing_errors() throws Exception {
     Organizations.Organization organization = tester.organizations().generate();
-    QualityProfiles.CreateWsResponse.QualityProfile profile = tester.qProfiles().createXooProfile(organization);
+    Qualityprofiles.CreateWsResponse.QualityProfile profile = tester.qProfiles().createXooProfile(organization);
 
     // step 1. activation
     tester.qProfiles().activateRule(profile.getKey(), RULE_ONE_BUG_PER_LINE);
@@ -99,8 +99,8 @@ public class ActiveRuleEsResilienceTest {
     assertThat(searchActiveRules(profile)).isEqualTo(0);
   }
 
-  private long searchActiveRules(QualityProfiles.CreateWsResponse.QualityProfile profile) {
-    SearchWsRequest request = new SearchWsRequest().setActivation(true).setQProfile(profile.getKey());
+  private long searchActiveRules(Qualityprofiles.CreateWsResponse.QualityProfile profile) {
+    SearchRequest request = new SearchRequest().setActivation("true").setQprofile(profile.getKey());
     return tester.wsClient().rules().search(request).getRulesCount();
   }
 }

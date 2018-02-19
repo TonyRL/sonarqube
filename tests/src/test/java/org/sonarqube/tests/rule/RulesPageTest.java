@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -23,13 +23,13 @@ import com.sonar.orchestrator.Orchestrator;
 import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
-import org.sonarqube.pageobjects.RulesPage;
-import org.sonarqube.tests.Category2Suite;
-import org.sonarqube.tests.Tester;
+import org.sonarqube.qa.util.Tester;
+import org.sonarqube.qa.util.pageobjects.RulesPage;
+import org.sonarqube.tests.Category4Suite;
 
 public class RulesPageTest {
   @ClassRule
-  public static Orchestrator ORCHESTRATOR = Category2Suite.ORCHESTRATOR;
+  public static Orchestrator ORCHESTRATOR = Category4Suite.ORCHESTRATOR;
 
   @Rule
   public Tester tester = new Tester(ORCHESTRATOR).disableOrganizations();

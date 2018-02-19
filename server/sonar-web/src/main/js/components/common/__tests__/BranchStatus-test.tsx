@@ -1,7 +1,7 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2016 SonarSource SA
- * mailto:contact AT sonarsource DOT com
+ * Copyright (C) 2009-2018 SonarSource SA
+ * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -45,11 +45,11 @@ it('renders status of short-living branches', () => {
 });
 
 it('renders status of long-living branches', () => {
-  checkLong();
-  checkLong('OK');
-  checkLong('ERROR');
+  expect(getWrapper().type()).toBeNull();
+  expect(getWrapper('OK')).toMatchSnapshot();
+  expect(getWrapper('ERROR')).toMatchSnapshot();
 
-  function checkLong(qualityGateStatus?: string) {
+  function getWrapper(qualityGateStatus?: string) {
     const branch: LongLivingBranch = {
       isMain: false,
       name: 'foo',
@@ -58,6 +58,6 @@ it('renders status of long-living branches', () => {
     if (qualityGateStatus) {
       branch.status = { qualityGateStatus };
     }
-    expect(shallow(<BranchStatus branch={branch} />)).toMatchSnapshot();
+    return shallow(<BranchStatus branch={branch} />);
   }
 });

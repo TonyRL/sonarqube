@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -81,14 +81,14 @@ public class FavoriteUpdaterTest {
 
   private void assertFavorite() {
     assertThat(dbClient.propertiesDao().selectByQuery(PropertyQuery.builder()
-      .setUserId((int) USER_ID)
+      .setUserId(USER_ID)
       .setComponentId(COMPONENT_ID)
       .build(), dbSession)).hasSize(1);
   }
 
   private void assertNoFavorite() {
     assertThat(dbClient.propertiesDao().selectByQuery(PropertyQuery.builder()
-      .setUserId((int) USER_ID)
+      .setUserId(USER_ID)
       .setComponentId(COMPONENT_ID)
       .build(), dbSession)).isEmpty();
   }

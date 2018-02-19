@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -108,18 +108,18 @@ export default class IssueView extends React.PureComponent {
           onChange={this.props.onChange}
         />
         {issue.comments &&
-        issue.comments.length > 0 && (
-          <div className="issue-comments">
-            {issue.comments.map(comment => (
-              <IssueCommentLine
-                comment={comment}
-                key={comment.key}
-                onEdit={this.editComment}
-                onDelete={this.deleteComment}
-              />
-            ))}
-          </div>
-        )}
+          issue.comments.length > 0 && (
+            <div className="issue-comments">
+              {issue.comments.map(comment => (
+                <IssueCommentLine
+                  comment={comment}
+                  key={comment.key}
+                  onEdit={this.editComment}
+                  onDelete={this.deleteComment}
+                />
+              ))}
+            </div>
+          )}
         <a className="issue-navigate js-issue-navigate">
           <i className="issue-navigate-to-left icon-chevron-left" />
           <i className="issue-navigate-to-right icon-chevron-right" />

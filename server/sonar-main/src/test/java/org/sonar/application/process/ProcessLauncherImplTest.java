@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -75,7 +75,7 @@ public class ProcessLauncherImplTest {
     assertThat(monitor).isNotNull();
     assertThat(processBuilder.started).isTrue();
     assertThat(processBuilder.commands.get(0)).endsWith("java");
-    assertThat(processBuilder.commands).containsSequence(
+    assertThat(processBuilder.commands).containsSubsequence(
       "-Dfoo=bar",
       "-Dfoo2=bar2",
       "-cp",
@@ -233,7 +233,7 @@ public class ProcessLauncherImplTest {
     }
 
     @Override
-    public Process start() throws IOException {
+    public Process start() {
       this.started = true;
       return mock(Process.class);
     }

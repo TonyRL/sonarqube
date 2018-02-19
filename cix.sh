@@ -12,11 +12,51 @@ case "$RUN_ACTIVITY" in
 
   run-db-integration-tests-*)
     DB_ENGINE=$(sed "s/run-db-integration-tests-//g" <<< $RUN_ACTIVITY | cut -d \- -f 1)
-    CATEGORY=$(sed "s/run-db-integration-tests-//g" <<< $RUN_ACTIVITY | cut -d \- -f 2)
+    CATEGORY_GROUP=$(sed "s/run-db-integration-tests-//g" <<< $RUN_ACTIVITY | cut -d \- -f 2)
+
     if [[ "$GITHUB_BRANCH" == "PULLREQUEST-"* ]] && [[ "$DB_ENGINE" != "postgresql93" ]]; then
-     exit 0
+      # execute PR QA only on postgres
+      exit 0
     else
-     ./run-integration-tests.sh "${CATEGORY}" "http://infra.internal.sonarsource.com/jenkins/orch-${DB_ENGINE}.properties"
+      mvn clean package -B -e -V -f tests/plugins/pom.xml
+
+      case "$CATEGORY_GROUP" in
+        Category1)
+          CATEGORY="Category1|authorization|measure|qualityGate|source"
+          ;;
+
+        Category2)
+          CATEGORY="issue|test|qualityModel"
+          ;;
+
+        Category3)
+          CATEGORY="Category3|component|project"
+          ;;
+
+        Category4)
+          CATEGORY="Category4|duplication"
+          ;;
+
+        Category5)
+          CATEGORY="Category5"
+          ;;
+
+        Category6)
+          CATEGORY="Category6|organization"
+          ;;
+
+        *)
+          echo "unknown CATEGORY_GROUP: $CATEGORY_GROUP"
+          exit 1
+          ;;
+      esac
+
+      mvn verify \
+          -f tests/pom.xml \
+          -Dcategory="$CATEGORY" \
+          -Dorchestrator.configUrl="http://infra.internal.sonarsource.com/jenkins/orch-$DB_ENGINE.properties" \
+          -Pwith-db-drivers \
+          -B -e -V
     fi
     ;;
 

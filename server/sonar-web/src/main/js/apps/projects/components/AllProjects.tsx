@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -20,11 +20,14 @@
 import * as React from 'react';
 import * as PropTypes from 'prop-types';
 import Helmet from 'react-helmet';
+import { omitBy } from 'lodash';
 import PageHeader from './PageHeader';
 import ProjectsList from './ProjectsList';
 import PageSidebar from './PageSidebar';
 import Visualizations from '../visualizations/Visualizations';
+import { CurrentUser, isLoggedIn } from '../../../app/types';
 import handleRequiredAuthentication from '../../../app/utils/handleRequiredAuthentication';
+import ScreenPositionHelper from '../../../components/common/ScreenPositionHelper';
 import ListFooter from '../../../components/controls/ListFooter';
 import { translate } from '../../../helpers/l10n';
 import * as storage from '../../../helpers/storage';
@@ -34,10 +37,13 @@ import { Project, Facets } from '../types';
 import { fetchProjects, parseSorting, SORTING_SWITCH } from '../utils';
 import { parseUrlQuery, Query } from '../query';
 
-interface Props {
+export interface Props {
+  currentUser: CurrentUser;
   isFavorite: boolean;
-  location: { pathname: string; query: { [x: string]: string } };
+  location: { pathname: string; query: RawQuery };
+  onSonarCloud: boolean;
   organization?: { key: string };
+  organizationsEnabled: boolean;
 }
 
 interface State {
@@ -51,23 +57,28 @@ interface State {
 
 export default class AllProjects extends React.PureComponent<Props, State> {
   mounted: boolean;
-  state: State = { loading: true, query: {} };
 
   static contextTypes = {
-    currentUser: PropTypes.object.isRequired,
-    organizationsEnabled: PropTypes.bool,
     router: PropTypes.object.isRequired
   };
 
+  constructor(props: Props) {
+    super(props);
+    this.state = { loading: true, query: {} };
+  }
+
   componentDidMount() {
     this.mounted = true;
-    if (this.props.isFavorite && !this.context.currentUser.isLoggedIn) {
+
+    if (this.props.isFavorite && !isLoggedIn(this.props.currentUser)) {
       handleRequiredAuthentication();
       return;
     }
     this.handleQueryChange(true);
     const footer = document.getElementById('footer');
-    footer && footer.classList.add('page-footer-with-sidebar');
+    if (footer) {
+      footer.classList.add('page-footer-with-sidebar');
+    }
   }
 
   componentDidUpdate(prevProps: Props) {
@@ -78,8 +89,11 @@ export default class AllProjects extends React.PureComponent<Props, State> {
 
   componentWillUnmount() {
     this.mounted = false;
+
     const footer = document.getElementById('footer');
-    footer && footer.classList.remove('page-footer-with-sidebar');
+    if (footer) {
+      footer.classList.remove('page-footer-with-sidebar');
+    }
   }
 
   getView = () => this.state.query.view || 'overall';
@@ -88,7 +102,8 @@ export default class AllProjects extends React.PureComponent<Props, State> {
 
   getSort = () => this.state.query.sort || 'name';
 
-  isFiltered = () => Object.values(this.state.query).some(value => value != undefined);
+  isFiltered = (query = this.state.query) =>
+    Object.values(query).some(value => value !== undefined);
 
   stopLoading = () => {
     if (this.mounted) {
@@ -193,7 +208,7 @@ export default class AllProjects extends React.PureComponent<Props, State> {
     const savedOptionsSet = savedOptions.sort || savedOptions.view || savedOptions.visualization;
 
     // if there is no filter, but there are saved preferences in the localStorage
-    if (initialMount && !this.isFiltered() && savedOptionsSet) {
+    if (initialMount && !this.isFiltered(query) && savedOptionsSet) {
       this.context.router.replace({ pathname: this.props.location.pathname, query: savedOptions });
     } else {
       this.fetchProjects(query);
@@ -201,34 +216,35 @@ export default class AllProjects extends React.PureComponent<Props, State> {
   }
 
   updateLocationQuery = (newQuery: RawQuery) => {
-    this.context.router.push({
-      pathname: this.props.location.pathname,
-      query: {
-        ...this.props.location.query,
-        ...newQuery
-      }
-    });
+    const query = omitBy({ ...this.props.location.query, ...newQuery }, x => !x);
+    this.context.router.push({ pathname: this.props.location.pathname, query });
+  };
+
+  handleClearAll = () => {
+    this.context.router.push({ pathname: this.props.location.pathname });
   };
 
   renderSide = () => (
-    <div className="layout-page-side-outer">
-      <div
-        className="layout-page-side projects-page-side"
-        style={{ top: this.props.organization ? 95 : 30 }}>
-        <div className="layout-page-side-inner">
-          <div className="layout-page-filters">
-            <PageSidebar
-              facets={this.state.facets}
-              isFavorite={this.props.isFavorite}
-              organization={this.props.organization}
-              query={this.state.query}
-              view={this.getView()}
-              visualization={this.getVisualization()}
-            />
+    <ScreenPositionHelper className="layout-page-side-outer">
+      {({ top }) => (
+        <div className="layout-page-side projects-page-side" style={{ top }}>
+          <div className="layout-page-side-inner">
+            <div className="layout-page-filters">
+              <PageSidebar
+                facets={this.state.facets}
+                onClearAll={this.handleClearAll}
+                onQueryChange={this.updateLocationQuery}
+                organization={this.props.organization}
+                query={this.state.query}
+                showFavoriteFilter={!this.props.onSonarCloud}
+                view={this.getView()}
+                visualization={this.getVisualization()}
+              />
+            </div>
           </div>
         </div>
-      </div>
-    </div>
+      )}
+    </ScreenPositionHelper>
   );
 
   renderHeader = () => (
@@ -236,10 +252,12 @@ export default class AllProjects extends React.PureComponent<Props, State> {
       <div className="layout-page-header-panel-inner layout-page-main-header-inner">
         <div className="layout-page-main-inner">
           <PageHeader
-            currentUser={this.context.currentUser}
+            currentUser={this.props.currentUser}
             isFavorite={this.props.isFavorite}
             loading={this.state.loading}
             onPerspectiveChange={this.handlePerspectiveChange}
+            onQueryChange={this.updateLocationQuery}
+            onSonarCloud={this.props.onSonarCloud}
             onSortChange={this.handleSortChange}
             organization={this.props.organization}
             projects={this.state.projects}
@@ -259,7 +277,7 @@ export default class AllProjects extends React.PureComponent<Props, State> {
       <div className="layout-page-main-inner">
         {this.state.projects && (
           <Visualizations
-            displayOrganizations={!this.props.organization && !!this.context.organizationsEnabled}
+            displayOrganizations={!this.props.organization && this.props.organizationsEnabled}
             projects={this.state.projects}
             sort={this.state.query.sort}
             total={this.state.total}
@@ -274,28 +292,29 @@ export default class AllProjects extends React.PureComponent<Props, State> {
             cardType={this.getView()}
             isFavorite={this.props.isFavorite}
             isFiltered={this.isFiltered()}
+            onSonarCloud={this.props.onSonarCloud}
             organization={this.props.organization}
             projects={this.state.projects}
             query={this.state.query}
           />
         )}
         <ListFooter
-          count={this.state.projects != undefined ? this.state.projects.length : 0}
+          count={this.state.projects !== undefined ? this.state.projects.length : 0}
           loadMore={this.fetchMoreProjects}
           ready={!this.state.loading}
-          total={this.state.total != undefined ? this.state.total : 0}
+          total={this.state.total !== undefined ? this.state.total : 0}
         />
       </div>
     );
 
   render() {
     return (
-      <div className="layout-page projects-page">
+      <div className="layout-page projects-page" id="projects-page">
         <Helmet title={translate('projects.page')} />
 
         {this.renderSide()}
 
-        <div className="layout-page-main projects-page-content">
+        <div className="layout-page-main">
           {this.renderHeader()}
           {this.renderMain()}
         </div>

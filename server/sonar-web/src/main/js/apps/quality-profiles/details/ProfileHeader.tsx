@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -22,7 +22,7 @@ import { Link, IndexLink } from 'react-router';
 import ProfileLink from '../components/ProfileLink';
 import ProfileActions from '../components/ProfileActions';
 import ProfileDate from '../components/ProfileDate';
-import BuiltInBadge from '../components/BuiltInBadge';
+import BuiltInQualityProfileBadge from '../components/BuiltInQualityProfileBadge';
 import { translate } from '../../../helpers/l10n';
 import {
   isStagnant,
@@ -92,7 +92,9 @@ export default class ProfileHeader extends React.PureComponent<Props> {
             organization={organization}>
             <span>{profile.name}</span>
           </ProfileLink>
-          {profile.isBuiltIn && <BuiltInBadge className="spacer-left" tooltip={false} />}
+          {profile.isBuiltIn && (
+            <BuiltInQualityProfileBadge className="spacer-left" tooltip={false} />
+          )}
         </h1>
 
         <div className="pull-right">
@@ -107,17 +109,13 @@ export default class ProfileHeader extends React.PureComponent<Props> {
               </Link>
             </li>
             <li>
-              <div className="pull-left dropdown">
-                <button className="dropdown-toggle" data-toggle="dropdown">
-                  {translate('actions')} <i className="icon-dropdown" />
-                </button>
-                <ProfileActions
-                  onRequestFail={this.props.onRequestFail}
-                  organization={organization}
-                  profile={profile}
-                  updateProfiles={this.props.updateProfiles}
-                />
-              </div>
+              <ProfileActions
+                className="pull-left"
+                onRequestFail={this.props.onRequestFail}
+                organization={organization}
+                profile={profile}
+                updateProfiles={this.props.updateProfiles}
+              />
             </li>
           </ul>
         </div>

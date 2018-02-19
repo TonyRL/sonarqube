@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -62,16 +62,15 @@ export default class Conditions extends React.PureComponent {
       edit,
       onAddCondition,
       onSaveCondition,
-      onDeleteCondition
+      onDeleteCondition,
+      organization
     } = this.props;
 
-    const existingConditions = conditions.filter(condition =>
-      metrics.find(metric => metric.key === condition.metric)
-    );
+    const existingConditions = conditions.filter(condition => metrics[condition.metric]);
 
     const sortedConditions = sortBy(
       existingConditions,
-      condition => metrics.find(metric => metric.key === condition.metric).name
+      condition => metrics[condition.metric] && metrics[condition.metric].name
     );
 
     const duplicates = [];
@@ -85,11 +84,10 @@ export default class Conditions extends React.PureComponent {
       }
     });
 
-    const uniqDuplicates = uniqBy(duplicates, d => d.metric).map(condition => {
-      const metric = metrics.find(metric => metric.key === condition.metric);
-      return { ...condition, metric };
-    });
-
+    const uniqDuplicates = uniqBy(duplicates, d => d.metric).map(condition => ({
+      ...condition,
+      metric: metrics[condition.metric]
+    }));
     return (
       <div id="quality-gate-conditions" className="quality-gate-section">
         <h3 className="spacer-bottom">{translate('quality_gates.conditions')}</h3>
@@ -127,12 +125,13 @@ export default class Conditions extends React.PureComponent {
                   key={getKey(condition, index)}
                   qualityGate={qualityGate}
                   condition={condition}
-                  metric={metrics.find(metric => metric.key === condition.metric)}
+                  metric={metrics[condition.metric]}
                   edit={edit}
                   onSaveCondition={onSaveCondition}
                   onDeleteCondition={onDeleteCondition}
                   onError={this.handleError.bind(this)}
                   onResetError={this.handleResetError.bind(this)}
+                  organization={organization}
                 />
               ))}
             </tbody>

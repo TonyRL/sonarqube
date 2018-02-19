@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -204,7 +204,7 @@ public class BatchReportReaderRule implements TestRule, BatchReportReader {
   }
 
   private static <T> CloseableIterator<T> closeableIterator(@Nullable List<T> list) {
-    return list == null ? CloseableIterator.<T>emptyCloseableIterator() : CloseableIterator.from(list.iterator());
+    return list == null ? CloseableIterator.emptyCloseableIterator() : CloseableIterator.from(list.iterator());
   }
 
   public BatchReportReaderRule putSymbols(int componentRef, List<ScannerReport.Symbol> symbols) {

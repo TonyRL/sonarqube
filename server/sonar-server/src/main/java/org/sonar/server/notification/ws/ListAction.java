@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -57,8 +57,8 @@ import static org.sonar.server.notification.NotificationDispatcherMetadata.GLOBA
 import static org.sonar.server.notification.NotificationDispatcherMetadata.PER_PROJECT_NOTIFICATION;
 import static org.sonar.server.ws.WsUtils.checkFound;
 import static org.sonar.server.ws.WsUtils.writeProtobuf;
-import static org.sonarqube.ws.client.notification.NotificationsWsParameters.ACTION_LIST;
-import static org.sonarqube.ws.client.notification.NotificationsWsParameters.PARAM_LOGIN;
+import static org.sonar.server.notification.ws.NotificationsWsParameters.ACTION_LIST;
+import static org.sonar.server.notification.ws.NotificationsWsParameters.PARAM_LOGIN;
 
 public class ListAction implements NotificationsWsAction {
   private static final Splitter PROPERTY_KEY_SPLITTER = Splitter.on(".");

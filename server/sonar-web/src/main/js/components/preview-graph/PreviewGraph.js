@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -175,19 +175,19 @@ export default class PreviewGraph extends React.PureComponent {
               updateTooltip={this.updateTooltip}
             />
             {selectedDate != null &&
-            tooltipXPos != null &&
-            tooltipIdx != null && (
-              <PreviewGraphTooltips
-                formatValue={this.formatValue}
-                graph={graph}
-                graphWidth={width}
-                metrics={this.props.metrics}
-                selectedDate={selectedDate}
-                series={series}
-                tooltipIdx={tooltipIdx}
-                tooltipPos={tooltipXPos}
-              />
-            )}
+              tooltipXPos != null &&
+              tooltipIdx != null && (
+                <PreviewGraphTooltips
+                  formatValue={this.formatValue}
+                  graph={graph}
+                  graphWidth={width}
+                  metrics={this.props.metrics}
+                  selectedDate={selectedDate}
+                  series={series}
+                  tooltipIdx={tooltipIdx}
+                  tooltipPos={tooltipXPos}
+                />
+              )}
           </div>
         )}
       </AutoSizer>

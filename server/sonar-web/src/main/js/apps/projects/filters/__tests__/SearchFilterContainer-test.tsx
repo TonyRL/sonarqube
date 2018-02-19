@@ -1,7 +1,7 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2016 SonarSource SA
- * mailto:contact AT sonarsource DOT com
+ * Copyright (C) 2009-2018 SonarSource SA
+ * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -21,17 +21,12 @@ import * as React from 'react';
 import { shallow } from 'enzyme';
 import SearchFilterContainer from '../SearchFilterContainer';
 
-// mocking lodash, because mocking timers is now working for some reason :'(
-jest.mock('lodash', () => {
-  const lodash = require.requireActual('lodash');
-  lodash.debounce = (fn: Function) => (...args: any[]) => fn(args);
-  return lodash;
-});
-
 it('searches', () => {
-  const push = jest.fn();
-  const wrapper = shallow(<SearchFilterContainer query={{}} />, { context: { router: { push } } });
+  const onQueryChange = jest.fn();
+  const wrapper = shallow(<SearchFilterContainer onQueryChange={onQueryChange} query={{}} />, {
+    context: { router: { push: jest.fn() } }
+  });
   expect(wrapper).toMatchSnapshot();
-  wrapper.prop('handleSearch')('foo');
-  expect(push).toBeCalledWith({ pathname: '/projects', query: { search: 'foo' } });
+  wrapper.find('SearchBox').prop<Function>('onChange')('foo');
+  expect(onQueryChange).toBeCalledWith({ search: 'foo' });
 });

@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -17,6 +17,7 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
+/* eslint-disable import/first */
 jest.mock('../../permissions/project/views/ApplyTemplateView');
 
 import * as React from 'react';
@@ -59,13 +60,14 @@ it('opens modal to apply permission template', () => {
   wrapper
     .find('ProjectRow')
     .first()
-    .prop<Function>('onApplyTemplateClick')(projects[0]);
+    .prop<Function>('onApplyTemplate')(projects[0]);
   expect(ApplyTemplateView).toBeCalledWith({ organization, project: projects[0] });
 });
 
 function shallowRender(props?: any) {
   return shallow(
     <Projects
+      currentUser={{ login: 'foo' }}
       onProjectDeselected={jest.fn()}
       onProjectSelected={jest.fn()}
       organization={organization}

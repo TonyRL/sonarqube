@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -23,10 +23,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import javax.annotation.CheckForNull;
+import javax.annotation.Nullable;
 import org.sonar.api.i18n.I18n;
 import org.sonar.api.resources.Languages;
 import org.sonar.api.resources.ResourceTypes;
-import org.sonar.api.server.ws.Request;
 import org.sonar.api.server.ws.Response;
 import org.sonar.api.server.ws.WebService;
 import org.sonar.api.server.ws.WebService.Param;
@@ -41,18 +42,19 @@ import org.sonar.server.es.SearchIdResult;
 import org.sonar.server.es.SearchOptions;
 import org.sonar.server.organization.DefaultOrganizationProvider;
 import org.sonar.server.ws.WsUtils;
-import org.sonarqube.ws.WsComponents;
-import org.sonarqube.ws.WsComponents.SearchWsResponse;
-import org.sonarqube.ws.client.component.SearchWsRequest;
+import org.sonarqube.ws.Components;
+import org.sonarqube.ws.Components.SearchWsResponse;
 
 import static com.google.common.base.Preconditions.checkArgument;
+import static java.util.Objects.requireNonNull;
 import static java.util.stream.Collectors.toMap;
 import static org.sonar.core.util.Protobuf.setNullable;
 import static org.sonar.core.util.stream.MoreCollectors.toHashSet;
+import static org.sonar.server.es.SearchOptions.MAX_LIMIT;
 import static org.sonar.server.util.LanguageParamUtils.getExampleValue;
 import static org.sonar.server.util.LanguageParamUtils.getLanguageKeys;
-import static org.sonar.server.ws.WsParameterBuilder.QualifierParameterContext.newQualifierParameterContext;
 import static org.sonar.server.ws.WsParameterBuilder.createQualifiersParameter;
+import static org.sonar.server.ws.WsParameterBuilder.QualifierParameterContext.newQualifierParameterContext;
 import static org.sonar.server.ws.WsUtils.writeProtobuf;
 import static org.sonarqube.ws.client.component.ComponentsWsParameters.ACTION_SEARCH;
 import static org.sonarqube.ws.client.component.ComponentsWsParameters.PARAM_LANGUAGE;
@@ -82,7 +84,7 @@ public class SearchAction implements ComponentsWsAction {
     WebService.NewAction action = context.createAction(ACTION_SEARCH)
       .setSince("6.3")
       .setDescription("Search for components")
-      .addPagingParams(100)
+      .addPagingParams(100, MAX_LIMIT)
       .setResponseExample(getClass().getResource("search-components-example.json"))
       .setHandler(this);
 
@@ -111,13 +113,13 @@ public class SearchAction implements ComponentsWsAction {
   }
 
   @Override
-  public void handle(Request wsRequest, Response wsResponse) throws Exception {
+  public void handle(org.sonar.api.server.ws.Request wsRequest, Response wsResponse) throws Exception {
     SearchWsResponse searchWsResponse = doHandle(toSearchWsRequest(wsRequest));
     writeProtobuf(searchWsResponse, wsRequest, wsResponse);
   }
 
-  private static SearchWsRequest toSearchWsRequest(Request request) {
-    return new SearchWsRequest()
+  private static SearchRequest toSearchWsRequest(org.sonar.api.server.ws.Request request) {
+    return new SearchRequest()
       .setOrganization(request.param(PARAM_ORGANIZATION))
       .setQualifiers(request.mandatoryParamAsStrings(PARAM_QUALIFIERS))
       .setLanguage(request.param(PARAM_LANGUAGE))
@@ -126,7 +128,7 @@ public class SearchAction implements ComponentsWsAction {
       .setPageSize(request.mandatoryParamAsInt(Param.PAGE_SIZE));
   }
 
-  private SearchWsResponse doHandle(SearchWsRequest request) {
+  private SearchWsResponse doHandle(SearchRequest request) {
     try (DbSession dbSession = dbClient.openSession(false)) {
       OrganizationDto organization = getOrganization(dbSession, request);
       ComponentQuery esQuery = buildEsQuery(organization, request);
@@ -148,7 +150,7 @@ public class SearchAction implements ComponentsWsAction {
     return projects.stream().collect(toMap(ComponentDto::uuid, ComponentDto::getDbKey));
   }
 
-  private OrganizationDto getOrganization(DbSession dbSession, SearchWsRequest request) {
+  private OrganizationDto getOrganization(DbSession dbSession, SearchRequest request) {
     String organizationKey = Optional.ofNullable(request.getOrganization())
       .orElseGet(defaultOrganizationProvider.get()::getKey);
     return WsUtils.checkFoundWithOptional(
@@ -156,7 +158,7 @@ public class SearchAction implements ComponentsWsAction {
       "No organizationDto with key '%s'", organizationKey);
   }
 
-  private static ComponentQuery buildEsQuery(OrganizationDto organization, SearchWsRequest request) {
+  private static ComponentQuery buildEsQuery(OrganizationDto organization, SearchRequest request) {
     return ComponentQuery.builder()
       .setQuery(request.getQuery())
       .setOrganization(organization.getUuid())
@@ -180,13 +182,13 @@ public class SearchAction implements ComponentsWsAction {
     return responseBuilder.build();
   }
 
-  private static WsComponents.Component dtoToComponent(OrganizationDto organization, ComponentDto dto, String projectKey) {
+  private static Components.Component dtoToComponent(OrganizationDto organization, ComponentDto dto, String projectKey) {
     checkArgument(
       organization.getUuid().equals(dto.getOrganizationUuid()),
       "No Organization found for uuid '%s'",
       dto.getOrganizationUuid());
 
-    WsComponents.Component.Builder builder = WsComponents.Component.newBuilder()
+    Components.Component.Builder builder = Components.Component.newBuilder()
       .setOrganization(organization.getKey())
       .setId(dto.uuid())
       .setKey(dto.getDbKey())
@@ -196,5 +198,74 @@ public class SearchAction implements ComponentsWsAction {
     setNullable(dto.language(), builder::setLanguage);
     return builder.build();
   }
+
+  static class SearchRequest {
+    private String organization;
+    private List<String> qualifiers;
+    private Integer page;
+    private Integer pageSize;
+    private String query;
+    private String language;
+
+    @CheckForNull
+    public String getOrganization() {
+      return organization;
+    }
+
+    public SearchRequest setOrganization(@Nullable String organization) {
+      this.organization = organization;
+      return this;
+    }
+
+    public List<String> getQualifiers() {
+      return qualifiers;
+    }
+
+    public SearchRequest setQualifiers(List<String> qualifiers) {
+      this.qualifiers = requireNonNull(qualifiers);
+      return this;
+    }
+
+    @CheckForNull
+    public Integer getPage() {
+      return page;
+    }
+
+    public SearchRequest setPage(int page) {
+      this.page = page;
+      return this;
+    }
+
+    @CheckForNull
+    public Integer getPageSize() {
+      return pageSize;
+    }
+
+    public SearchRequest setPageSize(int pageSize) {
+      this.pageSize = pageSize;
+      return this;
+    }
+
+    @CheckForNull
+    public String getQuery() {
+      return query;
+    }
+
+    public SearchRequest setQuery(@Nullable String query) {
+      this.query = query;
+      return this;
+    }
+
+    @CheckForNull
+    public String getLanguage() {
+      return language;
+    }
+
+    public SearchRequest setLanguage(@Nullable String language) {
+      this.language = language;
+      return this;
+    }
+  }
+
 
 }

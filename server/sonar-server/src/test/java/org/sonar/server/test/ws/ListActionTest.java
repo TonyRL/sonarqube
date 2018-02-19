@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -42,8 +42,8 @@ import org.sonar.server.test.index.TestIndexer;
 import org.sonar.server.tester.UserSessionRule;
 import org.sonar.server.ws.TestRequest;
 import org.sonar.server.ws.WsActionTester;
-import org.sonarqube.ws.WsTests;
-import org.sonarqube.ws.WsTests.ListResponse;
+import org.sonarqube.ws.Tests;
+import org.sonarqube.ws.Tests.ListResponse;
 
 import static java.lang.String.format;
 import static java.util.Arrays.asList;
@@ -113,7 +113,7 @@ public class ListActionTest {
   }
 
   @Test
-  public void list_tests() throws Exception {
+  public void list_tests() {
     userSessionRule.addProjectPermission(CODEVIEWER, project);
     DbFileSources.Test test = newTest(mainFile, 10, 11, 12, 20, 21, 25).setStatus(OK).build();
     insertTests(testFile, test);
@@ -121,10 +121,10 @@ public class ListActionTest {
     ListResponse request = call(ws.newRequest().setParam(TEST_ID, test.getUuid()));
 
     assertThat(request.getTestsList()).hasSize(1);
-    WsTests.Test result = request.getTests(0);
+    Tests.Test result = request.getTests(0);
     assertThat(result.getId()).isEqualTo(test.getUuid());
     assertThat(result.getName()).isEqualTo(test.getName());
-    assertThat(result.getStatus()).isEqualTo(WsTests.TestStatus.OK);
+    assertThat(result.getStatus()).isEqualTo(Tests.TestStatus.OK);
     assertThat(result.getFileId()).isEqualTo(testFile.uuid());
     assertThat(result.getFileKey()).isEqualTo(testFile.getDbKey());
     assertThat(result.getFileName()).isEqualTo(testFile.path());
@@ -135,7 +135,7 @@ public class ListActionTest {
   }
 
   @Test
-  public void list_tests_by_test_uuid() throws Exception {
+  public void list_tests_by_test_uuid() {
     userSessionRule.addProjectPermission(CODEVIEWER, project);
     DbFileSources.Test test1 = newTest(mainFile, 10).build();
     DbFileSources.Test test2 = newTest(mainFile, 11).build();
@@ -145,12 +145,12 @@ public class ListActionTest {
       .setParam(TEST_ID, test1.getUuid()));
 
     assertThat(request.getTestsList())
-      .extracting(WsTests.Test::getId)
+      .extracting(Tests.Test::getId)
       .containsOnly(test1.getUuid());
   }
 
   @Test
-  public void list_tests_by_test_file_uuid() throws Exception {
+  public void list_tests_by_test_file_uuid() {
     userSessionRule.addProjectPermission(CODEVIEWER, project);
     ComponentDto anotherTestFile = db.components().insertComponent(newFileDto(project));
     DbFileSources.Test test1 = newTest(mainFile, 10).build();
@@ -163,12 +163,12 @@ public class ListActionTest {
       .setParam(TEST_FILE_ID, testFile.uuid()));
 
     assertThat(request.getTestsList())
-      .extracting(WsTests.Test::getId)
+      .extracting(Tests.Test::getId)
       .containsOnly(test1.getUuid(), test2.getUuid());
   }
 
   @Test
-  public void list_tests_by_test_file_key() throws Exception {
+  public void list_tests_by_test_file_key() {
     userSessionRule.addProjectPermission(CODEVIEWER, project);
     ComponentDto anotherTestFile = db.components().insertComponent(newFileDto(project));
     DbFileSources.Test test1 = newTest(mainFile, 10).build();
@@ -181,12 +181,12 @@ public class ListActionTest {
       .setParam(TEST_FILE_KEY, testFile.getDbKey()));
 
     assertThat(request.getTestsList())
-      .extracting(WsTests.Test::getId)
+      .extracting(Tests.Test::getId)
       .containsOnly(test1.getUuid(), test2.getUuid());
   }
 
   @Test
-  public void list_tests_by_test_file_key_and_branch() throws Exception {
+  public void list_tests_by_test_file_key_and_branch() {
     ComponentDto project = db.components().insertMainBranch();
     userSessionRule.addProjectPermission(CODEVIEWER, project);
     ComponentDto branch = db.components().insertProjectBranch(project);
@@ -202,14 +202,14 @@ public class ListActionTest {
       .setParam("branch", testFile.getBranch()));
 
     assertThat(request.getTestsList())
-      .extracting(WsTests.Test::getId, WsTests.Test::getFileKey, WsTests.Test::getFileBranch)
+      .extracting(Tests.Test::getId, Tests.Test::getFileKey, Tests.Test::getFileBranch)
       .containsOnly(
         tuple(test1.getUuid(), testFile.getKey(), testFile.getBranch()),
         tuple(test2.getUuid(), testFile.getKey(), testFile.getBranch()));
   }
 
   @Test
-  public void list_tests_by_source_file_uuid_and_line_number() throws Exception {
+  public void list_tests_by_source_file_uuid_and_line_number() {
     userSessionRule.addProjectPermission(CODEVIEWER, project);
     ComponentDto anotherMainFile = db.components().insertComponent(newFileDto(project));
     DbFileSources.Test test1 = newTest(mainFile, 10, 11, 12).build();
@@ -222,11 +222,11 @@ public class ListActionTest {
       .setParam(SOURCE_FILE_ID, mainFile.uuid())
       .setParam(SOURCE_FILE_LINE_NUMBER, "11"));
 
-    assertThat(request.getTestsList()).extracting(WsTests.Test::getId).containsOnly(test1.getUuid(), test2.getUuid());
+    assertThat(request.getTestsList()).extracting(Tests.Test::getId).containsOnly(test1.getUuid(), test2.getUuid());
   }
 
   @Test
-  public void list_tests_by_source_file_key_and_line_number() throws Exception {
+  public void list_tests_by_source_file_key_and_line_number() {
     userSessionRule.addProjectPermission(CODEVIEWER, project);
     ComponentDto anotherMainFile = db.components().insertComponent(newFileDto(project));
     DbFileSources.Test test1 = newTest(mainFile, 10, 11, 12).build();
@@ -240,12 +240,12 @@ public class ListActionTest {
       .setParam(SOURCE_FILE_LINE_NUMBER, "10"));
 
     assertThat(request.getTestsList())
-      .extracting(WsTests.Test::getId)
+      .extracting(Tests.Test::getId)
       .containsOnly(test1.getUuid(), test3.getUuid());
   }
 
   @Test
-  public void list_tests_by_source_file_key_and_branch_and_line_number() throws Exception {
+  public void list_tests_by_source_file_key_and_branch_and_line_number() {
     ComponentDto project = db.components().insertMainBranch();
     userSessionRule.addProjectPermission(CODEVIEWER, project);
     ComponentDto branch = db.components().insertProjectBranch(project);
@@ -262,14 +262,14 @@ public class ListActionTest {
       .setParam("branch", testFile.getBranch()));
 
     assertThat(request.getTestsList())
-      .extracting(WsTests.Test::getId, WsTests.Test::getFileKey, WsTests.Test::getFileBranch)
+      .extracting(Tests.Test::getId, Tests.Test::getFileKey, Tests.Test::getFileBranch)
       .containsOnly(
         tuple(test1.getUuid(), testFile.getKey(), testFile.getBranch()),
         tuple(test3.getUuid(), testFile.getKey(), testFile.getBranch()));
   }
 
   @Test
-  public void tests_are_paginated() throws Exception {
+  public void tests_are_paginated() {
     userSessionRule.addProjectPermission(CODEVIEWER, project);
     insertTests(testFile, newTest(mainFile, 10).build(), newTest(mainFile, 11).build(), newTest(mainFile, 12).build());
 
@@ -281,7 +281,7 @@ public class ListActionTest {
   }
 
   @Test
-  public void fail_when_no_argument() throws Exception {
+  public void fail_when_no_argument() {
     userSessionRule.addProjectPermission(CODEVIEWER, project);
 
     expectedException.expect(IllegalArgumentException.class);
@@ -289,7 +289,7 @@ public class ListActionTest {
   }
 
   @Test
-  public void fail_when_source_file_uuid_without_line_number() throws Exception {
+  public void fail_when_source_file_uuid_without_line_number() {
     userSessionRule.addProjectPermission(CODEVIEWER, project);
 
     expectedException.expect(IllegalArgumentException.class);
@@ -297,7 +297,7 @@ public class ListActionTest {
   }
 
   @Test
-  public void fail_when_not_enough_privilege_on_test_uuid() throws Exception {
+  public void fail_when_not_enough_privilege_on_test_uuid() {
     userSessionRule.addProjectPermission(USER, project);
     DbFileSources.Test test = newTest(mainFile, 10).build();
     insertTests(testFile, test);
@@ -307,7 +307,7 @@ public class ListActionTest {
   }
 
   @Test
-  public void fail_when_no_enough_privilege_on_test_file_id() throws Exception {
+  public void fail_when_no_enough_privilege_on_test_file_id() {
     userSessionRule.addProjectPermission(USER, project);
     insertTests(testFile, newTest(mainFile, 10).build());
 
@@ -316,7 +316,7 @@ public class ListActionTest {
   }
 
   @Test
-  public void fail_when_not_enough_privilege_on_test_file_key() throws Exception {
+  public void fail_when_not_enough_privilege_on_test_file_key() {
     userSessionRule.addProjectPermission(USER, project);
     insertTests(testFile, newTest(mainFile, 10).build());
 
@@ -325,7 +325,7 @@ public class ListActionTest {
   }
 
   @Test
-  public void fail_when_not_enough_privilege_on_main_file_uuid() throws Exception {
+  public void fail_when_not_enough_privilege_on_main_file_uuid() {
     userSessionRule.addProjectPermission(USER, project);
     insertTests(testFile, newTest(mainFile, 10).build());
 
@@ -334,25 +334,25 @@ public class ListActionTest {
   }
 
   @Test
-  public void fail_when_test_uuid_is_unknown() throws Exception {
+  public void fail_when_test_uuid_is_unknown() {
     expectedException.expect(NotFoundException.class);
     call(ws.newRequest().setParam(TEST_ID, "unknown"));
   }
 
   @Test
-  public void fail_when_test_file_id_is_unknown() throws Exception {
+  public void fail_when_test_file_id_is_unknown() {
     expectedException.expect(NotFoundException.class);
     call(ws.newRequest().setParam(TEST_FILE_ID, "unknown"));
   }
 
   @Test
-  public void fail_when_test_file_key_is_unknown() throws Exception {
+  public void fail_when_test_file_key_is_unknown() {
     expectedException.expect(NotFoundException.class);
     call(ws.newRequest().setParam(TEST_FILE_KEY, "unknown"));
   }
 
   @Test
-  public void fail_when_test_branch_is_unknown() throws Exception {
+  public void fail_when_test_branch_is_unknown() {
     ComponentDto project = db.components().insertMainBranch();
     userSessionRule.addProjectPermission(CODEVIEWER, project);
     ComponentDto branch = db.components().insertProjectBranch(project);
@@ -367,19 +367,19 @@ public class ListActionTest {
   }
 
   @Test
-  public void fail_when_source_file_id_is_unknown() throws Exception {
+  public void fail_when_source_file_id_is_unknown() {
     expectedException.expect(NotFoundException.class);
     call(ws.newRequest().setParam(SOURCE_FILE_ID, "unknown").setParam(SOURCE_FILE_LINE_NUMBER, "10"));
   }
 
   @Test
-  public void fail_when_source_file_key_is_unknown() throws Exception {
+  public void fail_when_source_file_key_is_unknown() {
     expectedException.expect(NotFoundException.class);
     call(ws.newRequest().setParam(SOURCE_FILE_KEY, "unknown").setParam(SOURCE_FILE_LINE_NUMBER, "10"));
   }
 
   @Test
-  public void fail_when_source_branch_is_unknown() throws Exception {
+  public void fail_when_source_branch_is_unknown() {
     ComponentDto project = db.components().insertMainBranch();
     userSessionRule.addProjectPermission(CODEVIEWER, project);
     ComponentDto branch = db.components().insertProjectBranch(project);

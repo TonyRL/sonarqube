@@ -1,7 +1,7 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2016 SonarSource SA
- * mailto:contact AT sonarsource DOT com
+ * Copyright (C) 2009-2018 SonarSource SA
+ * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -79,11 +79,9 @@ export default function WorstProjects({ component, subComponents, total }: Props
                   <QualifierIcon qualifier={component.qualifier} /> {component.name}
                 </Link>
               </td>
-              {component.qualifier === 'TRK' ? (
-                renderCell(component.measures, 'alert_status', 'LEVEL')
-              ) : (
-                renderCell(component.measures, 'releasability_rating', 'RATING')
-              )}
+              {component.qualifier === 'TRK'
+                ? renderCell(component.measures, 'alert_status', 'LEVEL')
+                : renderCell(component.measures, 'releasability_rating', 'RATING')}
               {renderCell(component.measures, 'reliability_rating', 'RATING')}
               {renderCell(component.measures, 'security_rating', 'RATING')}
               {renderCell(component.measures, 'sqale_rating', 'RATING')}

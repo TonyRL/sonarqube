@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -53,14 +53,12 @@ export default class SettingsEditionsNotif extends React.PureComponent<Props, St
       <NavBarNotif className="alert alert-info">
         <i className="spinner spacer-right text-bottom" />
         <span>
-          {edition ? (
-            translateWithParameters(
-              'marketplace.status_x.' + editionStatus.installationStatus,
-              edition.name
-            )
-          ) : (
-            translate('marketplace.status', editionStatus.installationStatus)
-          )}
+          {edition
+            ? translateWithParameters(
+                'marketplace.status_x.' + editionStatus.installationStatus,
+                edition.name
+              )
+            : translate('marketplace.status', editionStatus.installationStatus)}
         </span>
       </NavBarNotif>
     );
@@ -71,40 +69,38 @@ export default class SettingsEditionsNotif extends React.PureComponent<Props, St
     return (
       <NavBarNotif className="alert alert-success">
         <span>
-          {edition ? (
-            translateWithParameters(
-              'marketplace.status_x.' + editionStatus.installationStatus,
-              edition.name
-            )
-          ) : (
-            translate('marketplace.status', editionStatus.installationStatus)
-          )}
+          {edition
+            ? translateWithParameters(
+                'marketplace.status_x.' + editionStatus.installationStatus,
+                edition.name
+              )
+            : translate('marketplace.status', editionStatus.installationStatus)}
         </span>
         {edition &&
-        edition.key === 'datacenter' && (
-          <span className="little-spacer-left">
-            <FormattedMessage
-              defaultMessage={translate('marketplace.see_documentation_to_enable_cluster')}
-              id="marketplace.see_documentation_to_enable_cluster"
-              values={{
-                url: (
-                  <a
-                    href="https://redirect.sonarsource.com/doc/data-center-edition.html"
-                    target="_blank">
-                    {edition.name}
-                  </a>
-                )
-              }}
-            />
-          </span>
-        )}
+          edition.key === 'datacenter' && (
+            <span className="little-spacer-left">
+              <FormattedMessage
+                defaultMessage={translate('marketplace.see_documentation_to_enable_cluster')}
+                id="marketplace.see_documentation_to_enable_cluster"
+                values={{
+                  url: (
+                    <a
+                      href="https://redirect.sonarsource.com/doc/data-center-edition.html"
+                      target="_blank">
+                      {edition.name}
+                    </a>
+                  )
+                }}
+              />
+            </span>
+          )}
         {!preventRestart && (
           <button className="js-restart spacer-left" onClick={this.handleOpenRestart}>
             {translate('marketplace.restart')}
           </button>
         )}
         {!preventRestart &&
-        this.state.openRestart && <RestartForm onClose={this.hanleCloseRestart} />}
+          this.state.openRestart && <RestartForm onClose={this.hanleCloseRestart} />}
       </NavBarNotif>
     );
   }
@@ -113,22 +109,18 @@ export default class SettingsEditionsNotif extends React.PureComponent<Props, St
     const { editionStatus } = this.props;
     return (
       <NavBarNotif className="alert alert-danger">
-        {edition ? (
-          translateWithParameters(
-            'marketplace.status_x.' + editionStatus.installationStatus,
-            edition.name
-          )
-        ) : (
-          translate('marketplace.status', editionStatus.installationStatus)
-        )}
+        {edition
+          ? translateWithParameters(
+              'marketplace.status_x.' + editionStatus.installationStatus,
+              edition.name
+            )
+          : translate('marketplace.status', editionStatus.installationStatus)}
         <a
           className="spacer-left"
           href={
-            edition && edition.key === 'datacenter' ? (
-              'https://redirect.sonarsource.com/doc/data-center-edition.html'
-            ) : (
-              'https://redirect.sonarsource.com/doc/how-to-install-an-edition.html'
-            )
+            edition && edition.key === 'datacenter'
+              ? 'https://redirect.sonarsource.com/doc/data-center-edition.html'
+              : 'https://redirect.sonarsource.com/doc/how-to-install-an-edition.html'
           }
           target="_blank">
           {translate('marketplace.how_to_install')}

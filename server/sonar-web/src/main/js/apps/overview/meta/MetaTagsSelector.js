@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -19,7 +19,7 @@
  */
 //@flow
 import React from 'react';
-import { debounce, without } from 'lodash';
+import { without } from 'lodash';
 import TagsSelector from '../../../components/tags/TagsSelector';
 import { searchProjectTags } from '../../../api/components';
 
@@ -42,13 +42,7 @@ const LIST_SIZE = 10;
 
 export default class MetaTagsSelector extends React.PureComponent {
   /*:: props: Props; */
-  /*:: state: State; */
-
-  constructor(props /*: Props */) {
-    super(props);
-    this.state = { searchResult: [] };
-    this.onSearch = debounce(this.onSearch, 250);
-  }
+  state /*: State */ = { searchResult: [] };
 
   componentDidMount() {
     this.onSearch('');
@@ -56,12 +50,10 @@ export default class MetaTagsSelector extends React.PureComponent {
 
   onSearch = (query /*: string */) => {
     searchProjectTags({
-      q: query || '',
+      q: query,
       ps: Math.min(this.props.selectedTags.length - 1 + LIST_SIZE, 100)
     }).then(result => {
-      this.setState({
-        searchResult: result.tags
-      });
+      this.setState({ searchResult: result.tags });
     });
   };
 

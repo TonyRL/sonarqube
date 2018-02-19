@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -49,7 +49,7 @@ public class SystemInfoHttpActionTest {
   private SystemInfoHttpAction underTest;
 
   @Before
-  public void setUp() throws Exception {
+  public void setUp() {
     underTest = new SystemInfoHttpAction(Arrays.asList(stateProvider1, stateProvider2));
   }
 

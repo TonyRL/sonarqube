@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -19,11 +19,13 @@
  */
 import * as React from 'react';
 import { sortBy } from 'lodash';
-import * as Select from 'react-select';
 import ProjectsSortingSelectOption, { Option } from './ProjectsSortingSelectOption';
+import * as theme from '../../../app/theme';
 import SortAscIcon from '../../../components/icons-components/SortAscIcon';
 import SortDescIcon from '../../../components/icons-components/SortDescIcon';
+import Select from '../../../components/controls/Select';
 import Tooltip from '../../../components/controls/Tooltip';
+import { ButtonIcon } from '../../../components/ui/buttons';
 import { translate } from '../../../helpers/l10n';
 import { SORTING_METRICS, SORTING_LEAK_METRICS, parseSorting } from '../utils';
 
@@ -40,19 +42,16 @@ export default class ProjectsSortingSelect extends React.PureComponent<Props> {
 
   getOptions = () => {
     const sortMetrics = this.props.view === 'leak' ? SORTING_LEAK_METRICS : SORTING_METRICS;
-    return sortBy(
-      sortMetrics,
-      option => (option.value === this.props.defaultOption ? 0 : 1)
-    ).map(option => ({
-      value: option.value,
-      label: translate('projects.sorting', option.value),
-      class: option.class
-    }));
+    return sortBy(sortMetrics, option => (option.value === this.props.defaultOption ? 0 : 1)).map(
+      option => ({
+        value: option.value,
+        label: translate('projects.sorting', option.value),
+        class: option.class
+      })
+    );
   };
 
-  handleDescToggle = (event: React.SyntheticEvent<HTMLAnchorElement>) => {
-    event.preventDefault();
-    event.currentTarget.blur();
+  handleDescToggle = () => {
     const sorting = this.getSorting();
     this.props.onChange(sorting.sortValue, !sorting.sortDesc);
   };
@@ -79,13 +78,12 @@ export default class ProjectsSortingSelect extends React.PureComponent<Props> {
           overlay={
             sortDesc ? translate('projects.sort_descending') : translate('projects.sort_ascending')
           }>
-          <a className="spacer-left button-icon" href="#" onClick={this.handleDescToggle}>
-            {sortDesc ? (
-              <SortDescIcon className="little-spacer-top" />
-            ) : (
-              <SortAscIcon className="little-spacer-top" />
-            )}
-          </a>
+          <ButtonIcon
+            className="js-projects-sorting-invert spacer-left"
+            color={theme.gray60}
+            onClick={this.handleDescToggle}>
+            {sortDesc ? <SortDescIcon className="" /> : <SortAscIcon className="" />}
+          </ButtonIcon>
         </Tooltip>
       </div>
     );

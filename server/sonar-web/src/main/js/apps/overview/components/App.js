@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -34,8 +34,11 @@ type Props = {
     id: string,
     key: string,
     qualifier: string,
-    tags: Array<string>
+    tags: Array<string>,
+    organization?: string
   },
+  isInProgress?: bool,
+  isPending?: bool,
   onComponentChange: {} => void,
   router: Object
 };
@@ -82,7 +85,12 @@ export default class App extends React.PureComponent {
     }
 
     if (!component.analysisDate) {
-      return <EmptyOverview component={component} />;
+      return (
+        <EmptyOverview
+          component={component.key}
+          showWarning={!this.props.isPending && !this.props.isInProgress}
+        />
+      );
     }
 
     return (

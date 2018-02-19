@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -56,11 +56,18 @@ export function keydown(keyCode: number): void {
 }
 
 export function elementKeydown(element: ShallowWrapper, keyCode: number): void {
-  element.simulate('keydown', {
+  const event = {
     currentTarget: { element },
     keyCode,
     preventDefault() {}
-  });
+  };
+
+  if (typeof element.type() === 'string') {
+    // `type()` is string for native dom elements
+    element.simulate('keydown', event);
+  } else {
+    element.prop<Function>('onKeyDown')(event);
+  }
 }
 
 export function doAsync(fn?: Function): Promise<void> {

@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -17,7 +17,6 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-
 package org.sonar.server.platform.platformlevel;
 
 import java.util.List;
@@ -38,6 +37,7 @@ import org.sonar.server.authentication.AuthenticationModule;
 import org.sonar.server.authentication.LogOAuthWarning;
 import org.sonar.server.batch.BatchWsModule;
 import org.sonar.server.branch.BranchFeatureProxyImpl;
+import org.sonar.server.branch.ws.BranchWsModule;
 import org.sonar.server.ce.ws.CeWsModule;
 import org.sonar.server.component.ComponentCleanerService;
 import org.sonar.server.component.ComponentFinder;
@@ -69,6 +69,7 @@ import org.sonar.server.health.NodeHealthModule;
 import org.sonar.server.issue.AddTagsAction;
 import org.sonar.server.issue.AssignAction;
 import org.sonar.server.issue.CommentAction;
+import org.sonar.server.issue.IssueChangePostProcessorImpl;
 import org.sonar.server.issue.RemoveTagsAction;
 import org.sonar.server.issue.SetSeverityAction;
 import org.sonar.server.issue.SetTypeAction;
@@ -88,6 +89,7 @@ import org.sonar.server.issue.ws.IssueWsModule;
 import org.sonar.server.language.ws.LanguageWs;
 import org.sonar.server.measure.custom.ws.CustomMeasuresWsModule;
 import org.sonar.server.measure.index.ProjectsEsModule;
+import org.sonar.server.measure.live.LiveMeasureModule;
 import org.sonar.server.measure.ws.MeasuresWsModule;
 import org.sonar.server.measure.ws.TimeMachineWs;
 import org.sonar.server.metric.CoreCustomMetrics;
@@ -149,7 +151,6 @@ import org.sonar.server.plugins.ws.UninstallAction;
 import org.sonar.server.plugins.ws.UpdatesAction;
 import org.sonar.server.project.ws.ProjectsWsModule;
 import org.sonar.server.projectanalysis.ProjectAnalysisModule;
-import org.sonar.server.projectbranch.ws.BranchWsModule;
 import org.sonar.server.projectlink.ws.ProjectLinksModule;
 import org.sonar.server.projecttag.ws.ProjectTagsWsModule;
 import org.sonar.server.property.InternalPropertiesImpl;
@@ -410,6 +411,7 @@ public class PlatformLevel4 extends PlatformLevel {
       ComponentIndexDefinition.class,
       ComponentIndex.class,
       ComponentIndexer.class,
+      LiveMeasureModule.class,
 
       FavoriteModule.class,
 
@@ -445,6 +447,7 @@ public class PlatformLevel4 extends PlatformLevel {
       TransitionAction.class,
       AddTagsAction.class,
       RemoveTagsAction.class,
+      IssueChangePostProcessorImpl.class,
 
       // technical debt
       DebtModelPluginRepository.class,

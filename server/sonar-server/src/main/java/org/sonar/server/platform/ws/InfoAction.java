@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -19,6 +19,7 @@
  */
 package org.sonar.server.platform.ws;
 
+import org.sonar.api.server.ws.Change;
 import org.sonar.api.server.ws.Request;
 import org.sonar.api.server.ws.Response;
 import org.sonar.api.server.ws.WebService;
@@ -39,25 +40,27 @@ public class InfoAction implements SystemWsAction {
 
   @Override
   public void define(WebService.NewController controller) {
-    controller.createAction("info")
+    WebService.NewAction action = controller.createAction("info")
       .setDescription("Get detailed information about system configuration.<br/>" +
-        "Requires 'Administer' permissions.<br/>" +
-        "Since 5.5, this web service becomes internal in order to more easily update result.")
+        "Requires 'Administer' permissions.")
       .setSince("5.1")
       .setInternal(true)
-      .setResponseExample(getClass().getResource("/org/sonar/server/platform/ws/info-example.json"))
+      .setResponseExample(getClass().getResource("info-example.json"))
       .setHandler(this);
 
+    action.setChangelog(
+      new Change("5.5", "Becomes internal to easily update result")
+    );
   }
 
   @Override
   public void handle(Request request, Response response) throws Exception {
     userSession.checkIsSystemAdministrator();
-    try (JsonWriter json = response.newJsonWriter()) {
-      json.beginObject();
-      systemInfoWriter.write(json);
-      json.endObject();
-    }
+    JsonWriter json = response.newJsonWriter();
+    json.beginObject();
+    systemInfoWriter.write(json);
+    json.endObject();
+    json.close();
   }
 
 }

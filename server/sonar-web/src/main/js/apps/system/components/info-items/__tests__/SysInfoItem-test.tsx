@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -51,10 +51,10 @@ it('should render object correctly', () => {
 
 it('should render `true`', () => {
   const wrapper = mount(<SysInfoItem name="test" value={true} />);
-  expect(wrapper.find('CheckIcon')).toHaveLength(1);
+  expect(wrapper.find('CheckIcon').exists()).toBeTruthy();
 });
 
 it('should render `false`', () => {
   const wrapper = mount(<SysInfoItem name="test" value={false} />);
-  expect(wrapper.find('CloseIcon')).toHaveLength(1);
+  expect(wrapper.find('ClearIcon').exists()).toBeTruthy();
 });

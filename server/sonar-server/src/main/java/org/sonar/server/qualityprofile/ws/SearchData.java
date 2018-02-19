@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -39,7 +39,6 @@ class SearchData {
   private Map<String, Long> projectCountByProfileKey;
   private Set<String> defaultProfileKeys;
   private Set<String> editableProfileKeys;
-  private boolean isGlobalQProfileAdmin;
 
   SearchData setOrganization(OrganizationDto organization) {
     this.organization = organization;
@@ -96,7 +95,7 @@ class SearchData {
   }
 
   boolean isEditable(QProfileDto profile) {
-    return !profile.isBuiltIn() && (isGlobalQProfileAdmin || editableProfileKeys.contains(profile.getKee()));
+    return editableProfileKeys.contains(profile.getKee());
   }
 
   SearchData setEditableProfileKeys(List<String> editableProfileKeys) {
@@ -104,12 +103,4 @@ class SearchData {
     return this;
   }
 
-  boolean isGlobalQProfileAdmin() {
-    return isGlobalQProfileAdmin;
-  }
-
-  SearchData setGlobalQProfileAdmin(boolean globalQProfileAdmin) {
-    isGlobalQProfileAdmin = globalQProfileAdmin;
-    return this;
-  }
 }

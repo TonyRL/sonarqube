@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -52,6 +52,19 @@ public class CeTasksMBeanImplTest {
     assertThat(getMBean()).isNull();
   }
 
+  /**
+   * Dumb implementation of CEQueueStatus which returns constant values for get methods and throws UnsupportedOperationException
+   * for other methods.
+   */
+  @CheckForNull
+  private ObjectInstance getMBean() throws Exception {
+    try {
+      return ManagementFactory.getPlatformMBeanServer().getObjectInstance(new ObjectName(CeTasksMBean.OBJECT_NAME));
+    } catch (InstanceNotFoundException e) {
+      return null;
+    }
+  }
+
   @Test
   public void get_methods_delegate_to_the_CEQueueStatus_instance() {
     assertThat(underTest.getPendingCount()).isEqualTo(PENDING_COUNT);
@@ -77,12 +90,8 @@ public class CeTasksMBeanImplTest {
     assertThat(section.getName()).isEqualTo("Compute Engine Tasks");
     assertThat(section.getAttributesCount()).isEqualTo(7);
   }
-
-  /**
-   * Dumb implementation of CEQueueStatus which returns constant values for get methods and throws UnsupportedOperationException
-   * for other methods.
-   */
   private static class DumbCEQueueStatus implements CEQueueStatus {
+
 
     @Override
     public long getPendingCount() {
@@ -123,13 +132,13 @@ public class CeTasksMBeanImplTest {
     public long getProcessingTime() {
       return PROCESSING_TIME;
     }
-
     private long methodNotImplemented() {
       throw new UnsupportedOperationException("Not Implemented");
     }
-  }
 
+  }
   private static class DumbCeConfiguration implements CeConfiguration {
+
     @Override
     public void refresh() {
       throw new UnsupportedOperationException("Refresh is not implemented");
@@ -160,14 +169,10 @@ public class CeTasksMBeanImplTest {
       throw new UnsupportedOperationException("getCleanCeTasksDelay is not implemented");
     }
 
-  }
-
-  @CheckForNull
-  private ObjectInstance getMBean() throws Exception {
-    try {
-      return ManagementFactory.getPlatformMBeanServer().getObjectInstance(new ObjectName(CeTasksMBean.OBJECT_NAME));
-    } catch (InstanceNotFoundException e) {
-      return null;
+    @Override
+    public int getGracefulStopTimeoutInMs() {
+      return 40_000;
     }
+
   }
 }

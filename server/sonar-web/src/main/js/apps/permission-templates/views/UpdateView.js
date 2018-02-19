@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -19,7 +19,7 @@
  */
 import FormView from './FormView';
 import { updatePermissionTemplate } from '../../../api/permissions';
-import { parseError } from '../../code/utils';
+import { parseError } from '../../../helpers/request';
 
 export default FormView.extend({
   sendRequest() {

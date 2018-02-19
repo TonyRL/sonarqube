@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -198,7 +198,7 @@ export function fetchProjects(
               const value = isDiffMetric(measure.metric)
                 ? getPeriodValue(measure, 1)
                 : measure.value;
-              if (value != undefined) {
+              if (value !== undefined) {
                 componentMeasures[measure.metric] = value;
               }
             });
@@ -248,7 +248,7 @@ function convertToQueryData(
   if (sort.s) {
     data.s = sort.s;
   }
-  if (sort.hasOwnProperty('asc')) {
+  if (sort.asc !== undefined) {
     data.asc = sort.asc;
   }
   return data;
@@ -270,7 +270,7 @@ function fetchProjectOrganizations(projects: Array<{ organization: string }>) {
   }
 
   const organizations = uniq(projects.map(project => project.organization));
-  return getOrganizations(organizations).then(r => r.organizations);
+  return getOrganizations({ organizations: organizations.join() }).then(r => r.organizations);
 }
 
 function mapFacetValues(values: Array<{ val: string; count: number }>) {

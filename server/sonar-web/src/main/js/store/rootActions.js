@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -21,11 +21,11 @@ import { getLanguages } from '../api/languages';
 import { getGlobalNavigation } from '../api/nav';
 import * as auth from '../api/auth';
 import { getOrganizations } from '../api/organizations';
-import { getMetrics } from '../api/metrics';
+import { getAllMetrics } from '../api/metrics';
 import { receiveLanguages } from './languages/actions';
 import { receiveMetrics } from './metrics/actions';
 import { addGlobalErrorMessage } from './globalMessages/duck';
-import { parseError } from '../apps/code/utils';
+import { parseError } from '../helpers/request';
 import { setAppState } from './appState/duck';
 import { receiveOrganizations } from './organizations/duck';
 
@@ -42,10 +42,10 @@ export const fetchLanguages = () => dispatch =>
   getLanguages().then(languages => dispatch(receiveLanguages(languages)), onFail(dispatch));
 
 export const fetchMetrics = () => dispatch =>
-  getMetrics().then(metrics => dispatch(receiveMetrics(metrics)), onFail(dispatch));
+  getAllMetrics().then(metrics => dispatch(receiveMetrics(metrics)), onFail(dispatch));
 
 export const fetchOrganizations = (organizations /*: Array<string> | void */) => dispatch =>
-  getOrganizations(organizations).then(
+  getOrganizations({ organizations: organizations && organizations.join() }).then(
     r => dispatch(receiveOrganizations(r.organizations)),
     onFail(dispatch)
   );

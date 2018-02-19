@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -21,6 +21,7 @@
 import React from 'react';
 import QualityGateConditions from './QualityGateConditions';
 import EmptyQualityGate from './EmptyQualityGate';
+import * as theme from '../../../app/theme';
 import { translate } from '../../../helpers/l10n';
 import Level from '../../../components/ui/Level';
 import Tooltip from '../../../components/controls/Tooltip';
@@ -73,7 +74,7 @@ export default function QualityGate({ branch, component, measures } /*: Props */
           {translate('overview.quality_gate.ignored_conditions')}
           <Tooltip overlay={translate('overview.quality_gate.ignored_conditions.tooltip')}>
             <span className="spacer-left">
-              <HelpIcon fill="#4b9fd5" />
+              <HelpIcon fill={theme.blue} />
             </span>
           </Tooltip>
         </div>

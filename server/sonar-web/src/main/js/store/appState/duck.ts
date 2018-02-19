@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -17,16 +17,7 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-
-import { Extension } from '../../app/types';
-
-interface AppState {
-  adminPages?: Extension[];
-  authenticationError: boolean;
-  authorizationError: boolean;
-  organizationsEnabled: boolean;
-  qualifiers?: string[];
-}
+import { Extension, AppState } from '../../app/types';
 
 interface SetAppStateAction {
   type: 'SET_APP_STATE';
@@ -62,7 +53,8 @@ export function requireAuthorization(): RequireAuthorizationAction {
 const defaultValue: AppState = {
   authenticationError: false,
   authorizationError: false,
-  organizationsEnabled: false
+  organizationsEnabled: false,
+  qualifiers: []
 };
 
 export default function(state: AppState = defaultValue, action: Action): AppState {

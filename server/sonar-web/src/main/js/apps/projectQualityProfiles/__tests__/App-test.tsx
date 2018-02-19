@@ -1,7 +1,7 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2016 SonarSource SA
- * mailto:contact AT sonarsource DOT com
+ * Copyright (C) 2009-2018 SonarSource SA
+ * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -17,6 +17,7 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
+/* eslint-disable import/first, import/order */
 jest.mock('../../../api/quality-profiles', () => ({
   associateProject: jest.fn(() => Promise.resolve()),
   dissociateProject: jest.fn(() => Promise.resolve()),
@@ -65,21 +66,13 @@ const component = {
 
 it('checks permissions', () => {
   handleRequiredAuthorization.mockClear();
-  mount(<App component={{ ...component, configuration: undefined }} customOrganizations={false} />);
+  mount(<App component={{ ...component, configuration: undefined }} />);
   expect(handleRequiredAuthorization).toBeCalled();
 });
 
 it('fetches profiles', () => {
   searchQualityProfiles.mockClear();
-  mount(<App component={component} customOrganizations={false} />);
-  expect(searchQualityProfiles.mock.calls).toHaveLength(2);
-  expect(searchQualityProfiles).toBeCalledWith({ organization: undefined });
-  expect(searchQualityProfiles).toBeCalledWith({ organization: undefined, project: 'foo' });
-});
-
-it('fetches profiles with organization', () => {
-  searchQualityProfiles.mockClear();
-  mount(<App component={component} customOrganizations={true} />);
+  mount(<App component={component} />);
   expect(searchQualityProfiles.mock.calls).toHaveLength(2);
   expect(searchQualityProfiles).toBeCalledWith({ organization: 'org' });
   expect(searchQualityProfiles).toBeCalledWith({ organization: 'org', project: 'foo' });
@@ -89,7 +82,7 @@ it('changes profile', () => {
   associateProject.mockClear();
   dissociateProject.mockClear();
   addGlobalSuccessMessage.mockClear();
-  const wrapper = mount(<App component={component} customOrganizations={false} />);
+  const wrapper = mount(<App component={component} />);
 
   const fooJava = randomProfile('foo-java', 'java');
   const fooJs = randomProfile('foo-js', 'js');
@@ -116,7 +109,7 @@ function randomProfile(key: string, language: string, isDefault = false) {
     isDefault,
     key,
     name: key,
-    language: language,
+    language,
     languageName: language,
     organization: 'org'
   };

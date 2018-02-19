@@ -1,7 +1,7 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2016 SonarSource SA
- * mailto:contact AT sonarsource DOT com
+ * Copyright (C) 2009-2018 SonarSource SA
+ * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -17,6 +17,7 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
+/* eslint-disable import/first, import/order */
 jest.mock('../../../api/components', () => ({
   createProject: jest.fn(({ name }: { name: string }) =>
     Promise.resolve({ project: { key: name, name } })
@@ -27,10 +28,11 @@ import * as React from 'react';
 import { shallow } from 'enzyme';
 import CreateProjectForm from '../CreateProjectForm';
 import { change, submit, click } from '../../../helpers/testUtils';
+import { Visibility } from '../../../app/types';
 
 const createProject = require('../../../api/components').createProject as jest.Mock<any>;
 
-const organization = { key: 'org', name: 'org', projectVisibility: 'public' };
+const organization = { key: 'org', name: 'org', projectVisibility: Visibility.Public };
 
 it('creates project', async () => {
   const wrapper = shallow(

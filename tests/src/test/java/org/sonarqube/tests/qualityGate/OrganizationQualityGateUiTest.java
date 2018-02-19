@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -27,22 +27,22 @@ import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.openqa.selenium.By;
-import org.sonarqube.pageobjects.ProjectDashboardPage;
-import org.sonarqube.pageobjects.QualityGatePage;
-import org.sonarqube.tests.Category6Suite;
-import org.sonarqube.tests.Tester;
+import org.sonarqube.qa.util.Tester;
+import org.sonarqube.qa.util.pageobjects.ProjectDashboardPage;
+import org.sonarqube.qa.util.pageobjects.QualityGatePage;
 import org.sonarqube.ws.Organizations;
-import org.sonarqube.ws.WsUsers;
+import org.sonarqube.ws.Users;
+import org.sonarqube.ws.client.permissions.AddUserRequest;
 import util.issue.IssueRule;
 
 import static com.codeborne.selenide.Selenide.$;
+import static org.assertj.core.api.Assertions.assertThat;
 import static util.ItUtils.restoreProfile;
 import static util.ItUtils.runProjectAnalysis;
-import static org.assertj.core.api.Assertions.assertThat;
 
 public class OrganizationQualityGateUiTest {
   @ClassRule
-  public static Orchestrator orchestrator = Category6Suite.ORCHESTRATOR;
+  public static Orchestrator orchestrator = OrganizationQualityGateSuite.ORCHESTRATOR;
 
   @Rule
   public Tester tester = new Tester(orchestrator);
@@ -51,15 +51,18 @@ public class OrganizationQualityGateUiTest {
   public IssueRule issueRule = IssueRule.from(orchestrator);
 
   private Organizations.Organization organization;
-  private WsUsers.CreateWsResponse.User user;
-  private WsUsers.CreateWsResponse.User gateAdmin;
+  private Users.CreateWsResponse.User user;
+  private Users.CreateWsResponse.User gateAdmin;
 
   @Before
-  public void setUp() throws Exception {
+  public void setUp() {
     organization = tester.organizations().generate();
     gateAdmin = tester.users().generate();
-    tester.organizations().addMember(tester.organizations().getDefaultOrganization(), gateAdmin);
-    tester.wsClient().permissions().addUser(new org.sonarqube.ws.client.permission.AddUserWsRequest().setLogin(gateAdmin.getLogin()).setPermission("gateadmin"));
+    tester.organizations().addMember(organization, gateAdmin);
+    tester.wsClient().permissions().addUser(new AddUserRequest()
+      .setOrganization(organization.getKey())
+      .setLogin(gateAdmin.getLogin())
+      .setPermission("gateadmin"));
     user = tester.users().generate();
     tester.organizations().addMember(organization, user);
     restoreProfile(orchestrator, getClass().getResource("/issue/with-many-rules.xml"), organization.getKey());
@@ -99,7 +102,7 @@ public class OrganizationQualityGateUiTest {
 
   @Test
   public void quality_gate_link_on_project_dashboard_should_have_organization_context() {
-    String project = tester.projects().generate(organization).getKey();
+    String project = tester.projects().provision(organization).getKey();
     runProjectAnalysis(orchestrator, "shared/xoo-multi-modules-sample",
       "sonar.projectKey", project,
       "sonar.organization", organization.getKey(),
@@ -112,7 +115,7 @@ public class OrganizationQualityGateUiTest {
     ProjectDashboardPage page = tester.openBrowser()
       .logIn().submitCredentials(user.getLogin())
       .openProjectDashboard(project);
-    page.hasQualityGateLink("SonarQube way", link);
+    page.hasQualityGateLink("Sonar way", link);
   }
 
   @Test
@@ -120,6 +123,6 @@ public class OrganizationQualityGateUiTest {
     QualityGatePage page = tester.openBrowser()
       .logIn().submitCredentials(user.getLogin())
       .openQualityGates(organization.getKey());
-    page.countQualityGates(1).displayQualityGateDetail("SonarQube way");
+    page.countQualityGates(1).displayQualityGateDetail("Sonar way");
   }
 }

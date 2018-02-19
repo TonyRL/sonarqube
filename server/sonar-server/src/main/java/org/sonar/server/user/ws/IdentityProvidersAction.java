@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -28,8 +28,8 @@ import org.sonar.api.server.ws.Request;
 import org.sonar.api.server.ws.Response;
 import org.sonar.api.server.ws.WebService;
 import org.sonar.server.authentication.IdentityProviderRepository;
-import org.sonarqube.ws.WsUsers;
-import org.sonarqube.ws.WsUsers.IdentityProvidersWsResponse;
+import org.sonarqube.ws.Users;
+import org.sonarqube.ws.Users.IdentityProvidersWsResponse;
 
 import static org.sonar.server.ws.WsUtils.writeProtobuf;
 
@@ -61,12 +61,12 @@ public class IdentityProvidersAction implements UsersWsAction {
     return response.build();
   }
 
-  private enum IdentityProviderToWsResponse implements Function<IdentityProvider, WsUsers.IdentityProvider> {
+  private enum IdentityProviderToWsResponse implements Function<IdentityProvider, Users.IdentityProvider> {
     INSTANCE;
 
     @Override
-    public WsUsers.IdentityProvider apply(@Nonnull IdentityProvider input) {
-      WsUsers.IdentityProvider.Builder builder = WsUsers.IdentityProvider.newBuilder()
+    public Users.IdentityProvider apply(@Nonnull IdentityProvider input) {
+      Users.IdentityProvider.Builder builder = Users.IdentityProvider.newBuilder()
         .setKey(input.getKey())
         .setName(input.getName());
       Display display = input.getDisplay();

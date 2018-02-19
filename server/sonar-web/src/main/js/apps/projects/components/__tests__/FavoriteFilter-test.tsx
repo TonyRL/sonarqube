@@ -1,7 +1,7 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2016 SonarSource SA
- * mailto:contact AT sonarsource DOT com
+ * Copyright (C) 2009-2018 SonarSource SA
+ * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -17,6 +17,7 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
+/* eslint-disable import/first */
 jest.mock('../../../../helpers/storage', () => ({
   saveAll: jest.fn(),
   saveFavorite: jest.fn()
@@ -37,11 +38,11 @@ beforeEach(() => {
 });
 
 it('renders for logged in user', () => {
-  expect(shallow(<FavoriteFilter query={query} />, { context: { currentUser } })).toMatchSnapshot();
+  expect(shallow(<FavoriteFilter currentUser={currentUser} query={query} />)).toMatchSnapshot();
 });
 
 it('saves last selection', () => {
-  const wrapper = shallow(<FavoriteFilter query={query} />, { context: { currentUser } });
+  const wrapper = shallow(<FavoriteFilter currentUser={currentUser} query={query} />);
   click(wrapper.find('#favorite-projects'));
   expect(saveFavorite).toBeCalled();
   click(wrapper.find('#all-projects'));
@@ -50,16 +51,16 @@ it('saves last selection', () => {
 
 it('handles organization', () => {
   expect(
-    shallow(<FavoriteFilter organization={{ key: 'org' }} query={query} />, {
-      context: { currentUser }
-    })
+    shallow(
+      <FavoriteFilter currentUser={currentUser} organization={{ key: 'org' }} query={query} />
+    )
   ).toMatchSnapshot();
 });
 
 it('does not save last selection with organization', () => {
-  const wrapper = shallow(<FavoriteFilter organization={{ key: 'org' }} query={query} />, {
-    context: { currentUser }
-  });
+  const wrapper = shallow(
+    <FavoriteFilter currentUser={currentUser} organization={{ key: 'org' }} query={query} />
+  );
   click(wrapper.find('#favorite-projects'));
   expect(saveFavorite).not.toBeCalled();
   click(wrapper.find('#all-projects'));
@@ -68,6 +69,6 @@ it('does not save last selection with organization', () => {
 
 it('does not render for anonymous', () => {
   expect(
-    shallow(<FavoriteFilter query={query} />, { context: { currentUser: { isLoggedIn: false } } })
-  ).toMatchSnapshot();
+    shallow(<FavoriteFilter currentUser={{ isLoggedIn: false }} query={query} />).type()
+  ).toBeNull();
 });

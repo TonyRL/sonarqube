@@ -23,7 +23,7 @@ package sonarqube.ws.component;
 import "ws-commons.proto";
 
 option java_package = "org.sonarqube.ws";
-option java_outer_classname = "WsComponents";
+option java_outer_classname = "Components";
 option optimize_for = SPEED;
 
 // WS api/components/search

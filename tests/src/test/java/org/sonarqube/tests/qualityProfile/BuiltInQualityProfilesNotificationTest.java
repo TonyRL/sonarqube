@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -17,7 +17,6 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-
 package org.sonarqube.tests.qualityProfile;
 
 import com.sonar.orchestrator.Orchestrator;
@@ -28,13 +27,13 @@ import javax.mail.internet.MimeMessage;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.sonarqube.ws.WsUsers;
+import org.sonarqube.ws.Users;
 import org.sonarqube.ws.client.PostRequest;
 import org.sonarqube.ws.client.WsClient;
-import org.sonarqube.ws.client.permission.AddGroupWsRequest;
-import org.sonarqube.ws.client.permission.AddUserWsRequest;
-import org.sonarqube.ws.client.qualityprofile.ChangeParentRequest;
-import org.sonarqube.ws.client.qualityprofile.CreateRequest;
+import org.sonarqube.ws.client.permissions.AddGroupRequest;
+import org.sonarqube.ws.client.permissions.AddUserRequest;
+import org.sonarqube.ws.client.qualityprofiles.ChangeParentRequest;
+import org.sonarqube.ws.client.qualityprofiles.CreateRequest;
 import org.subethamail.wiser.Wiser;
 import org.subethamail.wiser.WiserMessage;
 import util.ItUtils;
@@ -51,13 +50,13 @@ public class BuiltInQualityProfilesNotificationTest {
   private static UserRule userRule;
 
   @Before
-  public void init() throws Exception {
+  public void init() {
     smtpServer = new Wiser(0);
     smtpServer.start();
   }
 
   @After
-  public void tearDown() throws Exception {
+  public void tearDown() {
     if (orchestrator != null) {
       orchestrator.stop();
     }
@@ -75,9 +74,9 @@ public class BuiltInQualityProfilesNotificationTest {
       .build();
     orchestrator.start();
     userRule = UserRule.from(orchestrator);
-    WsUsers.CreateWsResponse.User profileAdmin1 = userRule.generate();
+    Users.CreateWsResponse.User profileAdmin1 = userRule.generate();
     WsClient wsClient = ItUtils.newAdminWsClient(orchestrator);
-    wsClient.permissions().addUser(new AddUserWsRequest().setLogin(profileAdmin1.getLogin()).setPermission("profileadmin"));
+    wsClient.permissions().addUser(new AddUserRequest().setLogin(profileAdmin1.getLogin()).setPermission("profileadmin"));
 
     orchestrator.restartServer();
 
@@ -98,21 +97,21 @@ public class BuiltInQualityProfilesNotificationTest {
     userRule = UserRule.from(orchestrator);
 
     // Create a quality profile administrator (user having direct permission)
-    WsUsers.CreateWsResponse.User profileAdmin1 = userRule.generate();
+    Users.CreateWsResponse.User profileAdmin1 = userRule.generate();
     WsClient wsClient = ItUtils.newAdminWsClient(orchestrator);
-    wsClient.permissions().addUser(new AddUserWsRequest().setLogin(profileAdmin1.getLogin()).setPermission("profileadmin"));
+    wsClient.permissions().addUser(new AddUserRequest().setLogin(profileAdmin1.getLogin()).setPermission("profileadmin"));
     // Create a quality profile administrator (user having permission from a group)
-    WsUsers.CreateWsResponse.User profileAdmin2 = userRule.generate();
+    Users.CreateWsResponse.User profileAdmin2 = userRule.generate();
     String groupName = randomAlphanumeric(20);
     wsClient.wsConnector().call(new PostRequest("api/user_groups/create").setParam("name", groupName)).failIfNotSuccessful();
-    wsClient.permissions().addGroup(new AddGroupWsRequest().setPermission("profileadmin").setGroupName(groupName));
+    wsClient.permissions().addGroup(new AddGroupRequest().setPermission("profileadmin").setGroupName(groupName));
     wsClient.wsConnector().call(new PostRequest("api/user_groups/add_user").setParam("name", groupName).setParam("login", profileAdmin2.getLogin())).failIfNotSuccessful();
     // Create a user not being quality profile administrator
-    WsUsers.CreateWsResponse.User noProfileAdmin = userRule.generate();
+    Users.CreateWsResponse.User noProfileAdmin = userRule.generate();
 
     // Create a child profile on the built-in profile => The notification should not take into account updates of this profile
-    wsClient.qualityProfiles().create(CreateRequest.builder().setLanguage("foo").setName("child").build());
-    wsClient.qualityProfiles().changeParent(ChangeParentRequest.builder().setProfileName("child").setParentName("Basic").setLanguage("foo").build());
+    wsClient.qualityprofiles().create(new CreateRequest().setLanguage("foo").setName("child"));
+    wsClient.qualityprofiles().changeParent(new ChangeParentRequest().setQualityProfile("child").setParentQualityProfile("Basic").setLanguage("foo"));
 
     // uninstall plugin V1
     wsClient.wsConnector().call(new PostRequest("api/plugins/uninstall").setParam("key", "foo")).failIfNotSuccessful();
@@ -134,7 +133,7 @@ public class BuiltInQualityProfilesNotificationTest {
       .containsOnly("[SONARQUBE] Built-in quality profiles have been updated");
     String url = orchestrator.getServer().getUrl();
     assertThat(messages.get(0).getMimeMessage().getContent().toString())
-      .containsSequence(
+      .containsSubsequence(
         "The following built-in profiles have been updated:",
         "\"Basic\" - Foo: " + url + "/profiles/changelog?language=foo&name=Basic&since=", "&to=",
         " 1 new rule",
@@ -154,9 +153,9 @@ public class BuiltInQualityProfilesNotificationTest {
       .build();
     orchestrator.start();
     userRule = UserRule.from(orchestrator);
-    WsUsers.CreateWsResponse.User profileAdmin1 = userRule.generate();
+    Users.CreateWsResponse.User profileAdmin1 = userRule.generate();
     WsClient wsClient = ItUtils.newAdminWsClient(orchestrator);
-    wsClient.permissions().addUser(new AddUserWsRequest().setLogin(profileAdmin1.getLogin()).setPermission("profileadmin"));
+    wsClient.permissions().addUser(new AddUserRequest().setLogin(profileAdmin1.getLogin()).setPermission("profileadmin"));
 
     // uninstall plugin V1
     wsClient.wsConnector().call(new PostRequest("api/plugins/uninstall").setParam("key", "foo")).failIfNotSuccessful();

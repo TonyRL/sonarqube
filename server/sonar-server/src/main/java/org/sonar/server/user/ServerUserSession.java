@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -188,12 +188,12 @@ public class ServerUserSession extends AbstractUserSession {
   protected List<ComponentDto> doKeepAuthorizedComponents(String permission, Collection<ComponentDto> components) {
     try (DbSession dbSession = dbClient.openSession(false)) {
       Set<String> projectUuids = components.stream()
-        .map(ComponentDto::projectUuid)
+        .map(c -> defaultIfEmpty(c.getMainBranchProjectUuid(), c.projectUuid()))
         .collect(MoreCollectors.toSet(components.size()));
       Set<String> authorizedProjectUuids = dbClient.authorizationDao().keepAuthorizedProjectUuids(dbSession, projectUuids, getUserId(), permission);
 
       return components.stream()
-        .filter(c -> authorizedProjectUuids.contains(c.projectUuid()))
+        .filter(c -> authorizedProjectUuids.contains(c.projectUuid()) || authorizedProjectUuids.contains(c.getMainBranchProjectUuid()))
         .collect(MoreCollectors.toList(components.size()));
     }
   }

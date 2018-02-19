@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -43,7 +43,7 @@ public class PluginUpdateAggregatorTest {
 
   @Test
   public void aggregates_returns_an_empty_collection_when_plugin_collection_is_empty() {
-    assertThat(underTest.aggregate(Collections.<PluginUpdate>emptyList())).isEmpty();
+    assertThat(underTest.aggregate(Collections.emptyList())).isEmpty();
   }
 
   @Test

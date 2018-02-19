@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -158,7 +158,7 @@ public class CeActivityDaoTest {
     insert("TASK_4", "views", null, CeActivityDto.Status.SUCCESS);
 
     // no filters
-    CeTaskQuery query = new CeTaskQuery().setStatuses(Collections.<String>emptyList());
+    CeTaskQuery query = new CeTaskQuery().setStatuses(Collections.emptyList());
     List<CeActivityDto> dtos = underTest.selectByQuery(db.getSession(), query, forPage(1).andSize(10));
     assertThat(dtos).extracting("uuid").containsExactly("TASK_4", "TASK_3", "TASK_2", "TASK_1");
 

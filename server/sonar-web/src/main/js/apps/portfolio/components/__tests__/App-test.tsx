@@ -1,7 +1,7 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2016 SonarSource SA
- * mailto:contact AT sonarsource DOT com
+ * Copyright (C) 2009-2018 SonarSource SA
+ * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -17,6 +17,7 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
+/* eslint-disable import/first, import/order */
 jest.mock('../../../../api/measures', () => ({
   getMeasures: jest.fn(() => Promise.resolve([]))
 }));
@@ -27,12 +28,14 @@ jest.mock('../../../../api/components', () => ({
 
 // mock Activity to not deal with localstorage
 jest.mock('../Activity', () => ({
+  // eslint-disable-next-line
   default: function Activity() {
     return null;
   }
 }));
 
 jest.mock('../Report', () => ({
+  // eslint-disable-next-line
   default: function Report() {
     return null;
   }
@@ -101,6 +104,6 @@ it('fetches measures and children components', () => {
       'sqale_rating',
       'alert_status'
     ],
-    { ps: 20 }
+    { ps: 20, s: 'qualifier' }
   );
 });

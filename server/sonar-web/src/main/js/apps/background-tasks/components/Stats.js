@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -20,6 +20,7 @@
 /* @flow */
 import React from 'react';
 import Tooltip from '../../../components/controls/Tooltip';
+import { DeleteButton } from '../../../components/ui/buttons';
 import { translate } from '../../../helpers/l10n';
 
 /*::
@@ -40,12 +41,6 @@ export default class Stats extends React.PureComponent {
   /*:: props: Props; */
   /*:: state: State; */
 
-  handleCancelAllPending = (event /*: Object */) => {
-    event.preventDefault();
-    event.currentTarget.blur();
-    this.props.onCancelAllPending();
-  };
-
   handleShowFailing = (event /*: Object */) => {
     event.preventDefault();
     event.currentTarget.blur();
@@ -64,10 +59,9 @@ export default class Stats extends React.PureComponent {
           {translate('background_tasks.pending')}
           {this.props.isSystemAdmin && (
             <Tooltip overlay={translate('background_tasks.cancel_all_tasks')}>
-              <a
-                className="js-cancel-pending icon-delete spacer-left"
-                href="#"
-                onClick={this.handleCancelAllPending}
+              <DeleteButton
+                className="js-cancel-pending spacer-left"
+                onClick={this.props.onCancelAllPending}
               />
             </Tooltip>
           )}

@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -21,6 +21,7 @@ import * as React from 'react';
 import ChangeVisibilityForm from './ChangeVisibilityForm';
 import { Organization, Visibility } from '../../app/types';
 import { translate } from '../../helpers/l10n';
+import { EditButton } from '../../components/ui/buttons';
 
 export interface Props {
   hasProvisionPermission?: boolean;
@@ -41,8 +42,7 @@ export default class Header extends React.PureComponent<Props, State> {
     this.props.onProjectCreate();
   };
 
-  handleChangeVisibilityClick = (event: React.SyntheticEvent<HTMLAnchorElement>) => {
-    event.preventDefault();
+  handleChangeVisibilityClick = () => {
     this.setState({ visibilityForm: true });
   };
 
@@ -59,11 +59,12 @@ export default class Header extends React.PureComponent<Props, State> {
 
         <div className="page-actions">
           <span className="big-spacer-right">
-            {translate('organization.default_visibility_of_new_projects')}{' '}
-            <strong>{translate('visibility', organization.projectVisibility)}</strong>
-            <a
-              className="js-change-visibility spacer-left icon-edit"
-              href="#"
+            <span className="text-middle">
+              {translate('organization.default_visibility_of_new_projects')}{' '}
+              <strong>{translate('visibility', organization.projectVisibility)}</strong>
+            </span>
+            <EditButton
+              className="js-change-visibility spacer-left button-small"
               onClick={this.handleChangeVisibilityClick}
             />
           </span>

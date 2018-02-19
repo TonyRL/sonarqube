@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -25,32 +25,18 @@ import java.net.InetAddress;
 import org.junit.ClassRule;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
-import org.sonarqube.tests.authorisation.PermissionTemplateTest;
-import org.sonarqube.tests.issue.IssueNotificationsTest;
+import org.sonarqube.tests.authorization.PermissionTemplateTest;
 import org.sonarqube.tests.ce.ReportFailureNotificationTest;
+import org.sonarqube.tests.issue.IssueNotificationsTest;
 import org.sonarqube.tests.issue.IssueTagsTest;
 import org.sonarqube.tests.issue.OrganizationIssueAssignTest;
 import org.sonarqube.tests.issue.OrganizationIssuesPageTest;
-import org.sonarqube.tests.organization.BillingTest;
-import org.sonarqube.tests.organization.OrganizationMembershipTest;
-import org.sonarqube.tests.organization.OrganizationMembershipUiTest;
-import org.sonarqube.tests.organization.OrganizationTest;
-import org.sonarqube.tests.organization.PersonalOrganizationTest;
-import org.sonarqube.tests.organization.RootUserOnOrganizationTest;
-import org.sonarqube.tests.projectAdministration.ProjectDeleteTest;
-import org.sonarqube.tests.projectAdministration.ProjectKeyUpdateTest;
-import org.sonarqube.tests.projectAdministration.ProjectProvisioningTest;
-import org.sonarqube.tests.projectAdministration.ProjectSearchTest;
-import org.sonarqube.tests.projectSearch.LeakProjectsPageTest;
-import org.sonarqube.tests.projectSearch.SearchProjectsTest;
-import org.sonarqube.tests.qualityGate.OrganizationQualityGateUiTest;
 import org.sonarqube.tests.qualityProfile.BuiltInQualityProfilesTest;
 import org.sonarqube.tests.qualityProfile.CustomQualityProfilesTest;
-import org.sonarqube.tests.qualityProfile.OrganizationQualityProfilesUiTest;
 import org.sonarqube.tests.qualityProfile.QualityProfilesEditTest;
 import org.sonarqube.tests.qualityProfile.QualityProfilesWsTest;
+import org.sonarqube.tests.rule.RulesMarkdownTest;
 import org.sonarqube.tests.rule.RulesWsTest;
-import org.sonarqube.tests.ui.OrganizationUiExtensionsTest;
 import org.sonarqube.tests.user.OrganizationIdentityProviderTest;
 
 import static util.ItUtils.pluginArtifact;
@@ -58,33 +44,23 @@ import static util.ItUtils.xooPlugin;
 
 /**
  * This category is used only when organizations feature is activated
+ *
+ * @deprecated use dedicated suites in each package (see {@link org.sonarqube.tests.measure.MeasureSuite}
+ * for instance)
  */
+@Deprecated
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
   OrganizationIdentityProviderTest.class,
   OrganizationIssueAssignTest.class,
   OrganizationIssuesPageTest.class,
-  OrganizationMembershipTest.class,
-  OrganizationMembershipUiTest.class,
-  OrganizationQualityGateUiTest.class,
-  OrganizationQualityProfilesUiTest.class,
-  OrganizationTest.class,
-  RootUserOnOrganizationTest.class,
-  OrganizationUiExtensionsTest.class,
-  PersonalOrganizationTest.class,
   BuiltInQualityProfilesTest.class,
   QualityProfilesEditTest.class,
   QualityProfilesWsTest.class,
   CustomQualityProfilesTest.class,
-  BillingTest.class,
   IssueTagsTest.class,
-  LeakProjectsPageTest.class,
-  SearchProjectsTest.class,
   RulesWsTest.class,
-  ProjectDeleteTest.class,
-  ProjectProvisioningTest.class,
-  ProjectKeyUpdateTest.class,
-  ProjectSearchTest.class,
+  RulesMarkdownTest.class,
   PermissionTemplateTest.class,
   ReportFailureNotificationTest.class,
   IssueNotificationsTest.class
@@ -104,7 +80,6 @@ public class Category6Suite {
 
     .addPlugin(xooPlugin())
     .addPlugin(pluginArtifact("base-auth-plugin"))
-    .addPlugin(pluginArtifact("fake-billing-plugin"))
     .addPlugin(pluginArtifact("ui-extensions-plugin"))
 
     // reduce memory for Elasticsearch to 128M

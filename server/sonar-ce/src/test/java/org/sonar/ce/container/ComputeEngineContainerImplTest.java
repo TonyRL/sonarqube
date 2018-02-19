@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -65,7 +65,7 @@ public class ComputeEngineContainerImplTest {
   private ComputeEngineContainerImpl underTest;
 
   @Before
-  public void setUp() throws Exception {
+  public void setUp() {
     underTest = new ComputeEngineContainerImpl();
     underTest.setComputeEngineStatus(mock(ComputeEngineStatus.class));
   }
@@ -91,7 +91,8 @@ public class ComputeEngineContainerImplTest {
     assertThat(picoContainer.getComponentAdapters())
       .hasSize(
         CONTAINER_ITSELF
-          + 75 // level 4
+          + 78 // level 4
+          + 21 // content of QualityGateModule
           + 6 // content of CeConfigurationModule
           + 4 // content of CeQueueModule
           + 4 // content of CeHttpModule
@@ -100,15 +101,16 @@ public class ComputeEngineContainerImplTest {
           + 7 // content of CeTaskProcessorModule
           + 4 // content of ReportAnalysisFailureNotificationModule
           + 3 // CeCleaningModule + its content
+          + 4 // WebhookModule
           + 1 // CeDistributedInformation
     );
     assertThat(picoContainer.getParent().getComponentAdapters()).hasSize(
       CONTAINER_ITSELF
-        + 5 // level 3
+        + 7 // level 3
     );
     assertThat(picoContainer.getParent().getParent().getComponentAdapters()).hasSize(
       CONTAINER_ITSELF
-        + 13 // MigrationConfigurationModule
+        + 14 // MigrationConfigurationModule
         + 17 // level 2
     );
     assertThat(picoContainer.getParent().getParent().getParent().getComponentAdapters()).hasSize(

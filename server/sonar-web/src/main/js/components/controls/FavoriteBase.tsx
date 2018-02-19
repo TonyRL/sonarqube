@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -19,12 +19,15 @@
  */
 import * as React from 'react';
 import * as classNames from 'classnames';
+import Tooltip from './Tooltip';
 import FavoriteIcon from '../icons-components/FavoriteIcon';
+import { translate } from '../../helpers/l10n';
 
-interface Props {
+export interface Props {
   addFavorite: () => Promise<void>;
   className?: string;
   favorite: boolean;
+  qualifier: string;
   removeFavorite: () => Promise<void>;
 }
 
@@ -80,13 +83,18 @@ export default class FavoriteBase extends React.PureComponent<Props, State> {
   }
 
   render() {
+    const tooltip = this.state.favorite
+      ? translate('favorite.current', this.props.qualifier)
+      : translate('favorite.check', this.props.qualifier);
     return (
-      <a
-        className={classNames('link-no-underline', this.props.className)}
-        href="#"
-        onClick={this.toggleFavorite}>
-        <FavoriteIcon favorite={this.state.favorite} />
-      </a>
+      <Tooltip overlay={tooltip} placement="left">
+        <a
+          className={classNames('display-inline-block', 'link-no-underline', this.props.className)}
+          href="#"
+          onClick={this.toggleFavorite}>
+          <FavoriteIcon favorite={this.state.favorite} />
+        </a>
+      </Tooltip>
     );
   }
 }

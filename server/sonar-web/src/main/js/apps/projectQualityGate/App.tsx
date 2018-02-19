@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -35,6 +35,7 @@ import { translate } from '../../helpers/l10n';
 
 interface Props {
   component: Component;
+  onComponentChange: (changes: {}) => void;
 }
 
 interface State {
@@ -67,9 +68,13 @@ export default class App extends React.PureComponent<Props> {
   }
 
   fetchQualityGates() {
+    const { component } = this.props;
     this.setState({ loading: true });
-    Promise.all([fetchQualityGates(), getGateForProject(this.props.component.key)]).then(
-      ([allGates, gate]) => {
+    Promise.all([
+      fetchQualityGates({ organization: component.organization }),
+      getGateForProject({ organization: component.organization, project: component.key })
+    ]).then(
+      ([{ qualitygates: allGates }, gate]) => {
         if (this.mounted) {
           this.setState({ allGates, gate, loading: false });
         }
@@ -82,16 +87,21 @@ export default class App extends React.PureComponent<Props> {
     );
   }
 
-  handleChangeGate = (oldId: number | undefined, newId: number | undefined) => {
+  handleChangeGate = (oldId?: number, newId?: number) => {
     const { allGates } = this.state;
-
     if ((!oldId && !newId) || !allGates) {
       return Promise.resolve();
     }
 
+    const { component } = this.props;
+    const requestData = {
+      gateId: newId ? newId : oldId!,
+      organization: component.organization,
+      projectKey: component.key
+    };
     const request = newId
-      ? associateGateWithProject(newId, this.props.component.key)
-      : dissociateGateWithProject(oldId!, this.props.component.key);
+      ? associateGateWithProject(requestData)
+      : dissociateGateWithProject(requestData);
 
     return request.then(() => {
       if (this.mounted) {
@@ -100,6 +110,7 @@ export default class App extends React.PureComponent<Props> {
           const newGate = allGates.find(gate => gate.id === newId);
           if (newGate) {
             this.setState({ gate: newGate });
+            this.props.onComponentChange({ qualityGate: newGate });
           }
         } else {
           this.setState({ gate: undefined });

@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -62,7 +62,7 @@ public class AnalysisMetadataHolderImplTest {
 
   @Test
   public void setOrganization_throws_ISE_if_called_twice() {
-    Organization organization = Organization.from(new OrganizationDto().setUuid("uuid").setKey("key").setName("name"));
+    Organization organization = Organization.from(new OrganizationDto().setUuid("uuid").setKey("key").setName("name").setDefaultQualityGateUuid("anyuuidr"));
     underTest.setOrganization(organization);
 
     expectedException.expect(IllegalStateException.class);
@@ -98,7 +98,7 @@ public class AnalysisMetadataHolderImplTest {
   }
 
   @Test
-  public void getAnalysisDate_returns_date_with_same_time_as_the_one_set_with_setAnalysisDate() throws InterruptedException {
+  public void getAnalysisDate_returns_date_with_same_time_as_the_one_set_with_setAnalysisDate() {
 
     underTest.setAnalysisDate(SOME_DATE);
 
@@ -137,7 +137,7 @@ public class AnalysisMetadataHolderImplTest {
   }
 
   @Test
-  public void isFirstAnalysis_return_true() throws Exception {
+  public void isFirstAnalysis_return_true() {
     AnalysisMetadataHolderImpl underTest = new AnalysisMetadataHolderImpl();
 
     underTest.setBaseAnalysis(null);
@@ -145,7 +145,7 @@ public class AnalysisMetadataHolderImplTest {
   }
 
   @Test
-  public void isFirstAnalysis_return_false() throws Exception {
+  public void isFirstAnalysis_return_false() {
     AnalysisMetadataHolderImpl underTest = new AnalysisMetadataHolderImpl();
 
     underTest.setBaseAnalysis(baseProjectAnalysis);
@@ -270,7 +270,7 @@ public class AnalysisMetadataHolderImplTest {
   }
 
   @Test
-  public void getRootComponentRef() throws InterruptedException {
+  public void getRootComponentRef() {
     AnalysisMetadataHolderImpl underTest = new AnalysisMetadataHolderImpl();
 
     underTest.setRootComponentRef(10);

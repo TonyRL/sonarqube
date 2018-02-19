@@ -10,16 +10,16 @@ set -euo pipefail
 # at each build.
 #
 function installJdk8 {
-  echo "Setup JDK 1.8u151"
+  echo "Setup JDK 1.8u161"
   mkdir -p ~/jvm
   pushd ~/jvm > /dev/null
-  if [ ! -d "jdk1.8.0_151" ]; then
-    wget --quiet --continue --header "Cookie: oraclelicense=accept-securebackup-cookie" http://download.oracle.com/otn-pub/java/jdk/8u151-b12/e758a0de34e24606bca991d704f6dcbf/jdk-8u151-linux-x64.tar.gz
-    tar xzf jdk-8u151-linux-x64.tar.gz
-    rm jdk-8u151-linux-x64.tar.gz
+  if [ ! -d "jdk1.8.0_161" ]; then
+    wget --quiet --continue --header "Cookie: oraclelicense=accept-securebackup-cookie" http://download.oracle.com/otn-pub/java/jdk/8u161-b12/2f38c3b165be4555a1fa6e98c45e0808/jdk-8u161-linux-x64.tar.gz
+    tar xzf jdk-8u161-linux-x64.tar.gz
+    rm jdk-8u161-linux-x64.tar.gz
   fi
   popd > /dev/null
-  export JAVA_HOME=~/jvm/jdk1.8.0_151
+  export JAVA_HOME=~/jvm/jdk1.8.0_161
   export PATH=$JAVA_HOME/bin:$PATH
 }
 
@@ -105,15 +105,16 @@ function fixBuildVersion {
 #
 function configureTravis {
   mkdir -p ~/.local
-  curl -sSL https://github.com/SonarSource/travis-utils/tarball/v38 | tar zx --strip-components 1 -C ~/.local
+  curl -sSL https://github.com/SonarSource/travis-utils/tarball/v41 | tar zx --strip-components 1 -C ~/.local
   source ~/.local/bin/install
 }
 configureTravis
 
-# When pull request exists on the branch, then the job related to the branch does not need
-# to be executed and should be canceled. It does not book slaves for nothing.
+# When a pull request is open on the branch, then the job related
+# to the branch does not need to be executed and should be canceled.
+# It does not book slaves for nothing.
 # @TravisCI please provide the feature natively, like at AppVeyor or CircleCI ;-)
-cancel_branch_build_with_pr
+cancel_branch_build_with_pr || if [[ $? -eq 1 ]]; then exit 0; fi
 
 case "$TARGET" in
 
@@ -177,16 +178,6 @@ BUILD)
         -Dsource.skip=true \
         -Pdeploy-sonarsource
 
-    # analysis to decorate GitHub pull request
-    # (need support of standard analysis mode in GH plugin)
-    mvn sonar:sonar \
-        -Dsonar.host.url=$SONAR_HOST_URL \
-        -Dsonar.login=$SONAR_TOKEN \
-        -Dsonar.analysis.mode=preview \
-        -Dsonar.github.pullRequest=$TRAVIS_PULL_REQUEST \
-        -Dsonar.github.repository=$TRAVIS_REPO_SLUG \
-        -Dsonar.github.oauth=$GITHUB_TOKEN
-
     mvn sonar:sonar \
         -Dsonar.host.url=$SONAR_HOST_URL \
         -Dsonar.login=$SONAR_TOKEN \
@@ -196,7 +187,9 @@ BUILD)
         -Dsonar.analysis.pipeline=$TRAVIS_BUILD_NUMBER \
         -Dsonar.analysis.sha1=$TRAVIS_PULL_REQUEST_SHA \
         -Dsonar.analysis.prNumber=$TRAVIS_PULL_REQUEST \
-        -Dsonar.analysis.repository=$TRAVIS_REPO_SLUG
+        -Dsonar.analysis.repository=$TRAVIS_REPO_SLUG \
+        -Dsonar.pullrequest.github.id=$TRAVIS_PULL_REQUEST \
+        -Dsonar.pullrequest.github.repository=$TRAVIS_REPO_SLUG
   else
     echo 'Build feature branch or external pull request'
 

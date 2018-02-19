@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -38,7 +38,6 @@ import org.sonar.db.DatabaseChecker;
 import org.sonar.db.DbClient;
 import org.sonar.db.DefaultDatabase;
 import org.sonar.db.purge.PurgeProfiler;
-import org.sonar.db.semaphore.SemaphoresImpl;
 import org.sonar.process.NetworkUtilsImpl;
 import org.sonar.process.logging.LogbackHelper;
 import org.sonar.server.app.ProcessCommandWrapperImpl;
@@ -98,7 +97,6 @@ public class PlatformLevel1 extends PlatformLevel {
       org.sonar.core.persistence.MyBatis.class,
       PurgeProfiler.class,
       ServerFileSystemImpl.class,
-      SemaphoresImpl.class,
       TempFolderCleaner.class,
       new TempFolderProvider(),
       System2.INSTANCE,

@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -17,6 +17,7 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
+/* eslint-disable import/order */
 import * as React from 'react';
 import { shallow } from 'enzyme';
 import { click } from '../../../../helpers/testUtils';
@@ -75,8 +76,8 @@ it('should update the edition status after install', async () => {
   const updateEditionStatus = jest.fn();
   const wrapper = getWrapper({ updateEditionStatus });
   const form = wrapper.instance() as LicenseEditionForm;
-  form.mounted = true;
   form.handleLicenseChange('mylicense', 'AUTOMATIC_INSTALL');
+  wrapper.update();
   click(wrapper.find('button'));
   expect(applyLicense).toHaveBeenCalledWith({ license: 'mylicense' });
   await new Promise(setImmediate);

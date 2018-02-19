@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -328,7 +328,7 @@ public class RegisterRulesTest {
   }
 
   @Test
-  public void update_only_rule_name() throws Exception {
+  public void update_only_rule_name() {
     when(system.now()).thenReturn(DATE1.getTime());
     execute(new RulesDefinition() {
       @Override
@@ -363,7 +363,7 @@ public class RegisterRulesTest {
   }
 
   @Test
-  public void update_only_rule_description() throws Exception {
+  public void update_only_rule_description() {
     when(system.now()).thenReturn(DATE1.getTime());
     execute(new RulesDefinition() {
       @Override
@@ -398,7 +398,7 @@ public class RegisterRulesTest {
   }
 
   @Test
-  public void disable_then_enable_rule() throws Exception {
+  public void disable_then_enable_rule() {
     // Install rule
     when(system.now()).thenReturn(DATE1.getTime());
     execute(new FakeRepositoryV1());

@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -17,7 +17,6 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-
 package org.sonar.server.organization.ws;
 
 import com.google.common.collect.Multiset;
@@ -160,8 +159,6 @@ public class SearchMembersAction implements OrganizationsWsAction {
 
   private static SearchOptions buildSearchOptions(Request request) {
     int pageSize = request.mandatoryParamAsInt(Param.PAGE_SIZE);
-    checkArgument(pageSize <= SearchOptions.MAX_LIMIT, "Page size must lower than or equal to %s", SearchOptions.MAX_LIMIT);
-
     return new SearchOptions().setPage(request.mandatoryParamAsInt(Param.PAGE), pageSize);
   }
 

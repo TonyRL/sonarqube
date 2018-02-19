@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -151,11 +151,7 @@ export default class App extends React.PureComponent {
 
   handleQueryChange = (query /*: string */) => {
     if (this.mounted) {
-      this.setState({ query }, () => {
-        if (query.length === 0 || query.length > 2) {
-          this.loadHolders();
-        }
-      });
+      this.setState({ query }, this.loadHolders);
     }
   };
 
@@ -360,9 +356,9 @@ export default class App extends React.PureComponent {
             visibility={this.props.component.visibility}
           />
           {this.props.component.qualifier === 'TRK' &&
-          !canTurnToPrivate && (
-            <UpgradeOrganizationBox organization={this.props.component.organization} />
-          )}
+            !canTurnToPrivate && (
+              <UpgradeOrganizationBox organization={this.props.component.organization} />
+            )}
           {this.state.disclaimer && (
             <PublicProjectDisclaimer
               component={this.props.component}

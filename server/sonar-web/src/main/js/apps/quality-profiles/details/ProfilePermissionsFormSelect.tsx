@@ -1,7 +1,7 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2016 SonarSource SA
- * mailto:contact AT sonarsource DOT com
+ * Copyright (C) 2009-2018 SonarSource SA
+ * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -18,9 +18,9 @@
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 import * as React from 'react';
-import * as Select from 'react-select';
 import { debounce, identity } from 'lodash';
 import { User, Group } from './ProfilePermissions';
+import Select from '../../../components/controls/Select';
 import Avatar from '../../../components/ui/Avatar';
 import { translate, translateWithParameters } from '../../../helpers/l10n';
 import GroupIcon from '../../../components/icons-components/GroupIcon';
@@ -113,7 +113,7 @@ export default class ProfilePermissionsFormSelect extends React.PureComponent<Pr
 }
 
 function isUser(option: Option): option is User {
-  return (option as User).login != undefined;
+  return (option as User).login !== undefined;
 }
 
 function getStringValue(option: Option) {

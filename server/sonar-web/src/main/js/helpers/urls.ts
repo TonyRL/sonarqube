@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -18,9 +18,10 @@
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 import { stringify } from 'querystring';
+import { omitBy, isNil } from 'lodash';
 import { isShortLivingBranch } from './branches';
 import { getProfilePath } from '../apps/quality-profiles/utils';
-import { Branch } from '../app/types';
+import { Branch, HomePage, HomePageType } from '../app/types';
 
 interface Query {
   [x: string]: string | undefined;
@@ -35,21 +36,16 @@ export function getBaseUrl(): string {
   return (window as any).baseUrl;
 }
 
-/**
- * Generate URL for a component's home page
- * Deprecated : use getProjectUrl
- */
-export function getComponentUrl(componentKey: string, branch?: string): string {
-  const branchQuery = branch ? `&branch=${encodeURIComponent(branch)}` : '';
-  return getBaseUrl() + '/dashboard?id=' + encodeURIComponent(componentKey) + branchQuery;
+export function getPathUrlAsString(path: Location): string {
+  return `${getBaseUrl()}${path.pathname}?${stringify(omitBy(path.query, isNil))}`;
 }
 
 export function getProjectUrl(key: string, branch?: string): Location {
   return { pathname: '/dashboard', query: { id: key, branch } };
 }
 
-export function getComponentBackgroundTaskUrl(componentKey: string): Location {
-  return { pathname: '/project/background_tasks', query: { id: componentKey } };
+export function getComponentBackgroundTaskUrl(componentKey: string, status?: string): Location {
+  return { pathname: '/project/background_tasks', query: { id: componentKey, status } };
 }
 
 export function getProjectBranchUrl(key: string, branch: Branch): Location {
@@ -76,12 +72,7 @@ export function getIssuesUrl(query: Query): Location {
  * Generate URL for a component's issues page
  */
 export function getComponentIssuesUrl(componentKey: string, query?: Query): Location {
-  return { pathname: '/project/issues', query: { ...query || {}, id: componentKey } };
-}
-
-export function getComponentIssuesUrlAsString(componentKey: string, query?: Query): string {
-  const path = getComponentIssuesUrl(componentKey, query);
-  return `${getBaseUrl()}${path.pathname}?${stringify(path.query)}`;
+  return { pathname: '/project/issues', query: { ...(query || {}), id: componentKey } };
 }
 
 /**
@@ -175,4 +166,24 @@ export function getMarkdownHelpUrl(): string {
 
 export function getCodeUrl(project: string, branch?: string, selected?: string) {
   return { pathname: '/code', query: { id: project, branch, selected } };
+}
+
+export function getOrganizationUrl(organization: string) {
+  return `/organizations/${organization}`;
+}
+
+export function getHomePageUrl(homepage: HomePage) {
+  switch (homepage.type) {
+    case HomePageType.Project:
+      return getProjectUrl(homepage.parameter!);
+    case HomePageType.Organization:
+      return getOrganizationUrl(homepage.parameter!);
+    case HomePageType.MyProjects:
+      return '/projects';
+    case HomePageType.MyIssues:
+      return { pathname: '/issues', query: { resolved: 'false' } };
+  }
+
+  // should never happen, but just in case...
+  return '/projects';
 }

@@ -1,7 +1,7 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2016 SonarSource SA
- * mailto:contact AT sonarsource DOT com
+ * Copyright (C) 2009-2018 SonarSource SA
+ * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -44,26 +44,26 @@ export default function BranchStatus({ branch, concise = false }: Props) {
     const indicatorColor = totalIssues > 0 ? 'red' : 'green';
 
     return concise ? (
-      <ul className="list-inline branch-status">
+      <ul className="branch-status">
         <li>{totalIssues}</li>
         <li className="spacer-left">
           <StatusIndicator color={indicatorColor} size="small" />
         </li>
       </ul>
     ) : (
-      <ul className="list-inline branch-status">
+      <ul className="branch-status">
         <li className="spacer-right">
           <StatusIndicator color={indicatorColor} size="small" />
         </li>
-        <li>
+        <li className="spacer-left">
           {branch.status.bugs}
           <BugIcon />
         </li>
-        <li>
+        <li className="spacer-left">
           {branch.status.vulnerabilities}
           <VulnerabilityIcon />
         </li>
-        <li>
+        <li className="spacer-left">
           {branch.status.codeSmells}
           <CodeSmellIcon />
         </li>

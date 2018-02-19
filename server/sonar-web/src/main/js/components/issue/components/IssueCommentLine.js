@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -21,6 +21,8 @@
 import React from 'react';
 import Avatar from '../../../components/ui/Avatar';
 import BubblePopupHelper from '../../../components/common/BubblePopupHelper';
+import EditIcon from '../../../components/icons-components/EditIcon';
+import { EditButton, DeleteButton } from '../../../components/ui/buttons';
 import CommentDeletePopup from '../popups/CommentDeletePopup';
 import CommentPopup from '../popups/CommentPopup';
 import DateFromNow from '../../../components/intl/DateFromNow';
@@ -117,8 +119,8 @@ export default class IssueCommentLine extends React.PureComponent {
                   toggleComment={this.toggleEditPopup}
                 />
               }>
-              <button
-                className="js-issue-comment-edit button-link icon-edit icon-half-transparent"
+              <EditButton
+                className="js-issue-comment-edit button-small"
                 onClick={this.toggleEditPopup}
               />
             </BubblePopupHelper>
@@ -131,8 +133,8 @@ export default class IssueCommentLine extends React.PureComponent {
               position="bottomright"
               togglePopup={this.toggleDeletePopup}
               popup={<CommentDeletePopup onDelete={this.handleDelete} />}>
-              <button
-                className="js-issue-comment-delete button-link icon-delete icon-half-transparent"
+              <DeleteButton
+                className="js-issue-comment-delete button-small"
                 onClick={this.toggleDeletePopup}
               />
             </BubblePopupHelper>

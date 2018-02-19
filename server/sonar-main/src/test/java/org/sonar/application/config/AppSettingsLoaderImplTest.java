@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -97,7 +97,7 @@ public class AppSettingsLoaderImplTest {
   }
 
   @Test
-  public void detectHomeDir_returns_existing_dir() throws Exception {
+  public void detectHomeDir_returns_existing_dir() {
     assertThat(new AppSettingsLoaderImpl(new String[0]).getHomeDir()).exists().isDirectory();
 
   }

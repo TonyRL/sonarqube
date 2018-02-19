@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -17,7 +17,6 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-
 package org.sonar.server.organization.ws;
 
 import java.util.HashSet;
@@ -332,7 +331,7 @@ public class RemoveMemberActionTest {
   }
 
   @Test
-  public void remove_org_admin_is_allowed_when_another_org_admin_exists() throws Exception {
+  public void remove_org_admin_is_allowed_when_another_org_admin_exists() {
     OrganizationDto anotherOrganization = db.organizations().insert();
     UserDto admin1 = db.users().insertAdminByUserPermission(anotherOrganization);
     db.organizations().addMember(anotherOrganization, admin1);
@@ -390,8 +389,8 @@ public class RemoveMemberActionTest {
 
   private void insertProperty(String key, @Nullable String value, @Nullable Long resourceId, @Nullable Integer userId) {
     PropertyDto dto = new PropertyDto().setKey(key)
-      .setResourceId(resourceId == null ? null : resourceId)
-      .setUserId(userId == null ? null : userId)
+      .setResourceId(resourceId)
+      .setUserId(userId)
       .setValue(value);
     db.properties().insertProperty(dto);
   }

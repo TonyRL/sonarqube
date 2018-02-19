@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -24,6 +24,8 @@ import escapeHtml from 'escape-html';
 import { translate } from '../../helpers/l10n';
 import ItemTemplate from './templates/item.hbs';
 import ListTemplate from './templates/list.hbs';
+import './styles.css';
+import '../controls/SearchBox.css';
 
 let showError = null;
 
@@ -159,7 +161,8 @@ const SelectListView = Backbone.View.extend({
   events: {
     'click .select-list-control-button[name=selected]': 'showSelected',
     'click .select-list-control-button[name=deselected]': 'showDeselected',
-    'click .select-list-control-button[name=all]': 'showAll'
+    'click .select-list-control-button[name=all]': 'showAll',
+    'click .js-reset': 'onResetClick'
   },
 
   initialize(options) {
@@ -330,6 +333,7 @@ const SelectListView = Backbone.View.extend({
 
     this.$('.select-list-check-control').toggleClass('disabled', hasQuery);
     this.$('.select-list-search-control').toggleClass('disabled', !hasQuery);
+    this.$('.js-reset').toggleClass('hidden', !hasQuery);
 
     if (hasQuery) {
       this.showFetchSpinner();
@@ -349,6 +353,15 @@ const SelectListView = Backbone.View.extend({
     } else {
       this.filterBySelection();
     }
+  },
+
+  onResetClick(e) {
+    e.preventDefault();
+    e.currentTarget.blur();
+    this.$('.select-list-search-control input')
+      .val('')
+      .focus()
+      .trigger('search');
   },
 
   searchByQuery(query) {

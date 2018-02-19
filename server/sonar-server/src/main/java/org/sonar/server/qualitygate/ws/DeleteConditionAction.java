@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -25,19 +25,18 @@ import org.sonar.api.server.ws.WebService;
 import org.sonar.db.DbClient;
 import org.sonar.db.DbSession;
 import org.sonar.db.organization.OrganizationDto;
-import org.sonar.server.user.UserSession;
+import org.sonar.db.qualitygate.QGateWithOrgDto;
+import org.sonar.db.qualitygate.QualityGateConditionDto;
 
-import static org.sonar.db.permission.OrganizationPermission.ADMINISTER_QUALITY_GATES;
-import static org.sonarqube.ws.client.qualitygate.QualityGatesWsParameters.PARAM_ID;
+import static com.google.common.base.Preconditions.checkState;
+import static org.sonar.server.qualitygate.ws.QualityGatesWsParameters.PARAM_ID;
 
 public class DeleteConditionAction implements QualityGatesWsAction {
 
   private final DbClient dbClient;
-  private final UserSession userSession;
   private final QualityGatesWsSupport wsSupport;
 
-  public DeleteConditionAction(UserSession userSession, DbClient dbClient, QualityGatesWsSupport wsSupport) {
-    this.userSession = userSession;
+  public DeleteConditionAction(DbClient dbClient, QualityGatesWsSupport wsSupport) {
     this.dbClient = dbClient;
     this.wsSupport = wsSupport;
   }
@@ -56,15 +55,21 @@ public class DeleteConditionAction implements QualityGatesWsAction {
       .setRequired(true)
       .setDescription("Condition ID")
       .setExampleValue("2");
+
+    wsSupport.createOrganizationParam(createCondition);
   }
 
   @Override
   public void handle(Request request, Response response) {
     long conditionId = request.mandatoryParamAsLong(PARAM_ID);
     try (DbSession dbSession = dbClient.openSession(false)) {
-      OrganizationDto organization = wsSupport.getOrganization(dbSession);
-      userSession.checkPermission(ADMINISTER_QUALITY_GATES, organization);
-      dbClient.gateConditionDao().delete(wsSupport.getCondition(dbSession, conditionId), dbSession);
+      OrganizationDto organization = wsSupport.getOrganization(dbSession, request);
+      QualityGateConditionDto condition = wsSupport.getCondition(dbSession, conditionId);
+      QGateWithOrgDto qualityGateDto = dbClient.qualityGateDao().selectByOrganizationAndId(dbSession, organization, condition.getQualityGateId());
+      checkState(qualityGateDto != null, "Condition '%s' is linked to an unknown quality gate '%s'", conditionId, condition.getQualityGateId());
+      wsSupport.checkCanEdit(qualityGateDto);
+
+      dbClient.gateConditionDao().delete(condition, dbSession);
       dbSession.commit();
       response.noContent();
     }

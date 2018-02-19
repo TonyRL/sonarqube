@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -38,7 +38,7 @@ export default function ComponentsHeader({ baseComponent, rootComponent }: Props
         translate('metric_domain.Maintainability'),
         translate('metric', 'ncloc', 'name')
       ]
-    : [
+    : ([
         isApplication && translate('metric.alert_status.name'),
         translate('metric', 'ncloc', 'name'),
         translate('metric', 'bugs', 'name'),
@@ -46,7 +46,7 @@ export default function ComponentsHeader({ baseComponent, rootComponent }: Props
         translate('metric', 'code_smells', 'name'),
         translate('metric', 'coverage', 'name'),
         translate('metric', 'duplicated_lines_density', 'short_name')
-      ].filter(Boolean) as string[];
+      ].filter(Boolean) as string[]);
 
   return (
     <thead>

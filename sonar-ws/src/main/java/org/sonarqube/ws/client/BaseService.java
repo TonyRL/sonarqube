@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -52,7 +52,7 @@ public abstract class BaseService {
     return wsConnector.call(request).failIfNotSuccessful();
   }
 
-  public <T extends Message> T convert(WsResponse response, Parser<T> parser) {
+  public static <T extends Message> T convert(WsResponse response, Parser<T> parser) {
     try (InputStream byteStream = response.contentStream()) {
       byte[] bytes = IOUtils.toByteArray(byteStream);
       // HTTP header "Content-Type" is not verified. It may be different than protobuf.

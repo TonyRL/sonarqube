@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -48,6 +48,7 @@ import org.sonar.server.computation.task.projectanalysis.batch.BatchReportReader
 import org.sonar.server.computation.task.projectanalysis.component.BranchLoader;
 import org.sonar.server.computation.task.step.ComputationStep;
 import org.sonar.server.organization.DefaultOrganizationProvider;
+import org.sonar.server.organization.OrganizationFlags;
 import org.sonar.server.qualityprofile.QualityProfile;
 
 import static com.google.common.base.Preconditions.checkState;
@@ -66,9 +67,11 @@ public class LoadReportAnalysisMetadataHolderStep implements ComputationStep {
   private final DbClient dbClient;
   private final BranchLoader branchLoader;
   private final PluginRepository pluginRepository;
+  private final OrganizationFlags organizationFlags;
 
   public LoadReportAnalysisMetadataHolderStep(CeTask ceTask, BatchReportReader reportReader, MutableAnalysisMetadataHolder analysisMetadata,
-    DefaultOrganizationProvider defaultOrganizationProvider, DbClient dbClient, BranchLoader branchLoader, PluginRepository pluginRepository) {
+    DefaultOrganizationProvider defaultOrganizationProvider, DbClient dbClient, BranchLoader branchLoader, PluginRepository pluginRepository,
+    OrganizationFlags organizationFlags) {
     this.ceTask = ceTask;
     this.reportReader = reportReader;
     this.analysisMetadata = analysisMetadata;
@@ -76,6 +79,7 @@ public class LoadReportAnalysisMetadataHolderStep implements ComputationStep {
     this.dbClient = dbClient;
     this.branchLoader = branchLoader;
     this.pluginRepository = pluginRepository;
+    this.organizationFlags = organizationFlags;
   }
 
   @Override
@@ -109,10 +113,13 @@ public class LoadReportAnalysisMetadataHolderStep implements ComputationStep {
   }
 
   private Organization loadOrganization(ScannerReport.Metadata reportMetadata) {
-    Organization organization = toOrganization(ceTask.getOrganizationUuid());
-    checkOrganizationKeyConsistency(reportMetadata, organization);
-    analysisMetadata.setOrganization(organization);
-    return organization;
+    try (DbSession dbSession = dbClient.openSession(false)) {
+      Organization organization = toOrganization(dbSession, ceTask.getOrganizationUuid());
+      checkOrganizationKeyConsistency(reportMetadata, organization);
+      analysisMetadata.setOrganization(organization);
+      analysisMetadata.setOrganizationsEnabled(organizationFlags.isEnabled(dbSession));
+      return organization;
+    }
   }
 
   private void loadQualityProfiles(ScannerReport.Metadata reportMetadata, Organization organization) {
@@ -201,12 +208,10 @@ public class LoadReportAnalysisMetadataHolderStep implements ComputationStep {
     return organizationKey == null || organizationKey.isEmpty();
   }
 
-  private Organization toOrganization(String organizationUuid) {
-    try (DbSession dbSession = dbClient.openSession(false)) {
-      Optional<OrganizationDto> organizationDto = dbClient.organizationDao().selectByUuid(dbSession, organizationUuid);
-      checkState(organizationDto.isPresent(), "Organization with uuid '%s' can't be found", organizationUuid);
-      return Organization.from(organizationDto.get());
-    }
+  private Organization toOrganization(DbSession dbSession, String organizationUuid) {
+    Optional<OrganizationDto> organizationDto = dbClient.organizationDao().selectByUuid(dbSession, organizationUuid);
+    checkState(organizationDto.isPresent(), "Organization with uuid '%s' can't be found", organizationUuid);
+    return Organization.from(organizationDto.get());
   }
 
   private ComponentDto toProject(String projectKey) {

@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -61,7 +61,7 @@ public class IssueCreationTest extends AbstractIssueTest {
   }
 
   @Test
-  public void plugin_can_override_profile_severity() throws Exception {
+  public void plugin_can_override_profile_severity() {
     ORCHESTRATOR.getServer().provisionProject(SAMPLE_PROJECT_KEY, SAMPLE_PROJECT_KEY);
 
     // The rule "OneBlockerIssuePerFile" is enabled with severity "INFO"

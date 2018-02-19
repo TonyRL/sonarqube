@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -44,11 +44,6 @@ public class PopulateAnalysisUuidOnMeasures extends DataChange {
     massUpdate.select("select distinct m.snapshot_id as sId, s.root_snapshot_id as rootSid " +
       "from project_measures m " +
       "inner join snapshots s on m.snapshot_id = s.id " +
-      "where m.analysis_uuid is null " +
-      "union " +
-      "select distinct m.snapshot_id as sId, s.root_snapshot_id as rootSid " +
-      "from project_measures m " +
-      "inner join snapshots s on m.snapshot_id=s.id " +
       "where m.analysis_uuid is null"
     );
     massUpdate.update("update project_measures set analysis_uuid=? where snapshot_id = ? and analysis_uuid is null");

@@ -1,7 +1,7 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2016 SonarSource SA
- * mailto:contact AT sonarsource DOT com
+ * Copyright (C) 2009-2018 SonarSource SA
+ * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -17,13 +17,14 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
+/* eslint-disable import/first, import/order */
 jest.mock('../../../../helpers/storage', () => ({
   getCustomGraph: () => ['coverage'],
   getGraph: () => 'custom'
 }));
 
 jest.mock('../../../../api/metrics', () => ({
-  getMetrics: jest.fn(() => Promise.resolve([]))
+  getAllMetrics: jest.fn(() => Promise.resolve([]))
 }));
 
 jest.mock('../../../../api/time-machine', () => ({
@@ -46,12 +47,12 @@ import * as React from 'react';
 import { mount, shallow } from 'enzyme';
 import Activity from '../Activity';
 
-const getMetrics = require('../../../../api/metrics').getMetrics as jest.Mock<any>;
+const getAllMetrics = require('../../../../api/metrics').getAllMetrics as jest.Mock<any>;
 const getAllTimeMachineData = require('../../../../api/time-machine')
   .getAllTimeMachineData as jest.Mock<any>;
 
 beforeEach(() => {
-  getMetrics.mockClear();
+  getAllMetrics.mockClear();
   getAllTimeMachineData.mockClear();
 });
 
@@ -72,6 +73,6 @@ it('renders', () => {
 
 it('fetches history', () => {
   mount(<Activity component="foo" />);
-  expect(getMetrics).toBeCalled();
+  expect(getAllMetrics).toBeCalled();
   expect(getAllTimeMachineData).toBeCalledWith('foo', ['coverage']);
 });

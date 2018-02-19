@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -28,40 +28,41 @@ import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
-import org.sonarqube.tests.Category1Suite;
-import org.sonarqube.tests.Tester;
-import org.sonarqube.ws.WsProjects.CreateWsResponse.Project;
-import org.sonarqube.ws.WsQualityGates;
+import org.sonarqube.qa.util.Tester;
+import org.sonarqube.ws.Projects.CreateWsResponse.Project;
+import org.sonarqube.ws.Qualitygates;
 import org.sonarqube.ws.client.PostRequest;
-import org.sonarqube.ws.client.qualitygate.CreateConditionRequest;
+import org.sonarqube.ws.client.qualitygates.CreateConditionRequest;
 import org.subethamail.wiser.Wiser;
 import org.subethamail.wiser.WiserMessage;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.sonarqube.ws.WsMeasures.Measure;
+import static org.sonarqube.ws.Measures.Measure;
 import static util.ItUtils.getMeasure;
 import static util.ItUtils.projectDir;
 
 public class QualityGateNotificationTest {
 
   @ClassRule
-  public static Orchestrator orchestrator = Category1Suite.ORCHESTRATOR;
+  public static Orchestrator orchestrator = QualityGateSuite.ORCHESTRATOR;
 
   @Rule
-  public Tester tester = new Tester(orchestrator).disableOrganizations();
+  public Tester tester = new Tester(orchestrator)
+    // all the tests of QualityGateSuite must disable organizations
+    .disableOrganizations();
 
-  private static Wiser SMTP_SERVER;
+  private static Wiser smtpServer;
 
   @BeforeClass
-  public static void startSmtpServer() throws Exception {
-    SMTP_SERVER = new Wiser(0);
-    SMTP_SERVER.start();
+  public static void startSmtpServer() {
+    smtpServer = new Wiser(0);
+    smtpServer.start();
   }
 
   @AfterClass
-  public static void stopSmtpServer() throws Exception {
-    if (SMTP_SERVER != null) {
-      SMTP_SERVER.stop();
+  public static void stopSmtpServer() {
+    if (smtpServer != null) {
+      smtpServer.stop();
     }
   }
 
@@ -69,7 +70,7 @@ public class QualityGateNotificationTest {
   public void status_on_metric_variation_and_send_notifications() throws Exception {
     tester.settings().setGlobalSettings("sonar.leak.period", "previous_version");
     tester.settings().setGlobalSettings("email.smtp_host.secured", "localhost");
-    tester.settings().setGlobalSettings("email.smtp_port.secured", Integer.toString(SMTP_SERVER.getServer().getPort()));
+    tester.settings().setGlobalSettings("email.smtp_port.secured", Integer.toString(smtpServer.getServer().getPort()));
 
     // Create user, who will receive notifications for new violations
     tester.users().generate(u -> u.setLogin("tester").setPassword("tester").setEmail("tester@example.org"));
@@ -85,10 +86,10 @@ public class QualityGateNotificationTest {
       .failIfNotSuccessful();
 
     // Create quality gate with conditions on variations
-    WsQualityGates.CreateWsResponse simple = tester.qGates().generate();
+    Qualitygates.CreateResponse simple = tester.qGates().generate();
     tester.qGates().service()
-      .createCondition(CreateConditionRequest.builder().setQualityGateId(simple.getId()).setMetricKey("ncloc").setPeriod(1).setOperator("EQ").setWarning("0").build());
-    Project project = tester.projects().generate(null);
+      .createCondition(new CreateConditionRequest().setGateId(String.valueOf(simple.getId())).setMetric("ncloc").setPeriod("1").setOp("EQ").setWarning("0"));
+    Project project = tester.projects().provision();
     tester.qGates().associateProject(simple, project);
 
     SonarScanner analysis = SonarScanner.create(projectDir("qualitygate/xoo-sample")).setProperty("sonar.projectKey", project.getKey());
@@ -98,9 +99,9 @@ public class QualityGateNotificationTest {
     orchestrator.executeBuild(analysis);
     assertThat(getGateStatusMeasure(project).getValue()).isEqualTo("WARN");
 
-    waitUntilAllNotificationsAreDelivered(SMTP_SERVER);
+    waitUntilAllNotificationsAreDelivered(smtpServer);
 
-    Iterator<WiserMessage> emails = SMTP_SERVER.getMessages().iterator();
+    Iterator<WiserMessage> emails = smtpServer.getMessages().iterator();
 
     MimeMessage message = emails.next().getMimeMessage();
     assertThat(message.getHeader("To", null)).isEqualTo("<test@example.org>");

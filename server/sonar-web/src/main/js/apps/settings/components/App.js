@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -47,10 +47,6 @@ export default class App extends React.PureComponent {
   state /*: State */ = { loaded: false };
 
   componentDidMount() {
-    const html = document.querySelector('html');
-    if (html) {
-      html.classList.add('dashboard-page');
-    }
     const componentKey = this.props.component ? this.props.component.key : null;
     this.props.fetchSettings(componentKey).then(() => this.setState({ loaded: true }));
   }
@@ -59,13 +55,6 @@ export default class App extends React.PureComponent {
     if (prevProps.component !== this.props.component) {
       const componentKey = this.props.component ? this.props.component.key : null;
       this.props.fetchSettings(componentKey);
-    }
-  }
-
-  componentWillUnmount() {
-    const html = document.querySelector('html');
-    if (html) {
-      html.classList.remove('dashboard-page');
     }
   }
 

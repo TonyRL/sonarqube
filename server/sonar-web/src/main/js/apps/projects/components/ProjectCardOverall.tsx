@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -22,7 +22,7 @@ import { Link } from 'react-router';
 import DateTimeFormatter from '../../../components/intl/DateTimeFormatter';
 import ProjectCardQualityGate from './ProjectCardQualityGate';
 import ProjectCardOverallMeasures from './ProjectCardOverallMeasures';
-import ProjectCardOrganization from './ProjectCardOrganization';
+import ProjectCardOrganizationContainer from './ProjectCardOrganizationContainer';
 import Favorite from '../../../components/controls/Favorite';
 import TagsList from '../../../components/tags/TagsList';
 import PrivateBadge from '../../../components/common/PrivateBadge';
@@ -43,15 +43,18 @@ export default function ProjectCardOverall({ organization, project }: Props) {
   return (
     <div data-key={project.key} className="boxed-group project-card">
       <div className="boxed-group-header clearfix">
-        {project.isFavorite != undefined && (
+        {project.isFavorite !== undefined && (
           <Favorite
             className="spacer-right"
             component={project.key}
             favorite={project.isFavorite}
+            qualifier="TRK"
           />
         )}
         <h2 className="project-card-name">
-          {!organization && <ProjectCardOrganization organization={project.organization} />}
+          {!organization && (
+            <ProjectCardOrganizationContainer organization={project.organization} />
+          )}
           <Link to={{ pathname: '/dashboard', query: { id: project.key } }}>{project.name}</Link>
         </h2>
         {project.analysisDate && <ProjectCardQualityGate status={measures['alert_status']} />}

@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -19,10 +19,10 @@
  */
 // @flow
 import React from 'react';
-import Select from 'react-select';
 import ListIcon from '../../../components/icons-components/ListIcon';
 import TreeIcon from '../../../components/icons-components/TreeIcon';
 import TreemapIcon from '../../../components/icons-components/TreemapIcon';
+import Select from '../../../components/controls/Select';
 import { hasList, hasTree, hasTreemap } from '../utils';
 import { translate } from '../../../helpers/l10n';
 /*:: import type { Metric } from '../../../store/metrics/actions'; */

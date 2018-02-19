@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -32,14 +32,15 @@ import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
-import org.sonarqube.pageobjects.Navigation;
+import org.sonarqube.qa.util.Tester;
+import org.sonarqube.qa.util.pageobjects.Navigation;
 import org.sonarqube.tests.Category4Suite;
-import org.sonarqube.tests.Tester;
-import org.sonarqube.ws.WsUsers.SearchWsResponse.User;
+import org.sonarqube.ws.Users.SearchWsResponse.User;
 import org.sonarqube.ws.client.GetRequest;
 import org.sonarqube.ws.client.WsResponse;
-import org.sonarqube.ws.client.permission.AddUserWsRequest;
-import org.sonarqube.ws.client.user.CreateRequest;
+import org.sonarqube.ws.client.permissions.AddUserRequest;
+import org.sonarqube.ws.client.users.CreateRequest;
+import util.selenium.Selenese;
 
 import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selenide.$;
@@ -108,7 +109,7 @@ public class OAuth2IdentityProviderTest {
   }
 
   @Test
-  public void authenticate_user_through_ui() throws Exception {
+  public void authenticate_user_through_ui() {
     simulateRedirectionToCallback();
     enablePlugin();
 
@@ -119,12 +120,12 @@ public class OAuth2IdentityProviderTest {
   }
 
   @Test
-  public void redirect_to_requested_page() throws UnsupportedEncodingException {
+  public void redirect_to_requested_page() {
     simulateRedirectionToCallback();
     enablePlugin();
     tester.users().generate(u -> u.setLogin(USER_LOGIN));
     // Give user global admin permission as we want to go to a page where authentication is required
-    tester.wsClient().permissions().addUser(new AddUserWsRequest().setLogin(USER_LOGIN).setPermission("admin"));
+    tester.wsClient().permissions().addUser(new AddUserRequest().setLogin(USER_LOGIN).setPermission("admin"));
 
     Navigation nav = tester.openBrowser();
     // Try to go to the settings page
@@ -139,25 +140,25 @@ public class OAuth2IdentityProviderTest {
   }
 
   @Test
-  public void display_unauthorized_page_when_authentication_failed_in_callback() throws Exception {
+  public void display_unauthorized_page_when_authentication_failed_in_callback() {
     simulateRedirectionToCallback();
     enablePlugin();
 
     // As this property is null, the plugin will throw an exception
     tester.settings().setGlobalSettings("sonar.auth.fake-oauth2-id-provider.user", null);
 
-    tester.runHtmlTests("/user/OAuth2IdentityProviderTest/display_unauthorized_page_when_authentication_failed.html");
+    Selenese.runSelenese(orchestrator, "/user/OAuth2IdentityProviderTest/display_unauthorized_page_when_authentication_failed.html");
 
     assertThatUserDoesNotExist(USER_LOGIN);
   }
 
   @Test
-  public void fail_to_authenticate_when_not_allowed_to_sign_up() throws Exception {
+  public void fail_to_authenticate_when_not_allowed_to_sign_up() {
     simulateRedirectionToCallback();
     enablePlugin();
     tester.settings().setGlobalSettings("sonar.auth.fake-oauth2-id-provider.allowsUsersToSignUp", "false");
 
-    tester.runHtmlTests("/user/OAuth2IdentityProviderTest/fail_to_authenticate_when_not_allowed_to_sign_up.html");
+    Selenese.runSelenese(orchestrator, "/user/OAuth2IdentityProviderTest/fail_to_authenticate_when_not_allowed_to_sign_up.html");
 
     assertThatUserDoesNotExist(USER_LOGIN);
   }
@@ -168,7 +169,7 @@ public class OAuth2IdentityProviderTest {
     enablePlugin();
     tester.settings().setGlobalSettings("sonar.auth.fake-oauth2-id-provider.throwUnauthorizedMessage", "true");
 
-    tester.runHtmlTests("/user/OAuth2IdentityProviderTest/display_message_in_ui_but_not_in_log_when_unauthorized_exception.html");
+    Selenese.runSelenese(orchestrator, "/user/OAuth2IdentityProviderTest/display_message_in_ui_but_not_in_log_when_unauthorized_exception.html");
 
     File logFile = orchestrator.getServer().getWebLogs();
     assertThat(FileUtils.readFileToString(logFile)).doesNotContain("A functional error has happened");
@@ -183,7 +184,7 @@ public class OAuth2IdentityProviderTest {
     enablePlugin();
     tester.users().generate(u -> u.setLogin("another").setName("Another").setEmail(USER_EMAIL).setPassword("another"));
 
-    tester.runHtmlTests("/user/OAuth2IdentityProviderTest/fail_when_email_already_exists.html");
+    Selenese.runSelenese(orchestrator, "/user/OAuth2IdentityProviderTest/fail_when_email_already_exists.html");
 
     File logFile = orchestrator.getServer().getWebLogs();
     assertThat(FileUtils.readFileToString(logFile))
@@ -196,12 +197,11 @@ public class OAuth2IdentityProviderTest {
     enablePlugin();
 
     // Provision none local user in database
-    tester.wsClient().users().create(CreateRequest.builder()
+    tester.wsClient().users().create(new CreateRequest()
       .setLogin(USER_LOGIN)
       .setName(USER_NAME)
       .setEmail(USER_EMAIL)
-      .setLocal(false)
-      .build());
+      .setLocal("false"));
     User user = tester.users().getByLogin(USER_LOGIN).get();
     assertThat(user.getLocal()).isFalse();
     assertThat(user.getExternalIdentity()).isEqualTo(USER_LOGIN);

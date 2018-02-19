@@ -1,7 +1,7 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2016 SonarSource SA
- * mailto:contact AT sonarsource DOT com
+ * Copyright (C) 2009-2018 SonarSource SA
+ * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -29,6 +29,7 @@ import {
 } from '../../../../helpers/branches';
 import { translate } from '../../../../helpers/l10n';
 import { getProjectBranchUrl } from '../../../../helpers/urls';
+import SearchBox from '../../../../components/controls/SearchBox';
 import Tooltip from '../../../../components/controls/Tooltip';
 
 interface Props {
@@ -46,11 +47,15 @@ interface State {
 
 export default class ComponentNavBranchesMenu extends React.PureComponent<Props, State> {
   private node: HTMLElement | null;
-  state = { query: '', selected: null };
 
   static contextTypes = {
     router: PropTypes.object
   };
+
+  constructor(props: Props) {
+    super(props);
+    this.state = { query: '', selected: null };
+  }
 
   componentDidMount() {
     window.addEventListener('click', this.handleClickOutside);
@@ -71,18 +76,13 @@ export default class ComponentNavBranchesMenu extends React.PureComponent<Props,
     }
   };
 
-  handleSearchChange = (event: React.SyntheticEvent<HTMLInputElement>) =>
-    this.setState({ query: event.currentTarget.value, selected: null });
+  handleSearchChange = (query: string) => this.setState({ query, selected: null });
 
   handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
     switch (event.keyCode) {
       case 13:
         event.preventDefault();
         this.openSelected();
-        return;
-      case 27:
-        event.preventDefault();
-        this.props.onClose();
         return;
       case 38:
         event.preventDefault();
@@ -147,17 +147,12 @@ export default class ComponentNavBranchesMenu extends React.PureComponent<Props,
   isSelected = (branch: Branch) => branch.name === this.getSelected();
 
   renderSearch = () => (
-    <div className="search-box menu-search">
-      <button className="search-box-submit button-clean">
-        <i className="icon-search-new" />
-      </button>
-      <input
+    <div className="menu-search">
+      <SearchBox
         autoFocus={true}
-        className="search-box-input"
         onChange={this.handleSearchChange}
         onKeyDown={this.handleKeyDown}
-        placeholder={translate('search_verb')}
-        type="search"
+        placeholder={translate('branches.search_for_branches')}
         value={this.state.query}
       />
     </div>
@@ -171,36 +166,35 @@ export default class ComponentNavBranchesMenu extends React.PureComponent<Props,
       return <div className="menu-message note">{translate('no_results')}</div>;
     }
 
-    const menu: JSX.Element[] = [];
-    branches.forEach((branch, index) => {
+    const items = branches.map((branch, index) => {
       const isOrphan = isShortLivingBranch(branch) && branch.isOrphan;
       const previous = index > 0 ? branches[index - 1] : null;
       const isPreviousOrphan = isShortLivingBranch(previous) ? previous.isOrphan : false;
-      if (isLongLivingBranch(branch) || (isOrphan && !isPreviousOrphan)) {
-        menu.push(<li key={`divider-${branch.name}`} className="divider" />);
-      }
-      if (isOrphan && !isPreviousOrphan) {
-        menu.push(
-          <li className="dropdown-header" key="orphans">
-            {translate('branches.orphan_branches')}
-            <Tooltip overlay={translate('branches.orphan_branches.tooltip')}>
-              <i className="icon-help spacer-left" />
-            </Tooltip>
-          </li>
-        );
-      }
-      menu.push(
-        <ComponentNavBranchesMenuItem
-          branch={branch}
-          component={this.props.component}
-          key={branch.name}
-          onSelect={this.handleSelect}
-          selected={branch.name === selected}
-        />
+      const showDivider = isLongLivingBranch(branch) || (isOrphan && !isPreviousOrphan);
+      const showOrphanHeader = isOrphan && !isPreviousOrphan;
+      return (
+        <React.Fragment key={branch.name}>
+          {showDivider && <li className="divider" />}
+          {showOrphanHeader && (
+            <li className="dropdown-header">
+              {translate('branches.orphan_branches')}
+              <Tooltip overlay={translate('branches.orphan_branches.tooltip')}>
+                <i className="icon-help spacer-left" />
+              </Tooltip>
+            </li>
+          )}
+          <ComponentNavBranchesMenuItem
+            branch={branch}
+            component={this.props.component}
+            key={branch.name}
+            onSelect={this.handleSelect}
+            selected={branch.name === selected}
+          />
+        </React.Fragment>
       );
     });
 
-    return <ul className="menu menu-vertically-limited">{menu}</ul>;
+    return <ul className="menu menu-vertically-limited">{items}</ul>;
   };
 
   render() {

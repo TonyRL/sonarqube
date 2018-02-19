@@ -1,7 +1,7 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2016 SonarSource SA
- * mailto:contact AT sonarsource DOT com
+ * Copyright (C) 2009-2018 SonarSource SA
+ * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -35,7 +35,8 @@ it('shows stack trace', () => {
   click(wrapper.find('.js-task-show-stacktrace'));
   expect(wrapper.find('Stacktrace')).toMatchSnapshot();
   wrapper.find('Stacktrace').prop<Function>('onClose')();
-  expect(wrapper.find('Stacktrace')).toMatchSnapshot();
+  wrapper.update();
+  expect(wrapper.find('Stacktrace').exists()).toBeFalsy();
 });
 
 it('shows scanner context', () => {
@@ -43,7 +44,8 @@ it('shows scanner context', () => {
   click(wrapper.find('.js-task-show-scanner-context'));
   expect(wrapper.find('ScannerContext')).toMatchSnapshot();
   wrapper.find('ScannerContext').prop<Function>('onClose')();
-  expect(wrapper.find('ScannerContext')).toMatchSnapshot();
+  wrapper.update();
+  expect(wrapper.find('ScannerContext').exists()).toBeFalsy();
 });
 
 function shallowRender(fields?: any, props?: any) {

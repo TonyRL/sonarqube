@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -17,7 +17,6 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-
 package org.sonar.db.component;
 
 import com.google.common.base.Optional;
@@ -240,8 +239,8 @@ public class ComponentDao implements Dao {
   }
 
   /**
-   * Returns all projects (Scope {@link org.sonar.api.resources.Scopes#PROJECT} and qualifier
-   * {@link org.sonar.api.resources.Qualifiers#PROJECT}) which are enabled.
+   * Returns all projects (Scope {@link Scopes#PROJECT} and qualifier
+   * {@link Qualifiers#PROJECT}) which are enabled.
    *
    * Branches are not returned.
    *

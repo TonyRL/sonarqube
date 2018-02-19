@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -37,7 +37,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.sonar.wsclient.issue.Issue;
 import org.sonar.wsclient.issue.IssueQuery;
-import org.sonarqube.tests.Tester;
+import org.sonarqube.qa.util.Tester;
 import org.sonarqube.ws.client.PostRequest;
 import org.sonarqube.ws.client.WsClient;
 import org.subethamail.wiser.Wiser;
@@ -81,13 +81,13 @@ public class IssueCreationDatePluginChangedTest {
   private static Wiser smtpServer;
 
   @BeforeClass
-  public static void setUp() throws Exception {
+  public static void setUp() {
     smtpServer = new Wiser(0);
     smtpServer.start();
   }
 
   @Before
-  public void before() throws InterruptedException, MessagingException, IOException {
+  public void before() {
     ORCHESTRATOR.resetData();
 
     // Configure Sonar
@@ -117,7 +117,7 @@ public class IssueCreationDatePluginChangedTest {
   }
 
   @Test
-  public void should_use_scm_date_for_new_issues_if_plugin_updated() throws InterruptedException, MessagingException, IOException {
+  public void should_use_scm_date_for_new_issues_if_plugin_updated() throws InterruptedException {
     ItUtils.restoreProfile(ORCHESTRATOR, getClass().getResource("/issue/IssueCreationDatePluginChangedTest/profile.xml"));
 
     ORCHESTRATOR.getServer().provisionProject(SAMPLE_PROJECT_KEY, SAMPLE_PROJECT_NAME);

@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -53,7 +53,7 @@ public class DbConnectionNodeCheckTest {
   }
 
   @Test
-  public void status_is_RED_with_single_cause_if_any_error_occurs_when_checking_DB() throws Exception {
+  public void status_is_RED_with_single_cause_if_any_error_occurs_when_checking_DB() {
     when(isAliveMapper.isAlive()).thenThrow(new RuntimeException("simulated runtime exception when querying DB"));
 
     Health health = underTest.check();
@@ -66,7 +66,7 @@ public class DbConnectionNodeCheckTest {
    * protection against change in this contract.
    */
   @Test
-  public void status_is_RED_with_single_cause_if_isAlive_does_not_return_1() throws Exception {
+  public void status_is_RED_with_single_cause_if_isAlive_does_not_return_1() {
     when(isAliveMapper.isAlive()).thenReturn(12);
 
     Health health = underTest.check();

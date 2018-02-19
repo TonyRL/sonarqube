@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -20,9 +20,9 @@
 import { stringify } from 'querystring';
 import * as React from 'react';
 import * as classNames from 'classnames';
-import Checkbox from '../../../components/controls/Checkbox';
 import { FormattedMessage } from 'react-intl';
 import { debounce } from 'lodash';
+import Checkbox from '../../../components/controls/Checkbox';
 import DeferredSpinner from '../../../components/common/DeferredSpinner';
 import { omitNil } from '../../../helpers/request';
 import { Edition, getFormData, getLicensePreview } from '../../../api/marketplace';
@@ -142,11 +142,11 @@ export default class LicenseEditionSet extends React.PureComponent<Props, State>
       return (
         <div className="spacer-top">
           {licenseEdition !== undefined &&
-          edition.key !== licenseEdition.key && (
-            <p className="alert alert-danger">
-              {translateWithParameters('marketplace.wrong_license_type_x', edition.name)}
-            </p>
-          )}
+            edition.key !== licenseEdition.key && (
+              <p className="alert alert-danger">
+                {translateWithParameters('marketplace.wrong_license_type_x', edition.name)}
+              </p>
+            )}
           <a href={this.getLicenseFormUrl(edition)} target="_blank">
             {translate('marketplace.i_need_a_license')}
           </a>
@@ -167,24 +167,24 @@ export default class LicenseEditionSet extends React.PureComponent<Props, State>
             licenseEdition ? licenseEdition.name : translate('marketplace.commercial_edition')
           )}
           {licenseEdition &&
-          licenseEdition.key === 'datacenter' &&
-          previewStatus !== 'NO_INSTALL' && (
-            <span className="little-spacer-left">
-              <FormattedMessage
-                defaultMessage={translate('marketplace.how_to_setup_cluster_url')}
-                id="marketplace.how_to_setup_cluster_url"
-                values={{
-                  url: (
-                    <a
-                      href="https://redirect.sonarsource.com/doc/data-center-edition.html"
-                      target="_blank">
-                      {licenseEdition.name}
-                    </a>
-                  )
-                }}
-              />
-            </span>
-          )}
+            licenseEdition.key === 'datacenter' &&
+            previewStatus !== 'NO_INSTALL' && (
+              <span className="little-spacer-left">
+                <FormattedMessage
+                  defaultMessage={translate('marketplace.how_to_setup_cluster_url')}
+                  id="marketplace.how_to_setup_cluster_url"
+                  values={{
+                    url: (
+                      <a
+                        href="https://redirect.sonarsource.com/doc/data-center-edition.html"
+                        target="_blank">
+                        {licenseEdition.name}
+                      </a>
+                    )
+                  }}
+                />
+              </span>
+            )}
         </p>
         {previewStatus !== 'NO_INSTALL' && (
           <span className="js-edition-tos">

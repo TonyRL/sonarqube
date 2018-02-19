@@ -23,7 +23,7 @@ package sonarqube.ws.projects;
 import "ws-commons.proto";
 
 option java_package = "org.sonarqube.ws";
-option java_outer_classname = "WsProjects";
+option java_outer_classname = "Projects";
 option optimize_for = SPEED;
 
 message SearchMyProjectsWsResponse {

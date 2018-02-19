@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -45,10 +45,10 @@ import org.sonar.server.ws.TestRequest;
 import org.sonar.server.ws.TestResponse;
 import org.sonar.server.ws.WsActionTester;
 import org.sonar.test.JsonAssert;
+import org.sonarqube.ws.Editions;
 import org.sonarqube.ws.MediaTypes;
-import org.sonarqube.ws.WsEditions;
-import org.sonarqube.ws.WsEditions.PreviewResponse;
-import org.sonarqube.ws.WsEditions.PreviewStatus;
+import org.sonarqube.ws.Editions.PreviewResponse;
+import org.sonarqube.ws.Editions.PreviewStatus;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
@@ -233,7 +233,7 @@ public class PreviewActionTest {
   }
 
   private void assertResponse(TestResponse response, String expectedNextEditionKey, PreviewStatus expectedPreviewStatus) throws IOException {
-    PreviewResponse parsedResponse = WsEditions.PreviewResponse.parseFrom(response.getInputStream());
+    PreviewResponse parsedResponse = Editions.PreviewResponse.parseFrom(response.getInputStream());
     assertThat(parsedResponse.getPreviewStatus()).isEqualTo(expectedPreviewStatus);
     assertThat(parsedResponse.getNextEditionKey()).isEqualTo(expectedNextEditionKey);
   }

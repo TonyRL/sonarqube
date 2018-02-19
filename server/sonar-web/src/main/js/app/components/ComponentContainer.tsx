@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -24,10 +24,12 @@ import ComponentNav from './nav/component/ComponentNav';
 import { Branch, Component } from '../types';
 import handleRequiredAuthorization from '../utils/handleRequiredAuthorization';
 import { getBranches } from '../../api/branches';
+import { Task, getTasksForComponent } from '../../api/ce';
 import { getComponentData } from '../../api/components';
 import { getComponentNavigation } from '../../api/nav';
 import { fetchOrganizations } from '../../store/rootActions';
 import { areThereCustomOrganizations } from '../../store/rootReducer';
+import { STATUSES } from '../../apps/background-tasks/constants';
 
 interface Props {
   children: any;
@@ -42,6 +44,9 @@ interface State {
   branches: Branch[];
   loading: boolean;
   component: Component | null;
+  currentTask?: Task;
+  isInProgress?: boolean;
+  isPending?: boolean;
 }
 
 export class ComponentContainer extends React.PureComponent<Props, State> {
@@ -89,27 +94,44 @@ export class ComponentContainer extends React.PureComponent<Props, State> {
       }
     };
 
-    Promise.all([
-      getComponentNavigation(id, branch),
-      getComponentData(id, branch)
-    ]).then(([nav, data]) => {
-      const component = this.addQualifier({ ...nav, ...data });
+    Promise.all([getComponentNavigation(id, branch), getComponentData(id, branch)]).then(
+      ([nav, data]) => {
+        const component = this.addQualifier({ ...nav, ...data });
 
-      if (this.props.organizationsEnabled) {
-        this.props.fetchOrganizations([component.organization]);
-      }
-
-      this.fetchBranches(component).then(branches => {
-        if (this.mounted) {
-          this.setState({ loading: false, branches, component });
+        if (this.props.organizationsEnabled) {
+          this.props.fetchOrganizations([component.organization]);
         }
-      }, onError);
-    }, onError);
+
+        this.fetchBranches(component).then(branches => {
+          if (this.mounted) {
+            this.setState({ loading: false, branches, component });
+          }
+        }, onError);
+
+        this.fetchStatus(component);
+      },
+      onError
+    );
   }
 
   fetchBranches = (component: Component) => {
-    const project = component.breadcrumbs.find((c: Component) => c.qualifier === 'TRK');
+    const project = component.breadcrumbs.find(({ qualifier }) => qualifier === 'TRK');
     return project ? getBranches(project.key) : Promise.resolve([]);
+  };
+
+  fetchStatus = (component: Component) => {
+    getTasksForComponent(component.key).then(
+      ({ current, queue }) => {
+        if (this.mounted) {
+          this.setState({
+            currentTask: current,
+            isInProgress: queue.some(task => task.status === STATUSES.IN_PROGRESS),
+            isPending: queue.some(task => task.status === STATUSES.PENDING)
+          });
+        }
+      },
+      () => {}
+    );
   };
 
   handleComponentChange = (changes: {}) => {
@@ -144,14 +166,17 @@ export class ComponentContainer extends React.PureComponent<Props, State> {
     return (
       <div>
         {component &&
-        !['FIL', 'UTS'].includes(component.qualifier) && (
-          <ComponentNav
-            branches={branches}
-            currentBranch={branch}
-            component={component}
-            location={this.props.location}
-          />
-        )}
+          !['FIL', 'UTS'].includes(component.qualifier) && (
+            <ComponentNav
+              branches={branches}
+              currentBranch={branch}
+              component={component}
+              currentTask={this.state.currentTask}
+              isInProgress={this.state.isInProgress}
+              isPending={this.state.isPending}
+              location={this.props.location}
+            />
+          )}
         {loading ? (
           <div className="page page-limited">
             <i className="spinner" />
@@ -161,6 +186,8 @@ export class ComponentContainer extends React.PureComponent<Props, State> {
             branch,
             branches,
             component,
+            isInProgress: this.state.isInProgress,
+            isPending: this.state.isPending,
             onBranchesChange: this.handleBranchesChange,
             onComponentChange: this.handleComponentChange
           })

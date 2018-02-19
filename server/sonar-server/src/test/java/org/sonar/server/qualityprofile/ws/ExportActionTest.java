@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -48,8 +48,8 @@ import org.sonar.server.ws.WsActionTester;
 
 import static java.lang.String.format;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.sonarqube.ws.client.qualityprofile.QualityProfileWsParameters.PARAM_LANGUAGE;
 import static org.sonarqube.ws.client.qualityprofile.QualityProfileWsParameters.PARAM_KEY;
+import static org.sonarqube.ws.client.qualityprofile.QualityProfileWsParameters.PARAM_LANGUAGE;
 
 public class ExportActionTest {
 
@@ -74,14 +74,19 @@ public class ExportActionTest {
     assertThat(definition.isPost()).isFalse();
     assertThat(definition.isInternal()).isFalse();
     assertThat(definition.params()).extracting(WebService.Param::key).containsExactlyInAnyOrder("key", "language", "qualityProfile", "organization");
+
     WebService.Param organizationParam = definition.param("organization");
     assertThat(organizationParam.since()).isEqualTo("6.4");
     assertThat(organizationParam.isInternal()).isTrue();
+
     WebService.Param key = definition.param("key");
     assertThat(key.since()).isEqualTo("6.5");
     assertThat(key.deprecatedSince()).isEqualTo("6.6");
+
     WebService.Param name = definition.param("qualityProfile");
     assertThat(name.deprecatedSince()).isNullOrEmpty();
+    assertThat(name.deprecatedKey()).isEqualTo("name");
+
     WebService.Param language = definition.param("language");
     assertThat(language.deprecatedSince()).isNullOrEmpty();
   }
@@ -186,7 +191,7 @@ public class ExportActionTest {
   }
 
   @Test
-  public void export_default_profile() throws Exception {
+  public void export_default_profile() {
     QProfileDto nonDefaultProfile = createProfile(db.getDefaultOrganization(), false);
     QProfileDto defaultProfile = createProfile(db.getDefaultOrganization(), true);
 
@@ -201,7 +206,7 @@ public class ExportActionTest {
   }
 
   @Test
-  public void throw_NotFoundException_if_profile_with_specified_name_does_not_exist_in_default_organization() throws Exception {
+  public void throw_NotFoundException_if_profile_with_specified_name_does_not_exist_in_default_organization() {
     expectedException.expect(NotFoundException.class);
 
     newWsActionTester().newRequest()
@@ -210,7 +215,7 @@ public class ExportActionTest {
   }
 
   @Test
-  public void throw_IAE_if_export_with_specified_key_does_not_exist() throws Exception {
+  public void throw_IAE_if_export_with_specified_key_does_not_exist() {
     QProfileDto profile = createProfile(db.getDefaultOrganization(), true);
 
     expectedException.expect(IllegalArgumentException.class);
@@ -222,7 +227,7 @@ public class ExportActionTest {
   }
 
   @Test
-  public void return_backup_when_exporter_is_not_specified() throws Exception {
+  public void return_backup_when_exporter_is_not_specified() {
     OrganizationDto organization = db.getDefaultOrganization();
     QProfileDto profile = createProfile(organization, false);
 

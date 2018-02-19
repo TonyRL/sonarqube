@@ -1,7 +1,7 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2016 SonarSource SA
- * mailto:contact AT sonarsource DOT com
+ * Copyright (C) 2009-2018 SonarSource SA
+ * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -18,7 +18,6 @@
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 import * as React from 'react';
-import Modal from 'react-modal';
 import ProfilePermissionsFormSelect from './ProfilePermissionsFormSelect';
 import {
   searchUsers,
@@ -27,6 +26,7 @@ import {
   addGroup,
   SearchUsersGroupsParameters
 } from '../../../api/quality-profiles';
+import Modal from '../../../components/controls/Modal';
 import { translate } from '../../../helpers/l10n';
 import { User, Group } from './ProfilePermissions';
 
@@ -82,7 +82,7 @@ export default class ProfilePermissionsForm extends React.PureComponent<Props, S
     const { selected } = this.state;
     if (selected) {
       this.setState({ submitting: true });
-      if ((selected as User).login != undefined) {
+      if ((selected as User).login !== undefined) {
         this.handleUserAdd(selected as User);
       } else {
         this.handleGroupAdd(selected as Group);
@@ -99,13 +99,9 @@ export default class ProfilePermissionsForm extends React.PureComponent<Props, S
       qualityProfile: profile.name,
       selected: 'deselected'
     };
-    return Promise.all([
-      searchUsers(parameters),
-      searchGroups(parameters)
-    ]).then(([usersResponse, groupsResponse]) => [
-      ...usersResponse.users,
-      ...groupsResponse.groups
-    ]);
+    return Promise.all([searchUsers(parameters), searchGroups(parameters)]).then(
+      ([usersResponse, groupsResponse]) => [...usersResponse.users, ...groupsResponse.groups]
+    );
   };
 
   handleValueChange = (selected: User | Group) => {
@@ -116,12 +112,7 @@ export default class ProfilePermissionsForm extends React.PureComponent<Props, S
     const header = translate('quality_profiles.grant_permissions_to_user_or_group');
     const submitDisabled = !this.state.selected || this.state.submitting;
     return (
-      <Modal
-        isOpen={true}
-        contentLabel={header}
-        className="modal"
-        overlayClassName="modal-overlay"
-        onRequestClose={this.props.onClose}>
+      <Modal contentLabel={header} onRequestClose={this.props.onClose}>
         <header className="modal-head">
           <h2>{header}</h2>
         </header>

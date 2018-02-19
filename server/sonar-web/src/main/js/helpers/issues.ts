@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -50,7 +50,7 @@ interface IssueBase {
   [x: string]: any;
 }
 
-interface RawIssue extends IssueBase {
+export interface RawIssue extends IssueBase {
   assignee?: string;
   author?: string;
   comments?: Array<Comment>;
@@ -81,7 +81,7 @@ function injectRelational(
 ) {
   const newFields: { [x: string]: any } = {};
   const baseValue = issue[baseField];
-  if (baseValue != undefined && source != undefined) {
+  if (baseValue !== undefined && source !== undefined) {
     const lookupValue = source.find(candidate => candidate[lookupField] === baseValue);
     if (lookupValue != null) {
       Object.keys(lookupValue).forEach(key => {

@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -18,7 +18,11 @@
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 import * as React from 'react';
+import * as PropTypes from 'prop-types';
+import * as theme from '../theme';
+import GlobalLoading from './GlobalLoading';
 import GlobalFooterContainer from './GlobalFooterContainer';
+import { tryGetGlobalNavigation } from '../../api/nav';
 import NavBar from '../../components/nav/NavBar';
 
 interface Props {
@@ -26,26 +30,53 @@ interface Props {
   hideLoggedInInfo?: boolean;
 }
 
-export default class SimpleContainer extends React.PureComponent<Props> {
+interface State {
+  loading: boolean;
+  onSonarCloud: boolean;
+}
+
+export default class SimpleContainer extends React.PureComponent<Props, State> {
+  mounted: boolean;
+
+  static childContextTypes = {
+    onSonarCloud: PropTypes.bool
+  };
+
+  state: State = { loading: true, onSonarCloud: false };
+
+  getChildContext() {
+    return { onSonarCloud: this.state.onSonarCloud };
+  }
+
   componentDidMount() {
-    const html = document.querySelector('html');
-    if (html) {
-      html.classList.add('dashboard-page');
-    }
+    this.mounted = true;
+    tryGetGlobalNavigation().then(
+      appState => {
+        if (this.mounted) {
+          this.setState({
+            loading: false,
+            onSonarCloud: Boolean(
+              appState.settings && appState.settings['sonar.sonarcloud.enabled'] === 'true'
+            )
+          });
+        }
+      },
+      () => {}
+    );
   }
 
   componentWillUnmount() {
-    const html = document.querySelector('html');
-    if (html) {
-      html.classList.remove('dashboard-page');
-    }
+    this.mounted = false;
   }
 
   render() {
+    if (this.state.loading) {
+      return <GlobalLoading />;
+    }
     return (
       <div className="global-container">
         <div className="page-wrapper" id="container">
-          <NavBar className="navbar-global" height={30} />
+          <NavBar className="navbar-global" height={theme.globalNavHeightRaw} />
 
           <div id="bd" className="page-wrapper-simple">
             <div id="nonav" className="page-simple">

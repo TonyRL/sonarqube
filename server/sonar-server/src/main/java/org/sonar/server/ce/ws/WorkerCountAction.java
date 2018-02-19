@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -25,10 +25,10 @@ import org.sonar.api.server.ws.Response;
 import org.sonar.api.server.ws.WebService;
 import org.sonar.ce.configuration.WorkerCountProvider;
 import org.sonar.server.user.UserSession;
-import org.sonarqube.ws.WsCe.WorkerCountResponse;
+import org.sonarqube.ws.Ce.WorkerCountResponse;
 
 import static org.sonar.server.ws.WsUtils.writeProtobuf;
-import static org.sonarqube.ws.client.ce.CeWsParameters.ACTION_WORKER_COUNT;
+import static org.sonar.server.ce.ws.CeWsParameters.ACTION_WORKER_COUNT;
 
 public class WorkerCountAction implements CeWsAction {
 

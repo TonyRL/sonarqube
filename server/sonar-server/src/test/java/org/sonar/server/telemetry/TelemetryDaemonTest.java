@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -17,7 +17,6 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-
 package org.sonar.server.telemetry;
 
 import java.io.IOException;
@@ -41,7 +40,6 @@ import org.sonar.core.platform.PluginRepository;
 import org.sonar.db.DbSession;
 import org.sonar.db.DbTester;
 import org.sonar.db.component.ComponentDto;
-import org.sonar.db.component.SnapshotDto;
 import org.sonar.db.metric.MetricDto;
 import org.sonar.server.es.EsTester;
 import org.sonar.server.measure.index.ProjectMeasuresIndex;
@@ -103,7 +101,7 @@ public class TelemetryDaemonTest {
     new ProjectMeasuresIndex(es.client(), null, system2)), client, settings.asConfig(), internalProperties, system2);
 
   @After
-  public void tearDown() throws Exception {
+  public void tearDown() {
     underTest.stop();
   }
 
@@ -126,18 +124,16 @@ public class TelemetryDaemonTest {
 
     ComponentDto project1 = db.components().insertMainBranch(db.getDefaultOrganization());
     ComponentDto project1Branch = db.components().insertProjectBranch(project1);
-    SnapshotDto analysis1 = db.components().insertSnapshot(project1);
-    db.measures().insertMeasure(project1, analysis1, lines, m -> m.setValue(200d));
-    db.measures().insertMeasure(project1, analysis1, ncloc, m -> m.setValue(100d));
-    db.measures().insertMeasure(project1, analysis1, coverage, m -> m.setValue(80d));
-    db.measures().insertMeasure(project1, analysis1, nclocDistrib, m -> m.setData("java=200;js=50"));
+    db.measures().insertLiveMeasure(project1, lines, m -> m.setValue(200d));
+    db.measures().insertLiveMeasure(project1, ncloc, m -> m.setValue(100d));
+    db.measures().insertLiveMeasure(project1, coverage, m -> m.setValue(80d));
+    db.measures().insertLiveMeasure(project1, nclocDistrib, m -> m.setValue(null).setData("java=200;js=50"));
 
     ComponentDto project2 = db.components().insertMainBranch(db.getDefaultOrganization());
-    SnapshotDto analysis2 = db.components().insertSnapshot(project2);
-    db.measures().insertMeasure(project2, analysis2, lines, m -> m.setValue(300d));
-    db.measures().insertMeasure(project2, analysis2, ncloc, m -> m.setValue(200d));
-    db.measures().insertMeasure(project2, analysis2, coverage, m -> m.setValue(80d));
-    db.measures().insertMeasure(project2, analysis2, nclocDistrib, m -> m.setData("java=300;kotlin=2500"));
+    db.measures().insertLiveMeasure(project2, lines, m -> m.setValue(300d));
+    db.measures().insertLiveMeasure(project2, ncloc, m -> m.setValue(200d));
+    db.measures().insertLiveMeasure(project2, coverage, m -> m.setValue(80d));
+    db.measures().insertLiveMeasure(project2, nclocDistrib, m -> m.setValue(null).setData("java=300;kotlin=2500"));
     projectMeasuresIndexer.indexOnStartup(emptySet());
 
     underTest.start();
@@ -173,12 +169,9 @@ public class TelemetryDaemonTest {
     ComponentDto project = db.components().insertMainBranch(db.getDefaultOrganization());
     ComponentDto longBranch = db.components().insertProjectBranch(project, b -> b.setBranchType(LONG));
     ComponentDto shortBranch = db.components().insertProjectBranch(project, b -> b.setBranchType(SHORT));
-    SnapshotDto projectAnalysis = db.components().insertSnapshot(project);
-    SnapshotDto longBranchAnalysis = db.components().insertSnapshot(longBranch);
-    SnapshotDto shortBranchAnalysis = db.components().insertSnapshot(shortBranch);
-    db.measures().insertMeasure(project, projectAnalysis, ncloc, m -> m.setValue(10d));
-    db.measures().insertMeasure(longBranch, longBranchAnalysis, ncloc, m -> m.setValue(20d));
-    db.measures().insertMeasure(shortBranch, shortBranchAnalysis, ncloc, m -> m.setValue(30d));
+    db.measures().insertLiveMeasure(project, ncloc, m -> m.setValue(10d));
+    db.measures().insertLiveMeasure(longBranch, ncloc, m -> m.setValue(20d));
+    db.measures().insertLiveMeasure(shortBranch, ncloc, m -> m.setValue(30d));
     projectMeasuresIndexer.indexOnStartup(emptySet());
 
     underTest.start();

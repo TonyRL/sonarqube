@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -30,6 +30,7 @@ export type Organization = {
   canProvisionProjects?: boolean,
   canUpdateProjectsVisibilityToPrivate?: boolean,
   description?: string,
+  isAdmin: bool,
   key: string,
   name: string,
   pages?: Array<{ key: string, name: string }>,
@@ -198,7 +199,7 @@ function byKey(state /*: ByKeyState */ = {}, action /*: Action */) {
     case 'RECEIVE_MY_ORGANIZATIONS':
       return onReceiveOrganizations(state, action);
     case 'CREATE_ORGANIZATION':
-      return { ...state, [action.organization.key]: action.organization };
+      return { ...state, [action.organization.key]: { ...action.organization, isAdmin: true } };
     case 'UPDATE_ORGANIZATION':
       return {
         ...state,

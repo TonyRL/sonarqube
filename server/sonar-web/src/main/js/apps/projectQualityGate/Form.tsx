@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -18,15 +18,14 @@
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 import * as React from 'react';
-import * as Select from 'react-select';
-import { some } from 'lodash';
 import { QualityGate } from '../../api/quality-gates';
+import Select from '../../components/controls/Select';
 import { translate } from '../../helpers/l10n';
 
 interface Props {
   allGates: QualityGate[];
   gate?: QualityGate;
-  onChange: (oldGate: number | undefined, newGate: number) => Promise<void>;
+  onChange: (oldGate?: number, newGate?: number) => Promise<void>;
 }
 
 interface State {
@@ -96,11 +95,6 @@ export default class Form extends React.PureComponent<Props, State> {
       isDefault: gate.isDefault
     }));
 
-    const hasDefault = some(allGates, gate => gate.isDefault);
-    if (!hasDefault) {
-      options.unshift({ value: '', label: translate('none') });
-    }
-
     return (
       <Select
         clearable={false}
@@ -108,7 +102,6 @@ export default class Form extends React.PureComponent<Props, State> {
         onChange={this.handleChange}
         optionRenderer={this.renderGateName}
         options={options}
-        placeholder={translate('none')}
         style={{ width: 300 }}
         value={gate && String(gate.id)}
         valueRenderer={this.renderGateName}

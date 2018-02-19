@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -56,7 +56,7 @@ public class IssueDocTesting {
   }
 
   public static IssueDoc newDoc() {
-    IssueDoc doc = new IssueDoc(Maps.<String, Object>newHashMap());
+    IssueDoc doc = new IssueDoc(Maps.newHashMap());
     doc.setKey(Uuids.createFast());
     doc.setRuleKey(RuleTesting.XOO_X1.toString());
     doc.setType(RuleType.CODE_SMELL);

@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -19,6 +19,7 @@
  */
 import * as React from 'react';
 import Helmet from 'react-helmet';
+import { WithRouterProps } from 'react-router';
 import ProfileNotFound from './ProfileNotFound';
 import ProfileHeader from '../details/ProfileHeader';
 import { Profile } from '../types';
@@ -32,11 +33,10 @@ interface Props {
   onRequestFail: (reasong: any) => void;
   organization: string | null;
   profiles: Profile[];
-  router: { replace: ({}) => void };
   updateProfiles: () => Promise<void>;
 }
 
-export default class ProfileContainer extends React.PureComponent<Props> {
+export default class ProfileContainer extends React.PureComponent<Props & WithRouterProps> {
   componentDidMount() {
     const { location, profiles, router } = this.props;
     if (location.query.key) {

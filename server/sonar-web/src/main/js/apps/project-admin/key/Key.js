@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -32,7 +32,7 @@ import {
   closeAllGlobalMessages,
   addGlobalSuccessMessage
 } from '../../../store/globalMessages/duck';
-import { parseError } from '../../code/utils';
+import { parseError } from '../../../helpers/request';
 import { reloadUpdateKeyPage } from './utils';
 import RecentHistory from '../../../app/components/RecentHistory';
 import { getProjectAdminProjectModules } from '../../../store/rootReducer';
@@ -101,7 +101,7 @@ class Key extends React.PureComponent {
         )}
 
         {hasModules && (
-          <div>
+          <div className="boxed-group boxed-group-inner">
             <div className="big-spacer-bottom">
               <ul className="tabs">
                 <li>

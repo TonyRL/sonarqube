@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -115,9 +115,11 @@ export default class LineCode extends React.PureComponent {
   }
 
   attachEvents() {
-    this.symbols = this.codeNode.querySelectorAll('.sym');
-    for (const symbol of this.symbols) {
-      symbol.addEventListener('click', this.handleSymbolClick);
+    if (this.codeNode) {
+      this.symbols = this.codeNode.querySelectorAll('.sym');
+      for (const symbol of this.symbols) {
+        symbol.addEventListener('click', this.handleSymbolClick);
+      }
     }
   }
 
@@ -229,19 +231,19 @@ export default class LineCode extends React.PureComponent {
           <pre ref={node => (this.codeNode = node)}>{renderedTokens}</pre>
         </div>
         {showIssues &&
-        issues.length > 0 && (
-          <LineIssuesList
-            branch={this.props.branch}
-            displayIssueLocationsCount={this.props.displayIssueLocationsCount}
-            displayIssueLocationsLink={this.props.displayIssueLocationsLink}
-            issues={issues}
-            onIssueChange={this.props.onIssueChange}
-            onIssueClick={onIssueSelect}
-            onPopupToggle={this.props.onPopupToggle}
-            openPopup={this.props.openPopup}
-            selectedIssue={selectedIssue}
-          />
-        )}
+          issues.length > 0 && (
+            <LineIssuesList
+              branch={this.props.branch}
+              displayIssueLocationsCount={this.props.displayIssueLocationsCount}
+              displayIssueLocationsLink={this.props.displayIssueLocationsLink}
+              issues={issues}
+              onIssueChange={this.props.onIssueChange}
+              onIssueClick={onIssueSelect}
+              onPopupToggle={this.props.onPopupToggle}
+              openPopup={this.props.openPopup}
+              selectedIssue={selectedIssue}
+            />
+          )}
       </td>
     );
   }

@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -48,6 +48,8 @@ public class UserDto {
   private String salt;
   private Long createdAt;
   private Long updatedAt;
+  private String homepageType;
+  private String homepageParameter;
   private boolean local = true;
   private boolean root = false;
   private boolean onboarded = false;
@@ -199,6 +201,26 @@ public class UserDto {
 
   UserDto setUpdatedAt(long updatedAt) {
     this.updatedAt = updatedAt;
+    return this;
+  }
+
+  @CheckForNull
+  public String getHomepageType() {
+    return homepageType;
+  }
+
+  public UserDto setHomepageType(@Nullable String homepageType) {
+    this.homepageType = homepageType;
+    return this;
+  }
+
+  @CheckForNull
+  public String getHomepageParameter() {
+    return homepageParameter;
+  }
+
+  public UserDto setHomepageParameter(@Nullable String homepageParameter) {
+    this.homepageParameter = homepageParameter;
     return this;
   }
 

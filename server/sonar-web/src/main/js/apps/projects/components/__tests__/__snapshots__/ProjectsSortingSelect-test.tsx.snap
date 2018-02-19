@@ -7,36 +7,9 @@ exports[`should handle the descending sort direction 1`] = `
     :
   </label>
   <Select
-    addLabelText="Add \\"{label}\\"?"
-    arrowRenderer={[Function]}
-    autosize={true}
-    backspaceRemoves={true}
-    backspaceToRemoveMessage="Press backspace to remove {label}"
     className="little-spacer-left input-medium"
-    clearAllText="Clear all"
-    clearRenderer={[Function]}
-    clearValueText="Clear value"
     clearable={false}
-    deleteRemoves={true}
-    delimiter=","
-    disabled={false}
-    escapeClearsValue={true}
-    filterOptions={[Function]}
-    ignoreAccents={true}
-    ignoreCase={true}
-    inputProps={Object {}}
-    isLoading={false}
-    joinValues={false}
-    labelKey="label"
-    matchPos="any"
-    matchProp="any"
-    menuBuffer={0}
-    menuRenderer={[Function]}
-    multi={false}
-    noResultsText="No results found"
-    onBlurResetsInput={true}
     onChange={[Function]}
-    onCloseResetsInput={true}
     optionComponent={[Function]}
     options={
       Array [
@@ -82,30 +55,22 @@ exports[`should handle the descending sort direction 1`] = `
         },
       ]
     }
-    pageSize={5}
-    placeholder="Select..."
-    required={false}
-    scrollMenuIntoView={true}
     searchable={false}
-    simpleValue={false}
-    tabSelectsValue={true}
     value="vulnerability"
-    valueComponent={[Function]}
-    valueKey="value"
   />
   <Tooltip
     overlay="projects.sort_descending"
     placement="bottom"
   >
-    <a
-      className="spacer-left button-icon"
-      href="#"
+    <ButtonIcon
+      className="js-projects-sorting-invert spacer-left"
+      color="#999"
       onClick={[Function]}
     >
       <SortDescIcon
-        className="little-spacer-top"
+        className=""
       />
-    </a>
+    </ButtonIcon>
   </Tooltip>
 </div>
 `;
@@ -117,36 +82,9 @@ exports[`should render correctly for leak view 1`] = `
     :
   </label>
   <Select
-    addLabelText="Add \\"{label}\\"?"
-    arrowRenderer={[Function]}
-    autosize={true}
-    backspaceRemoves={true}
-    backspaceToRemoveMessage="Press backspace to remove {label}"
     className="little-spacer-left input-medium"
-    clearAllText="Clear all"
-    clearRenderer={[Function]}
-    clearValueText="Clear value"
     clearable={false}
-    deleteRemoves={true}
-    delimiter=","
-    disabled={false}
-    escapeClearsValue={true}
-    filterOptions={[Function]}
-    ignoreAccents={true}
-    ignoreCase={true}
-    inputProps={Object {}}
-    isLoading={false}
-    joinValues={false}
-    labelKey="label"
-    matchPos="any"
-    matchProp="any"
-    menuBuffer={0}
-    menuRenderer={[Function]}
-    multi={false}
-    noResultsText="No results found"
-    onBlurResetsInput={true}
     onChange={[Function]}
-    onCloseResetsInput={true}
     optionComponent={[Function]}
     options={
       Array [
@@ -192,30 +130,22 @@ exports[`should render correctly for leak view 1`] = `
         },
       ]
     }
-    pageSize={5}
-    placeholder="Select..."
-    required={false}
-    scrollMenuIntoView={true}
     searchable={false}
-    simpleValue={false}
-    tabSelectsValue={true}
     value="new_coverage"
-    valueComponent={[Function]}
-    valueKey="value"
   />
   <Tooltip
     overlay="projects.sort_ascending"
     placement="bottom"
   >
-    <a
-      className="spacer-left button-icon"
-      href="#"
+    <ButtonIcon
+      className="js-projects-sorting-invert spacer-left"
+      color="#999"
       onClick={[Function]}
     >
       <SortAscIcon
-        className="little-spacer-top"
+        className=""
       />
-    </a>
+    </ButtonIcon>
   </Tooltip>
 </div>
 `;
@@ -227,36 +157,9 @@ exports[`should render correctly for overall view 1`] = `
     :
   </label>
   <Select
-    addLabelText="Add \\"{label}\\"?"
-    arrowRenderer={[Function]}
-    autosize={true}
-    backspaceRemoves={true}
-    backspaceToRemoveMessage="Press backspace to remove {label}"
     className="little-spacer-left input-medium"
-    clearAllText="Clear all"
-    clearRenderer={[Function]}
-    clearValueText="Clear value"
     clearable={false}
-    deleteRemoves={true}
-    delimiter=","
-    disabled={false}
-    escapeClearsValue={true}
-    filterOptions={[Function]}
-    ignoreAccents={true}
-    ignoreCase={true}
-    inputProps={Object {}}
-    isLoading={false}
-    joinValues={false}
-    labelKey="label"
-    matchPos="any"
-    matchProp="any"
-    menuBuffer={0}
-    menuRenderer={[Function]}
-    multi={false}
-    noResultsText="No results found"
-    onBlurResetsInput={true}
     onChange={[Function]}
-    onCloseResetsInput={true}
     optionComponent={[Function]}
     options={
       Array [
@@ -302,30 +205,22 @@ exports[`should render correctly for overall view 1`] = `
         },
       ]
     }
-    pageSize={5}
-    placeholder="Select..."
-    required={false}
-    scrollMenuIntoView={true}
     searchable={false}
-    simpleValue={false}
-    tabSelectsValue={true}
     value="name"
-    valueComponent={[Function]}
-    valueKey="value"
   />
   <Tooltip
     overlay="projects.sort_ascending"
     placement="bottom"
   >
-    <a
-      className="spacer-left button-icon"
-      href="#"
+    <ButtonIcon
+      className="js-projects-sorting-invert spacer-left"
+      color="#999"
       onClick={[Function]}
     >
       <SortAscIcon
-        className="little-spacer-top"
+        className=""
       />
-    </a>
+    </ButtonIcon>
   </Tooltip>
 </div>
 `;

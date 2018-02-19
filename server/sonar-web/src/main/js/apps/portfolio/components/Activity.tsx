@@ -1,7 +1,7 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2016 SonarSource SA
- * mailto:contact AT sonarsource DOT com
+ * Copyright (C) 2009-2018 SonarSource SA
+ * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -20,7 +20,7 @@
 import * as React from 'react';
 import { getDisplayedHistoryMetrics, DEFAULT_GRAPH } from '../../projectActivity/utils';
 import PreviewGraph from '../../../components/preview-graph/PreviewGraph';
-import { getMetrics } from '../../../api/metrics';
+import { getAllMetrics } from '../../../api/metrics';
 import { getAllTimeMachineData } from '../../../api/time-machine';
 import { Metric } from '../../../app/types';
 import { parseDate } from '../../../helpers/dates';
@@ -71,7 +71,7 @@ export default class Activity extends React.PureComponent<Props> {
     }
 
     this.setState({ loading: true });
-    return Promise.all([getAllTimeMachineData(component, graphMetrics), getMetrics()]).then(
+    return Promise.all([getAllTimeMachineData(component, graphMetrics), getAllMetrics()]).then(
       ([timeMachine, metrics]) => {
         if (this.mounted) {
           const history: History = {};
@@ -103,8 +103,8 @@ export default class Activity extends React.PureComponent<Props> {
         {this.state.loading ? (
           <i className="spinner" />
         ) : (
-          this.state.metrics != undefined &&
-          this.state.history != undefined && (
+          this.state.metrics !== undefined &&
+          this.state.history !== undefined && (
             <AnyPreviewGraph
               history={this.state.history}
               metrics={this.state.metrics}

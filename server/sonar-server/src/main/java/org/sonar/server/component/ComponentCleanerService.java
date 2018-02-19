@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -61,6 +61,7 @@ public class ComponentCleanerService {
   public void delete(DbSession dbSession, ComponentDto project) {
     checkArgument(!hasNotProjectScope(project) && !isNotDeletable(project) && project.getMainBranchProjectUuid() == null, "Only projects can be deleted");
     dbClient.purgeDao().deleteProject(dbSession, project.uuid());
+    dbClient.userDao().cleanHomepage(dbSession, project);
     projectIndexers.commitAndIndex(dbSession, singletonList(project), ProjectIndexer.Cause.PROJECT_DELETION);
   }
 

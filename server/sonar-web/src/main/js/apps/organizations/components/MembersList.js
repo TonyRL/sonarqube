@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -38,20 +38,22 @@ export default class MembersList extends React.PureComponent {
 
   render() {
     return (
-      <table className="data zebra">
-        <tbody>
-          {this.props.members.map(member => (
-            <MembersListItem
-              key={member.login}
-              member={member}
-              organizationGroups={this.props.organizationGroups}
-              organization={this.props.organization}
-              removeMember={this.props.removeMember}
-              updateMemberGroups={this.props.updateMemberGroups}
-            />
-          ))}
-        </tbody>
-      </table>
+      <div className="boxed-group boxed-group-inner">
+        <table className="data zebra">
+          <tbody>
+            {this.props.members.map(member => (
+              <MembersListItem
+                key={member.login}
+                member={member}
+                organizationGroups={this.props.organizationGroups}
+                organization={this.props.organization}
+                removeMember={this.props.removeMember}
+                updateMemberGroups={this.props.updateMemberGroups}
+              />
+            ))}
+          </tbody>
+        </table>
+      </div>
     );
   }
 }

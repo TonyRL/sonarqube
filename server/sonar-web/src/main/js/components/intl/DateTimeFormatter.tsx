@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -35,5 +35,9 @@ export const formatterOption = {
 };
 
 export default function DateTimeFormatter({ children, date }: Props) {
-  return <FormattedDate children={children} value={parseDate(date)} {...formatterOption} />;
+  return (
+    <FormattedDate value={parseDate(date)} {...formatterOption}>
+      {children}
+    </FormattedDate>
+  );
 }

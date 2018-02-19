@@ -1,7 +1,7 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2016 SonarSource SA
- * mailto:contact AT sonarsource DOT com
+ * Copyright (C) 2009-2018 SonarSource SA
+ * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -26,12 +26,12 @@ import ReliabilityBox from './ReliabilityBox';
 import SecurityBox from './SecurityBox';
 import MaintainabilityBox from './MaintainabilityBox';
 import Activity from './Activity';
+import { SubComponent } from '../types';
+import { PORTFOLIO_METRICS, SUB_COMPONENTS_METRICS, convertMeasures } from '../utils';
 import { getMeasures } from '../../../api/measures';
 import { getChildren } from '../../../api/components';
-import { PORTFOLIO_METRICS, SUB_COMPONENTS_METRICS, convertMeasures } from '../utils';
-import { SubComponent } from '../types';
-import '../styles.css';
 import { translate } from '../../../helpers/l10n';
+import '../styles.css';
 
 interface Props {
   component: { key: string; name: string };
@@ -50,10 +50,6 @@ export default class App extends React.PureComponent<Props, State> {
 
   componentDidMount() {
     this.mounted = true;
-    const html = document.querySelector('html');
-    if (html) {
-      html.classList.add('dashboard-page');
-    }
     this.fetchData();
   }
 
@@ -65,17 +61,13 @@ export default class App extends React.PureComponent<Props, State> {
 
   componentWillUnmount() {
     this.mounted = false;
-    const html = document.querySelector('html');
-    if (html) {
-      html.classList.remove('dashboard-page');
-    }
   }
 
   fetchData() {
     this.setState({ loading: true });
     Promise.all([
       getMeasures(this.props.component.key, PORTFOLIO_METRICS),
-      getChildren(this.props.component.key, SUB_COMPONENTS_METRICS, { ps: 20 })
+      getChildren(this.props.component.key, SUB_COMPONENTS_METRICS, { ps: 20, s: 'qualifier' })
     ]).then(
       ([measures, subComponents]) => {
         if (this.mounted) {
@@ -98,10 +90,10 @@ export default class App extends React.PureComponent<Props, State> {
     );
   }
 
-  isEmpty = () => this.state.measures == undefined || this.state.measures['ncloc'] == undefined;
+  isEmpty = () => this.state.measures === undefined || this.state.measures['ncloc'] === undefined;
 
   isNotComputed = () =>
-    this.state.measures && this.state.measures['reliability_rating'] == undefined;
+    this.state.measures && this.state.measures['reliability_rating'] === undefined;
 
   renderSpinner() {
     return (
@@ -151,14 +143,14 @@ export default class App extends React.PureComponent<Props, State> {
           <MaintainabilityBox component={component.key} measures={measures!} />
         </div>
 
-        {subComponents != undefined &&
-        totalSubComponents != undefined && (
-          <WorstProjects
-            component={component.key}
-            subComponents={subComponents}
-            total={totalSubComponents}
-          />
-        )}
+        {subComponents !== undefined &&
+          totalSubComponents !== undefined && (
+            <WorstProjects
+              component={component.key}
+              subComponents={subComponents}
+              total={totalSubComponents}
+            />
+          )}
       </div>
     );
   }
@@ -178,7 +170,7 @@ export default class App extends React.PureComponent<Props, State> {
 
           <aside className="page-sidebar-fixed">
             {!this.isEmpty() &&
-            !this.isNotComputed() && <Summary component={component} measures={measures!} />}
+              !this.isNotComputed() && <Summary component={component} measures={measures!} />}
             <Activity component={component.key} />
             <Report component={component} />
           </aside>

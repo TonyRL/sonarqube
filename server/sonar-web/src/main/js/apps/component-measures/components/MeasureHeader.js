@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -66,7 +66,7 @@ export default function MeasureHeader(props /*: Props*/) {
               placement="right"
               overlay={translate('component_measures.show_metric_history')}>
               <Link
-                className="js-show-history spacer-left button button-small button-compact"
+                className="js-show-history spacer-left button button-small"
                 to={getMeasureHistoryUrl(component.key, metric.key, branch)}>
                 <HistoryIcon />
               </Link>
@@ -80,27 +80,27 @@ export default function MeasureHeader(props /*: Props*/) {
         </div>
       </div>
       {secondaryMeasure &&
-      secondaryMeasure.metric.key === 'ncloc_language_distribution' && (
-        <div className="measure-details-secondary">
-          <LanguageDistributionContainer
-            alignTicks={true}
-            distribution={secondaryMeasure.value}
-            width={260}
-          />
-        </div>
-      )}
+        secondaryMeasure.metric.key === 'ncloc_language_distribution' && (
+          <div className="measure-details-secondary">
+            <LanguageDistributionContainer
+              alignTicks={true}
+              distribution={secondaryMeasure.value}
+              width={260}
+            />
+          </div>
+        )}
       {secondaryMeasure &&
-      secondaryMeasure.metric.key === 'function_complexity_distribution' && (
-        <div className="measure-details-secondary">
-          <ComplexityDistribution distribution={secondaryMeasure.value} of="function" />
-        </div>
-      )}
+        secondaryMeasure.metric.key === 'function_complexity_distribution' && (
+          <div className="measure-details-secondary">
+            <ComplexityDistribution distribution={secondaryMeasure.value} of="function" />
+          </div>
+        )}
       {secondaryMeasure &&
-      secondaryMeasure.metric.key === 'file_complexity_distribution' && (
-        <div className="measure-details-secondary">
-          <ComplexityDistribution distribution={secondaryMeasure.value} of="file" />
-        </div>
-      )}
+        secondaryMeasure.metric.key === 'file_complexity_distribution' && (
+          <div className="measure-details-secondary">
+            <ComplexityDistribution distribution={secondaryMeasure.value} of="file" />
+          </div>
+        )}
     </div>
   );
 }

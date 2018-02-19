@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -58,7 +58,7 @@ it('display special links page for SonarCloud', () => {
       currentUser={{ isLoggedIn: false }}
       onClose={jest.fn()}
       onTutorialSelect={jest.fn()}
-      sonarCloud={true}
+      onSonarCloud={true}
     />
   );
   clickOnSection(wrapper, 'links');

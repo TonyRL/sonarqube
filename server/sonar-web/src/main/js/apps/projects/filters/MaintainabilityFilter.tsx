@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -22,13 +22,14 @@ import IssuesFilter from './IssuesFilter';
 import { Facet } from '../types';
 import CodeSmellIcon from '../../../components/icons-components/CodeSmellIcon';
 import { translate } from '../../../helpers/l10n';
+import { RawQuery } from '../../../helpers/query';
 
 interface Props {
   className?: string;
   facet?: Facet;
   headerDetail?: React.ReactNode;
-  isFavorite?: boolean;
   maxFacetValue?: number;
+  onQueryChange: (change: RawQuery) => void;
   organization?: { key: string };
   query: { [x: string]: any };
   value?: any;

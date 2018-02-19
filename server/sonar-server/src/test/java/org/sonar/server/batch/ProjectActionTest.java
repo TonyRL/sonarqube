@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -25,7 +25,7 @@ import org.sonar.scanner.protocol.input.FileData;
 import org.sonar.scanner.protocol.input.ProjectRepositories;
 import org.sonar.server.ws.TestResponse;
 import org.sonar.server.ws.WsActionTester;
-import org.sonarqube.ws.WsBatch.WsProjectResponse;
+import org.sonarqube.ws.Batch.WsProjectResponse;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Matchers.any;
@@ -39,7 +39,7 @@ public class ProjectActionTest {
   private WsActionTester ws = new WsActionTester(new ProjectAction(projectDataLoader));
 
   @Test
-  public void project_referentials() throws Exception {
+  public void project_referentials() {
     String projectKey = "org.codehaus.sonar:sonar";
 
     ProjectRepositories projectReferentials = mock(ProjectRepositories.class);
@@ -66,7 +66,7 @@ public class ProjectActionTest {
    * SONAR-7084
    */
   @Test
-  public void do_not_fail_when_a_path_is_null() throws Exception {
+  public void do_not_fail_when_a_path_is_null() {
     String projectKey = "org.codehaus.sonar:sonar";
 
     ProjectRepositories projectRepositories = new ProjectRepositories().addFileData("module-1", null, new FileData(null, null));

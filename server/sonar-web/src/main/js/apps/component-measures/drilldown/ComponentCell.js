@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -19,9 +19,11 @@
  */
 // @flow
 import React from 'react';
+import { Link } from 'react-router';
+import LinkIcon from '../../../components/icons-components/LinkIcon';
 import QualifierIcon from '../../../components/icons-components/QualifierIcon';
 import { splitPath } from '../../../helpers/path';
-import { getComponentUrl } from '../../../helpers/urls';
+import { getPathUrlAsString, getProjectUrl } from '../../../helpers/urls';
 /*:: import type { ComponentEnhanced } from '../types'; */
 
 /*:: type Props = {
@@ -50,8 +52,7 @@ export default class ComponentCell extends React.PureComponent {
 
     if (['DIR', 'FIL', 'UTS'].includes(component.qualifier)) {
       const parts = splitPath(component.path);
-      head = parts.head;
-      tail = parts.tail;
+      ({ head, tail } = parts);
     }
     return (
       <span title={component.refKey || component.key}>
@@ -72,20 +73,20 @@ export default class ComponentCell extends React.PureComponent {
             <a
               id={'component-measures-component-link-' + component.key}
               className="link-no-underline"
-              href={getComponentUrl(component.key, branch)}
+              href={getPathUrlAsString(getProjectUrl(component.key, branch))}
               onClick={this.handleClick}>
               {this.renderInner()}
             </a>
           ) : (
-            <a
-              id={'component-measures-component-link-' + component.key}
+            <Link
               className="link-no-underline"
-              href={getComponentUrl(component.refKey, branch)}>
+              id={'component-measures-component-link-' + component.key}
+              to={getProjectUrl(component.refKey, branch)}>
               <span className="big-spacer-right">
-                <i className="icon-detach" />
+                <LinkIcon />
               </span>
               {this.renderInner()}
-            </a>
+            </Link>
           )}
         </div>
       </td>

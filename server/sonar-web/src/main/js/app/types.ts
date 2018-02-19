@@ -1,7 +1,7 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2016 SonarSource SA
- * mailto:contact AT sonarsource DOT com
+ * Copyright (C) 2009-2018 SonarSource SA
+ * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -62,13 +62,15 @@ export interface Extension {
   name: string;
 }
 
+export interface Breadcrumb {
+  key: string;
+  name: string;
+  qualifier: string;
+}
+
 export interface Component {
   analysisDate?: string;
-  breadcrumbs: Array<{
-    key: string;
-    name: string;
-    qualifier: string;
-  }>;
+  breadcrumbs: Breadcrumb[];
   configuration?: ComponentConfiguration;
   description?: string;
   extensions?: Extension[];
@@ -80,6 +82,7 @@ export interface Component {
   qualifier: string;
   refKey?: string;
   version?: string;
+  visibility?: string;
 }
 
 interface ComponentConfiguration {
@@ -108,18 +111,19 @@ export interface Metric {
 }
 
 export interface Organization {
-  adminPages?: Array<{ key: string; name: string }>;
+  adminPages?: { key: string; name: string }[];
   avatar?: string;
   canAdmin?: boolean;
   canDelete?: boolean;
   canProvisionProjects?: boolean;
   canUpdateProjectsVisibilityToPrivate?: boolean;
   description?: string;
+  isAdmin?: boolean;
   isDefault?: boolean;
   key: string;
   name: string;
-  pages?: Array<{ key: string; name: string }>;
-  projectVisibility: string;
+  pages?: { key: string; name: string }[];
+  projectVisibility: Visibility;
   url?: string;
 }
 
@@ -132,4 +136,48 @@ export interface Paging {
 export enum Visibility {
   Public = 'public',
   Private = 'private'
+}
+
+export interface CurrentUser {
+  isLoggedIn: boolean;
+  showOnboardingTutorial?: boolean;
+}
+
+export enum HomePageType {
+  Project = 'PROJECT',
+  Organization = 'ORGANIZATION',
+  MyProjects = 'MY_PROJECTS',
+  MyIssues = 'MY_ISSUES'
+}
+
+export interface HomePage {
+  parameter?: string;
+  type: HomePageType;
+}
+
+export function isSameHomePage(a: HomePage, b: HomePage) {
+  return a.type === b.type && a.parameter === b.parameter;
+}
+
+export interface LoggedInUser extends CurrentUser {
+  avatar?: string;
+  email?: string;
+  homepage?: HomePage;
+  isLoggedIn: true;
+  login: string;
+  name: string;
+}
+
+export function isLoggedIn(user: CurrentUser): user is LoggedInUser {
+  return user.isLoggedIn;
+}
+
+export interface AppState {
+  adminPages?: Extension[];
+  authenticationError?: boolean;
+  authorizationError?: boolean;
+  canAdmin?: boolean;
+  globalPages?: Extension[];
+  organizationsEnabled?: boolean;
+  qualifiers: string[];
 }

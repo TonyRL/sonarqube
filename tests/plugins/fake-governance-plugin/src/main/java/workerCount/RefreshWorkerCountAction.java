@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -54,7 +54,7 @@ public class RefreshWorkerCountAction implements CeWsAction {
   }
 
   @Override
-  public void handle(Request request, Response response) throws Exception {
+  public void handle(Request request, Response response) {
     String count = request.getParam(PARAM_COUNT).getValue();
     try (DbSession dbSession = dbClient.openSession(false)) {
       dbClient.propertiesDao().saveProperty(new PropertyDto()

@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -71,7 +71,7 @@ export default class ConciseIssueBox extends React.PureComponent {
       this.props.scroll(this.rootElement);
     } else {
       // otherwise scroll until the the message element is located on top
-      this.props.scroll(this.messageElement, window.innerHeight - 200);
+      this.props.scroll(this.messageElement, window.innerHeight - 250);
     }
   };
 

@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -445,7 +445,7 @@ public class RuleCreatorTest {
   }
 
   @Test
-  public void fail_to_create_custom_rule_when_unknown_template() throws Exception {
+  public void fail_to_create_custom_rule_when_unknown_template() {
     expectedException.expect(IllegalArgumentException.class);
     expectedException.expectMessage("The template key doesn't exist: java:S001");
 

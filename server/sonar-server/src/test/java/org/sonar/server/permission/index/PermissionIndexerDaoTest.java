@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -164,7 +164,7 @@ public class PermissionIndexerDaoTest {
   }
 
   @Test
-  public void select_by_projects_with_high_number_of_projects() throws Exception {
+  public void select_by_projects_with_high_number_of_projects() {
     List<String> projectUuids = new ArrayList<>();
     for (int i = 0; i < 350; i++) {
       ComponentDto project = ComponentTesting.newPrivateProjectDto(organization, Integer.toString(i));

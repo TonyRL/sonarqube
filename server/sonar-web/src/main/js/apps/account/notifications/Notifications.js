@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -40,13 +40,8 @@ class Notifications extends React.PureComponent {
     return (
       <div className="account-body account-container">
         <Helmet title={translate('my_account.notifications')} />
-
-        <p className="big-spacer-bottom">{translate('notification.dispatcher.information')}</p>
-
+        <p className="alert alert-info">{translate('notification.dispatcher.information')}</p>
         <GlobalNotifications />
-
-        <hr className="account-separator" />
-
         <Projects />
       </div>
     );

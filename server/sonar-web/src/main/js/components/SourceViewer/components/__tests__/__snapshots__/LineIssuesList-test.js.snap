@@ -12,8 +12,9 @@ exports[`render issues list 1`] = `
         "key": "foo",
       }
     }
-    onClick={[Function]}
-    onPopupToggle={[Function]}
+    key="foo"
+    onClick={[MockFunction]}
+    onPopupToggle={[MockFunction]}
     openPopup={null}
     selected={true}
   />
@@ -25,8 +26,9 @@ exports[`render issues list 1`] = `
         "key": "bar",
       }
     }
-    onClick={[Function]}
-    onPopupToggle={[Function]}
+    key="bar"
+    onClick={[MockFunction]}
+    onPopupToggle={[MockFunction]}
     openPopup={null}
     selected={false}
   />

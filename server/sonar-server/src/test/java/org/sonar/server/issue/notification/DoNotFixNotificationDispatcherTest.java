@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -44,10 +44,10 @@ public class DoNotFixNotificationDispatcherTest {
   NotificationDispatcher.Context context = mock(NotificationDispatcher.Context.class);
   NotificationChannel emailChannel = mock(NotificationChannel.class);
   NotificationChannel twitterChannel = mock(NotificationChannel.class);
-  DoNotFixNotificationDispatcher underTest = new DoNotFixNotificationDispatcher(notifications);;
+  DoNotFixNotificationDispatcher underTest = new DoNotFixNotificationDispatcher(notifications);
 
   @Test
-  public void test_metadata() throws Exception {
+  public void test_metadata() {
     NotificationDispatcherMetadata metadata = DoNotFixNotificationDispatcher.newMetadata();
     assertThat(metadata.getDispatcherKey()).isEqualTo(underTest.getKey());
     assertThat(metadata.getProperty(NotificationDispatcherMetadata.GLOBAL_NOTIFICATION)).isEqualTo("true");

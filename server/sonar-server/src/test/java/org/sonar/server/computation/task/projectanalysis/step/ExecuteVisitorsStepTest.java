@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -87,7 +87,7 @@ public class ExecuteVisitorsStepTest {
   }
 
   @Test
-  public void execute_with_type_aware_visitor() throws Exception {
+  public void execute_with_type_aware_visitor() {
     ExecuteVisitorsStep underStep = new ExecuteVisitorsStep(treeRootHolder, singletonList(new TestTypeAwareVisitor()));
 
     measureRepository.addRawMeasure(FILE_1_REF, NCLOC_KEY, newMeasureBuilder().create(1));
@@ -106,7 +106,7 @@ public class ExecuteVisitorsStepTest {
   }
 
   @Test
-  public void execute_with_path_aware_visitor() throws Exception {
+  public void execute_with_path_aware_visitor() {
     ExecuteVisitorsStep underStep = new ExecuteVisitorsStep(treeRootHolder, singletonList(new TestPathAwareVisitor()));
 
     measureRepository.addRawMeasure(FILE_1_REF, NCLOC_KEY, newMeasureBuilder().create(1));

@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -190,7 +190,7 @@ public class SnapshotDaoTest {
   }
 
   @Test
-  public void select_first_snapshots() throws Exception {
+  public void select_first_snapshots() {
     ComponentDto project = newPrivateProjectDto(db.getDefaultOrganization());
     db.getDbClient().componentDao().insert(dbSession, project);
 

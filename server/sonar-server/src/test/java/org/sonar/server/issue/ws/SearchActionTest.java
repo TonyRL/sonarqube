@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -149,6 +149,19 @@ public class SearchActionTest {
     assertThat(projectUuids.description()).isEqualTo("To retrieve issues associated to a specific list of projects (comma-separated list of project IDs). " +
       "This parameter is mostly used by the Issues page, please prefer usage of the componentKeys parameter. " +
       "Portfolios are not supported. If this parameter is set, 'projects' must not be set.");
+  }
+
+  //SONAR-10217
+  @Test
+  public void empty_search_with_unknown_branch() throws Exception {
+    TestResponse result = ws.newRequest()
+      .setParam("onComponentOnly", "true")
+      .setParam("componentKeys", "foo")
+      .setParam("branch", "bar")
+      .execute();
+
+    assertThat(result).isNotNull();
+    result.assertJson(this.getClass(), "empty_result.json");
   }
 
   @Test
@@ -690,7 +703,7 @@ public class SearchActionTest {
   }
 
   @Test
-  public void fail_when_invalid_format() throws Exception {
+  public void fail_when_invalid_format() {
     expectedException.expect(IllegalArgumentException.class);
     expectedException.expectMessage("Date 'wrong-date-input' cannot be parsed as either a date or date+time");
 

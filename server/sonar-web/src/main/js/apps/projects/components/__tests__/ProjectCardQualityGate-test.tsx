@@ -1,7 +1,7 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2016 SonarSource SA
- * mailto:contact AT sonarsource DOT com
+ * Copyright (C) 2009-2018 SonarSource SA
+ * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -26,5 +26,5 @@ it('renders', () => {
 });
 
 it('does not render', () => {
-  expect(shallow(<ProjectCardQualityGate />)).toMatchSnapshot();
+  expect(shallow(<ProjectCardQualityGate />).type()).toBeNull();
 });

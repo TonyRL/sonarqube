@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -23,14 +23,15 @@ import FilterHeader from './FilterHeader';
 import Rating from '../../../components/ui/Rating';
 import { translate } from '../../../helpers/l10n';
 import { Facet } from '../types';
+import { RawQuery } from '../../../helpers/query';
 
 interface Props {
   className?: string;
   facet?: Facet;
   headerDetail?: React.ReactNode;
-  isFavorite?: boolean;
   maxFacetValue?: number;
   name: string;
+  onQueryChange: (change: RawQuery) => void;
   organization?: { key: string };
   property: string;
   query: { [x: string]: any };
@@ -42,13 +43,13 @@ export default function IssuesFilter(props: Props) {
     <Filter
       facet={props.facet}
       maxFacetValue={props.maxFacetValue}
+      onQueryChange={props.onQueryChange}
       value={props.value}
       property={props.property}
       className={props.className}
       options={[1, 2, 3, 4, 5]}
       query={props.query}
       renderOption={renderOption}
-      isFavorite={props.isFavorite}
       organization={props.organization}
       getFacetValueForOption={getFacetValueForOption}
       highlightUnder={1}
@@ -70,7 +71,7 @@ function renderOption(option: number, selected: boolean) {
     <span>
       <Rating value={option} small={true} muted={!selected} />
       {option > 1 &&
-      option < 5 && <span className="note spacer-left">{translate('and_worse')}</span>}
+        option < 5 && <span className="note spacer-left">{translate('and_worse')}</span>}
     </span>
   );
 }

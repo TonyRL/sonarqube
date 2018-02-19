@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -19,53 +19,68 @@
  */
 package org.sonarqube.ws.client.projectbranches;
 
-import org.sonarqube.ws.WsBranches.ListWsResponse;
-import org.sonarqube.ws.WsBranches.ShowWsResponse;
+import java.util.stream.Collectors;
+import javax.annotation.Generated;
+import org.sonarqube.ws.MediaTypes;
 import org.sonarqube.ws.client.BaseService;
 import org.sonarqube.ws.client.GetRequest;
 import org.sonarqube.ws.client.PostRequest;
 import org.sonarqube.ws.client.WsConnector;
+import org.sonarqube.ws.ProjectBranches.ListWsResponse;
 
-import static org.sonarqube.ws.client.projectbranches.ProjectBranchesParameters.ACTION_DELETE;
-import static org.sonarqube.ws.client.projectbranches.ProjectBranchesParameters.ACTION_LIST;
-import static org.sonarqube.ws.client.projectbranches.ProjectBranchesParameters.ACTION_RENAME;
-import static org.sonarqube.ws.client.projectbranches.ProjectBranchesParameters.ACTION_SHOW;
-import static org.sonarqube.ws.client.projectbranches.ProjectBranchesParameters.CONTROLLER;
-import static org.sonarqube.ws.client.projectbranches.ProjectBranchesParameters.PARAM_BRANCH;
-import static org.sonarqube.ws.client.projectbranches.ProjectBranchesParameters.PARAM_NAME;
-import static org.sonarqube.ws.client.projectbranches.ProjectBranchesParameters.PARAM_PROJECT;
-
+/**
+ * @see <a href="https://next.sonarqube.com/sonarqube/web_api/api/project_branches">Further information about this web service online</a>
+ */
+@Generated("sonar-ws-generator")
 public class ProjectBranchesService extends BaseService {
 
   public ProjectBranchesService(WsConnector wsConnector) {
-    super(wsConnector, CONTROLLER);
+    super(wsConnector, "api/project_branches");
   }
 
-  public ListWsResponse list(String project) {
-    GetRequest get = new GetRequest(path(ACTION_LIST))
-      .setParam(PARAM_PROJECT, project);
-    return call(get, ListWsResponse.parser());
+  /**
+   *
+   * This is part of the internal API.
+   * This is a POST request.
+   * @see <a href="https://next.sonarqube.com/sonarqube/web_api/api/project_branches/delete">Further information about this action online (including a response example)</a>
+   * @since 6.6
+   */
+  public String delete(DeleteRequest request) {
+    return call(
+      new PostRequest(path("delete"))
+        .setParam("branch", request.getBranch())
+        .setParam("project", request.getProject())
+        .setMediaType(MediaTypes.JSON)
+      ).content();
   }
 
-  public ShowWsResponse show(String project, String branch) {
-    GetRequest get = new GetRequest(path(ACTION_SHOW))
-      .setParam(PARAM_PROJECT, project)
-      .setParam(PARAM_BRANCH, branch);
-    return call(get, ShowWsResponse.parser());
+  /**
+   *
+   * This is part of the internal API.
+   * This is a GET request.
+   * @see <a href="https://next.sonarqube.com/sonarqube/web_api/api/project_branches/list">Further information about this action online (including a response example)</a>
+   * @since 6.6
+   */
+  public ListWsResponse list(ListRequest request) {
+    return call(
+      new GetRequest(path("list"))
+        .setParam("project", request.getProject()),
+      ListWsResponse.parser());
   }
 
-  public void delete(String project, String branch) {
-    PostRequest post = new PostRequest(path(ACTION_DELETE))
-      .setParam(PARAM_PROJECT, project)
-      .setParam(PARAM_BRANCH, branch);
-    call(post);
+  /**
+   *
+   * This is part of the internal API.
+   * This is a POST request.
+   * @see <a href="https://next.sonarqube.com/sonarqube/web_api/api/project_branches/rename">Further information about this action online (including a response example)</a>
+   * @since 6.6
+   */
+  public void rename(RenameRequest request) {
+    call(
+      new PostRequest(path("rename"))
+        .setParam("name", request.getName())
+        .setParam("project", request.getProject())
+        .setMediaType(MediaTypes.JSON)
+      ).content();
   }
-
-  public void rename(String project, String name) {
-    PostRequest post = new PostRequest(path(ACTION_RENAME))
-      .setParam(PARAM_PROJECT, project)
-      .setParam(PARAM_NAME, name);
-    call(post);
-  }
-
 }

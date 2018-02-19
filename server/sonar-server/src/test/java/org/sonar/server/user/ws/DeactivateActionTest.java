@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -328,7 +328,7 @@ public class DeactivateActionTest {
   }
 
   @Test
-  public void test_example() throws Exception {
+  public void test_example() {
     UserDto user = insertUser(newUserDto()
       .setLogin("ada.lovelace")
       .setEmail("ada.lovelace@noteg.com")

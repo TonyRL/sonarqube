@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -31,8 +31,10 @@ import org.sonar.ce.queue.CeTask;
 import org.sonar.server.computation.queue.ReportSubmitter;
 import org.sonar.server.organization.DefaultOrganizationProvider;
 import org.sonar.server.ws.WsUtils;
-import org.sonarqube.ws.WsCe;
+import org.sonarqube.ws.Ce;
 
+import static org.sonar.core.component.ComponentKeys.MAX_COMPONENT_KEY_LENGTH;
+import static org.sonar.db.component.ComponentValidator.MAX_COMPONENT_NAME_LENGTH;
 import static org.sonar.server.ws.WsUtils.checkRequest;
 
 public class SubmitAction implements CeWsAction {
@@ -72,6 +74,7 @@ public class SubmitAction implements CeWsAction {
     action
       .createParam(PARAM_PROJECT_KEY)
       .setRequired(true)
+      .setMaximumLength(MAX_COMPONENT_KEY_LENGTH)
       .setDescription("Key of project")
       .setExampleValue("my_project");
 
@@ -83,6 +86,7 @@ public class SubmitAction implements CeWsAction {
     action
       .createParam(PARAM_PROJECT_NAME)
       .setRequired(false)
+      .setMaximumLength(MAX_COMPONENT_NAME_LENGTH)
       .setDescription("Optional name of the project, used only if the project does not exist yet.")
       .setExampleValue("My Project");
 
@@ -112,7 +116,7 @@ public class SubmitAction implements CeWsAction {
 
     try (InputStream report = new BufferedInputStream(wsRequest.mandatoryParamAsPart(PARAM_REPORT_DATA).getInputStream())) {
       CeTask task = reportSubmitter.submit(organizationKey, projectKey, projectBranch, projectName, characteristics, report);
-      WsCe.SubmitResponse submitResponse = WsCe.SubmitResponse.newBuilder()
+      Ce.SubmitResponse submitResponse = Ce.SubmitResponse.newBuilder()
         .setTaskId(task.getUuid())
         .setProjectId(task.getComponentUuid())
         .build();

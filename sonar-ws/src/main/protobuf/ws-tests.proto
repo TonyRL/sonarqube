@@ -23,7 +23,7 @@ package sonarqube.ws.tests;
 import "ws-commons.proto";
 
 option java_package = "org.sonarqube.ws";
-option java_outer_classname = "WsTests";
+option java_outer_classname = "Tests";
 option optimize_for = SPEED;
 
 // WS api/tests/list

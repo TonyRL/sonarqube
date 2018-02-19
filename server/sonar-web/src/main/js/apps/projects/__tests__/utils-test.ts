@@ -1,7 +1,7 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2016 SonarSource SA
- * mailto:contact AT sonarsource DOT com
+ * Copyright (C) 2009-2018 SonarSource SA
+ * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -49,6 +49,7 @@ describe('cumulativeMapFacetValues', () => {
         { val: '4', count: 2 },
         { val: '5', count: 0 }
       ])
+      // eslint-disable-next-line
     ).toEqual({ '1': 50, '2': 9, '3': 8, '4': 2, '5': 0 });
   });
   it('should correctly cumulate facets with NO_DATA items', () => {

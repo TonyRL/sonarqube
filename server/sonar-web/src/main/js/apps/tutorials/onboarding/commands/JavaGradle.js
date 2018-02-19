@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -31,7 +31,7 @@ type Props = {|
 */
 
 export default function JavaGradle(props /*: Props */) {
-  const config = 'plugins {\n  id "org.sonarqube" version "2.5"\n}';
+  const config = 'plugins {\n  id "org.sonarqube" version "2.6"\n}';
 
   const command = [
     './gradlew sonarqube',

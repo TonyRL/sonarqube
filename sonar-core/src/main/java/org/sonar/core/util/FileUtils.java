@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -159,6 +159,13 @@ public final class FileUtils {
     Files.walkFileTree(path, DeleteRecursivelyFileVisitor.INSTANCE);
 
     checkIO(!file.exists(), "Unable to delete directory '%s'", path);
+  }
+  
+  
+  public static Path getPack200FilePath(Path jarFilePath) {
+    String jarFileName = jarFilePath.getFileName().toString();
+    String filename = jarFileName.substring(0, jarFileName.length() - 3) + "pack.gz";
+    return jarFilePath.resolveSibling(filename);
   }
 
   /**

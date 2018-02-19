@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -18,9 +18,9 @@
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 import * as React from 'react';
-import Modal from 'react-modal';
 import { getTask } from '../../../api/ce';
 import { translate } from '../../../helpers/l10n';
+import Modal from '../../../components/controls/Modal';
 import { Task } from '../types';
 
 interface Props {
@@ -47,11 +47,18 @@ export default class Stacktrace extends React.PureComponent<Props, State> {
   }
 
   loadStacktrace() {
-    getTask(this.props.task.id, ['stacktrace']).then(task => {
-      if (this.mounted) {
-        this.setState({ loading: false, stacktrace: task.errorStacktrace });
+    getTask(this.props.task.id, ['stacktrace']).then(
+      task => {
+        if (this.mounted) {
+          this.setState({ loading: false, stacktrace: task.errorStacktrace });
+        }
+      },
+      () => {
+        if (this.mounted) {
+          this.setState({ loading: false });
+        }
       }
-    });
+    );
   }
 
   handleCloseClick = (event: React.SyntheticEvent<HTMLAnchorElement>) => {
@@ -64,12 +71,7 @@ export default class Stacktrace extends React.PureComponent<Props, State> {
     const { loading, stacktrace } = this.state;
 
     return (
-      <Modal
-        isOpen={true}
-        contentLabel="stacktrace"
-        className="modal modal-large"
-        overlayClassName="modal-overlay"
-        onRequestClose={this.props.onClose}>
+      <Modal contentLabel="stacktrace" large={true} onRequestClose={this.props.onClose}>
         <div className="modal-head">
           <h2>
             {translate('background_tasks.error_stacktrace')}

@@ -1,7 +1,7 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2016 SonarSource SA
- * mailto:contact AT sonarsource DOT com
+ * Copyright (C) 2009-2018 SonarSource SA
+ * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -50,19 +50,19 @@ export default function ReleasabilityBox({ component, measures }: Props) {
       <RatingFreshness lastChange={lastReleasabilityChange} />
 
       {effort &&
-      Number(effort) > 0 && (
-        <div className="portfolio-effort">
-          <Link to={getComponentDrilldownUrl(component, 'alert_status')}>
-            <span>
-              <Measure
-                measure={{ metric: { key: 'projects', type: 'SHORT_INT' }, value: effort }}
-              />{' '}
-              {Number(effort) === 1 ? 'project' : 'projects'}
-            </span>
-          </Link>{' '}
-          <span className="level level-ERROR level-small">{translate('metric.level.ERROR')}</span>
-        </div>
-      )}
+        Number(effort) > 0 && (
+          <div className="portfolio-effort">
+            <Link to={getComponentDrilldownUrl(component, 'alert_status')}>
+              <span>
+                <Measure
+                  measure={{ metric: { key: 'projects', type: 'SHORT_INT' }, value: effort }}
+                />{' '}
+                {Number(effort) === 1 ? 'project' : 'projects'}
+              </span>
+            </Link>{' '}
+            <span className="level level-ERROR level-small">{translate('metric.level.ERROR')}</span>
+          </div>
+        )}
     </div>
   );
 }

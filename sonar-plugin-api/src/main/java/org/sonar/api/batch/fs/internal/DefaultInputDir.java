@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -84,7 +84,7 @@ public class DefaultInputDir extends DefaultInputComponent implements InputDir {
   }
 
   /**
-   * For testing purpose. Will be automaticall set when dir is added to {@link DefaultFileSystem}
+   * For testing purpose. Will be automatically set when dir is added to {@link DefaultFileSystem}
    */
   public DefaultInputDir setModuleBaseDir(Path moduleBaseDir) {
     this.moduleBaseDir = moduleBaseDir.normalize();

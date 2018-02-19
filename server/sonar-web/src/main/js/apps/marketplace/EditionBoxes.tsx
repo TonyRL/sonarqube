@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -141,11 +141,9 @@ export default class EditionBoxes extends React.PureComponent<Props, State> {
           .map((edition, idx) => (
             <EditionBox
               actionLabel={
-                currentIdx > idx + 1 ? (
-                  translate('marketplace.downgrade')
-                ) : (
-                  translate('marketplace.upgrade')
-                )
+                currentIdx > idx + 1
+                  ? translate('marketplace.downgrade')
+                  : translate('marketplace.upgrade')
               }
               disableAction={inProgressStatus}
               displayAction={canInstall && currentIdx !== idx + 1}

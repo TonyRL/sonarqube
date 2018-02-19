@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -77,7 +77,7 @@ it('should not render internal actions', () => {
 
 it('should render only actions matching the query', () => {
   const actions = [ACTION, { ...ACTION, key: 'bar', description: 'Bar desc' }];
-  const domain = { ...DOMAIN, actions: actions };
+  const domain = { ...DOMAIN, actions };
   expect(
     shallow(<Domain {...DEFAULT_PROPS} domain={domain} searchQuery="Foo" />)
   ).toMatchSnapshot();
@@ -89,7 +89,7 @@ it('should also render actions with a description matching the query', () => {
     { ...ACTION, key: 'bar', description: 'Bar desc' },
     { ...ACTION, key: 'baz', description: 'foobar' }
   ];
-  const domain = { ...DOMAIN, actions: actions };
+  const domain = { ...DOMAIN, actions };
   expect(
     shallow(<Domain {...DEFAULT_PROPS} domain={domain} searchQuery="Foo" />)
   ).toMatchSnapshot();

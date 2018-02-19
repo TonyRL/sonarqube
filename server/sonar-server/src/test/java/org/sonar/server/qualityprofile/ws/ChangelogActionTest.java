@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -140,7 +140,7 @@ public class ChangelogActionTest {
   }
 
   @Test
-  public void find_changelog_by_profile_key() throws Exception {
+  public void find_changelog_by_profile_key() {
     QProfileDto profile = dbTester.qualityProfiles().insert(organization);
 
     String response = ws.newRequest()
@@ -153,7 +153,7 @@ public class ChangelogActionTest {
   }
 
   @Test
-  public void find_changelog_by_language_and_name() throws Exception {
+  public void find_changelog_by_language_and_name() {
     QProfileDto qualityProfile = dbTester.qualityProfiles().insert(dbTester.getDefaultOrganization());
 
     String response = ws.newRequest()
@@ -167,7 +167,7 @@ public class ChangelogActionTest {
   }
 
   @Test
-  public void find_changelog_by_organization_and_language_and_name() throws Exception {
+  public void find_changelog_by_organization_and_language_and_name() {
     QProfileDto qualityProfile = dbTester.qualityProfiles().insert(organization);
 
     String response = ws.newRequest()
@@ -182,7 +182,7 @@ public class ChangelogActionTest {
   }
 
   @Test
-  public void do_not_find_changelog_by_wrong_organization_and_language_and_name() throws Exception {
+  public void do_not_find_changelog_by_wrong_organization_and_language_and_name() {
     OrganizationDto organization1 = dbTester.organizations().insert();
     OrganizationDto organization2 = dbTester.organizations().insert();
 
@@ -200,7 +200,7 @@ public class ChangelogActionTest {
   }
 
   @Test
-  public void changelog_empty() throws Exception {
+  public void changelog_empty() {
     QProfileDto qualityProfile = dbTester.qualityProfiles().insert(organization);
 
     String response = ws.newRequest()
@@ -214,7 +214,7 @@ public class ChangelogActionTest {
   }
 
   @Test
-  public void changelog_not_empty() throws Exception {
+  public void changelog_not_empty() {
     QProfileDto qualityProfile = dbTester.qualityProfiles().insert(organization);
     QProfileChangeDto change = QualityProfileTesting.newQProfileChangeDto()
       .setUuid(null)
@@ -234,7 +234,7 @@ public class ChangelogActionTest {
   }
 
   @Test
-  public void changelog_filter_by_since() throws Exception {
+  public void changelog_filter_by_since() {
     QProfileDto qualityProfile = dbTester.qualityProfiles().insert(organization);
     system2.setNow(DateUtils.parseDateTime("2011-04-25T01:15:42+0100").getTime());
     QProfileChangeDto change = QualityProfileTesting.newQProfileChangeDto()
@@ -279,7 +279,7 @@ public class ChangelogActionTest {
       .execute()
       .getInput();
 
-    assertThat(response).containsSequence("15:43", "15:42");
+    assertThat(response).containsSubsequence("15:43", "15:42");
   }
 
   @Test

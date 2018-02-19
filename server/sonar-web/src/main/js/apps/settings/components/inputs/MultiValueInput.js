@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -21,6 +21,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import PrimitiveInput from './PrimitiveInput';
 import { getEmptyValue } from '../../utils';
+import { DeleteButton } from '../../../../components/ui/buttons';
 
 export default class MultiValueInput extends React.PureComponent {
   static propTypes = {
@@ -39,10 +40,7 @@ export default class MultiValueInput extends React.PureComponent {
     this.props.onChange(newValue);
   }
 
-  handleDeleteValue(e, index) {
-    e.preventDefault();
-    e.target.blur();
-
+  handleDeleteValue(index) {
     const newValue = [...this.ensureValue()];
     newValue.splice(index, 1);
     this.props.onChange(newValue);
@@ -69,11 +67,10 @@ export default class MultiValueInput extends React.PureComponent {
 
         {!isLast && (
           <div className="display-inline-block spacer-left">
-            <button
-              className="js-remove-value button-clean"
-              onClick={e => this.handleDeleteValue(e, index)}>
-              <i className="icon-delete" />
-            </button>
+            <DeleteButton
+              className="js-remove-value"
+              onClick={this.handleDeleteValue.bind(this, index)}
+            />
           </div>
         )}
       </li>

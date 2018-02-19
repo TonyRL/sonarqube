@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -19,9 +19,9 @@
  */
 // @flow
 import React from 'react';
-import Modal from 'react-modal';
 import UsersSelectSearch from '../../../users/components/UsersSelectSearch';
 import { searchMembers } from '../../../../api/organizations';
+import Modal from '../../../../components/controls/Modal';
 import { translate } from '../../../../helpers/l10n';
 /*:: import type { Organization } from '../../../../store/organizations/duck'; */
 /*:: import type { Member } from '../../../../store/organizationsMembers/actions'; */
@@ -77,15 +77,11 @@ export default class AddMemberForm extends React.PureComponent {
   };
 
   renderModal() {
+    const header = translate('users.add');
     return (
-      <Modal
-        isOpen={true}
-        contentLabel="modal form"
-        className="modal"
-        overlayClassName="modal-overlay"
-        onRequestClose={this.closeForm}>
+      <Modal key="add-member-modal" contentLabel={header} onRequestClose={this.closeForm}>
         <header className="modal-head">
-          <h2>{translate('users.add')}</h2>
+          <h2>{header}</h2>
         </header>
         <form onSubmit={this.handleSubmit}>
           <div className="modal-body">
@@ -116,11 +112,14 @@ export default class AddMemberForm extends React.PureComponent {
   }
 
   render() {
-    return (
-      <button onClick={this.openForm}>
+    const buttonComponent = (
+      <button key="add-member-button" onClick={this.openForm}>
         {translate('organization.members.add')}
-        {this.state.open && this.renderModal()}
       </button>
     );
+    if (this.state.open) {
+      return [buttonComponent, this.renderModal()];
+    }
+    return buttonComponent;
   }
 }

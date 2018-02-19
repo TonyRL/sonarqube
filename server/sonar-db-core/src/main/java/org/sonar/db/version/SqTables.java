@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -37,6 +37,7 @@ public final class SqTables {
     "dashboards",
     "issue_filters",
     "issue_filter_favourites",
+    "loaded_templates",
     "measure_filters",
     "measure_filter_favourites",
     "resource_index",
@@ -68,13 +69,14 @@ public final class SqTables {
     "internal_properties",
     "issues",
     "issue_changes",
-    "loaded_templates",
+    "live_measures",
     "manual_measures",
     "metrics",
     "notifications",
     "organizations",
     "organization_members",
     "org_qprofiles",
+    "org_quality_gates",
     "permission_templates",
     "perm_templates_users",
     "perm_templates_groups",

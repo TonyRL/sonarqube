@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -25,7 +25,7 @@ public class SuccessfulDistributedCall implements DistributedCall<Long> {
   static final AtomicLong COUNTER = new AtomicLong();
 
   @Override
-  public Long call() throws Exception {
+  public Long call() {
     return COUNTER.getAndIncrement();
   }
 }

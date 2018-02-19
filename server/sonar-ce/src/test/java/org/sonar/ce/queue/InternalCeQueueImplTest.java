@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -19,23 +19,13 @@
  */
 package org.sonar.ce.queue;
 
-import static com.google.common.base.Preconditions.checkArgument;
-import static java.util.Arrays.asList;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-import static org.sonar.ce.container.ComputeEngineStatus.Status.STARTED;
-import static org.sonar.ce.container.ComputeEngineStatus.Status.STOPPING;
-
+import com.google.common.collect.ImmutableSet;
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import java.util.List;
 import java.util.Optional;
 import java.util.Random;
-
 import javax.annotation.Nullable;
-
-import org.hamcrest.Matchers;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -59,7 +49,13 @@ import org.sonar.server.computation.task.step.TypedException;
 import org.sonar.server.organization.DefaultOrganization;
 import org.sonar.server.organization.DefaultOrganizationProvider;
 
-import com.google.common.collect.ImmutableSet;
+import static com.google.common.base.Preconditions.checkArgument;
+import static java.util.Arrays.asList;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+import static org.sonar.ce.container.ComputeEngineStatus.Status.STARTED;
+import static org.sonar.ce.container.ComputeEngineStatus.Status.STOPPING;
 
 public class InternalCeQueueImplTest {
 
@@ -83,7 +79,7 @@ public class InternalCeQueueImplTest {
   private InternalCeQueue underTest = new InternalCeQueueImpl(system2, db.getDbClient(), uuidFactory, queueStatus, defaultOrganizationProvider, computeEngineStatus);
 
   @Before
-  public void setUp() throws Exception {
+  public void setUp() {
     OrganizationDto defaultOrganization = db.getDefaultOrganization();
     when(defaultOrganizationProvider.get()).thenReturn(DefaultOrganization.newBuilder()
       .setUuid(defaultOrganization.getUuid())
@@ -293,7 +289,7 @@ public class InternalCeQueueImplTest {
   }
 
   @Test
-  public void fail_to_remove_if_not_in_queue() throws Exception {
+  public void fail_to_remove_if_not_in_queue() {
     CeTask task = submit(CeTaskTypes.REPORT, "PROJECT_1");
     underTest.remove(task, CeActivityDto.Status.SUCCESS, null, null);
 
@@ -303,7 +299,7 @@ public class InternalCeQueueImplTest {
   }
 
   @Test
-  public void test_peek() throws Exception {
+  public void test_peek() {
     CeTask task = submit(CeTaskTypes.REPORT, "PROJECT_1");
 
     Optional<CeTask> peek = underTest.peek(WORKER_UUID_1);
@@ -333,7 +329,7 @@ public class InternalCeQueueImplTest {
   }
 
   @Test
-  public void peek_nothing_if_application_status_stopping() throws Exception {
+  public void peek_nothing_if_application_status_stopping() {
     submit(CeTaskTypes.REPORT, "PROJECT_1");
     when(computeEngineStatus.getStatus()).thenReturn(STOPPING);
 
@@ -355,7 +351,7 @@ public class InternalCeQueueImplTest {
   }
 
   @Test
-  public void peek_peeks_pending_tasks_with_executionCount_equal_to_1_and_increases_it() {
+  public void peek_ignores_pending_tasks_with_executionCount_equal_to_1() {
     db.getDbClient().ceQueueDao().insert(session, new CeQueueDto()
       .setUuid("uuid")
       .setTaskType("foo")
@@ -363,8 +359,7 @@ public class InternalCeQueueImplTest {
       .setExecutionCount(1));
     db.commit();
 
-    assertThat(underTest.peek(WORKER_UUID_1).get().getUuid()).isEqualTo("uuid");
-    assertThat(db.getDbClient().ceQueueDao().selectByUuid(session, "uuid").get().getExecutionCount()).isEqualTo(2);
+    assertThat(underTest.peek(WORKER_UUID_1).isPresent()).isFalse();
   }
 
   @Test
@@ -427,30 +422,22 @@ public class InternalCeQueueImplTest {
   public void peek_resets_to_pending_any_task_in_progress_for_specified_worker_uuid_and_peeks_the_oldest_non_worn_out_no_matter_if_it_has_been_reset_or_not() {
     insertPending("u1", WORKER_UUID_1, 3); // won't be picked because worn out
     insertInProgress("u2", WORKER_UUID_1, 3); // will be reset but won't be picked because worn out
-    insertPending("u3", WORKER_UUID_1, 0); // will be picked first
-    insertInProgress("u4", WORKER_UUID_1, 1); // will be reset and picked on second call only
+    insertInProgress("u3", WORKER_UUID_1, 1); // will be reset but won't be picked because worn out
+    insertPending("u4", WORKER_UUID_1, 0); // will be picked
 
     Optional<CeTask> ceTask = underTest.peek(WORKER_UUID_1);
-    assertThat(ceTask.get().getUuid()).isEqualTo("u3");
-
-    // remove first task and do another peek: will pick the reset task since it's now the oldest one
-    underTest.remove(ceTask.get(), CeActivityDto.Status.SUCCESS, null, null);
-    assertThat(underTest.peek(WORKER_UUID_1).get().getUuid()).isEqualTo("u4");
+    assertThat(ceTask.get().getUuid()).isEqualTo("u4");
   }
 
   @Test
   public void peek_resets_to_pending_any_task_in_progress_for_specified_worker_uuid_and_peeks_reset_tasks_if_is_the_oldest_non_worn_out() {
     insertPending("u1", WORKER_UUID_1, 3); // won't be picked because worn out
     insertInProgress("u2", WORKER_UUID_1, 3); // will be reset but won't be picked because worn out
-    insertInProgress("u3", WORKER_UUID_1, 1); // will be reset and picked
+    insertInProgress("u3", WORKER_UUID_1, 1); // won't be picked because worn out
     insertPending("u4", WORKER_UUID_1, 0); // will be picked second
 
     Optional<CeTask> ceTask = underTest.peek(WORKER_UUID_1);
-    assertThat(ceTask.get().getUuid()).isEqualTo("u3");
-
-    // remove first task and do another peek: will pick the reset task since it's now the oldest one
-    underTest.remove(ceTask.get(), CeActivityDto.Status.SUCCESS, null, null);
-    assertThat(underTest.peek(WORKER_UUID_1).get().getUuid()).isEqualTo("u4");
+    assertThat(ceTask.get().getUuid()).isEqualTo("u4");
   }
 
   private void verifyResetTask(CeQueueDto originalDto) {
@@ -496,7 +483,7 @@ public class InternalCeQueueImplTest {
   }
 
   @Test
-  public void cancel_pending() throws Exception {
+  public void cancel_pending() {
     CeTask task = submit(CeTaskTypes.REPORT, "PROJECT_1");
     CeQueueDto queueDto = db.getDbClient().ceQueueDao().selectByUuid(db.getSession(), task.getUuid()).get();
 
@@ -525,19 +512,19 @@ public class InternalCeQueueImplTest {
   }
 
   @Test
-  public void fail_to_cancel_if_in_progress() throws Exception {
+  public void fail_to_cancel_if_in_progress() {
     CeTask task = submit(CeTaskTypes.REPORT, "PROJECT_1");
     underTest.peek(WORKER_UUID_2);
     CeQueueDto queueDto = db.getDbClient().ceQueueDao().selectByUuid(db.getSession(), task.getUuid()).get();
 
     expectedException.expect(IllegalStateException.class);
-    expectedException.expectMessage(Matchers.startsWith("Task is in progress and can't be canceled"));
+    expectedException.expectMessage("Task is in progress and can't be canceled");
 
     underTest.cancel(db.getSession(), queueDto);
   }
 
   @Test
-  public void cancelAll_pendings_but_not_in_progress() throws Exception {
+  public void cancelAll_pendings_but_not_in_progress() {
     CeTask inProgressTask = submit(CeTaskTypes.REPORT, "PROJECT_1");
     CeTask pendingTask1 = submit(CeTaskTypes.REPORT, "PROJECT_2");
     CeTask pendingTask2 = submit(CeTaskTypes.REPORT, "PROJECT_3");
@@ -555,7 +542,7 @@ public class InternalCeQueueImplTest {
   }
 
   @Test
-  public void cancelWornOuts_cancels_pending_tasks_with_executionCount_greater_or_equal_to_2() {
+  public void cancelWornOuts_cancels_pending_tasks_with_executionCount_greater_or_equal_to_1() {
     CeQueueDto u1 = insertCeQueueDto("u1", CeQueueDto.Status.PENDING, 0, "worker1");
     CeQueueDto u2 = insertCeQueueDto("u2", CeQueueDto.Status.PENDING, 1, "worker1");
     CeQueueDto u3 = insertCeQueueDto("u3", CeQueueDto.Status.PENDING, 2, "worker1");
@@ -568,7 +555,7 @@ public class InternalCeQueueImplTest {
     underTest.cancelWornOuts();
 
     verifyUnmodified(u1);
-    verifyUnmodified(u2);
+    verifyCanceled(u2);
     verifyCanceled(u3);
     verifyCanceled(u4);
     verifyUnmodified(u5);
@@ -702,7 +689,7 @@ public class InternalCeQueueImplTest {
   }
 
   @Test
-  public void pause_and_resume_submits() throws Exception {
+  public void pause_and_resume_submits() {
     assertThat(underTest.isSubmitPaused()).isFalse();
     underTest.pauseSubmit();
     assertThat(underTest.isSubmitPaused()).isTrue();

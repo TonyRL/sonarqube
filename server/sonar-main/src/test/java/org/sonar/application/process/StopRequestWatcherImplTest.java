@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -53,7 +53,7 @@ public class StopRequestWatcherImplTest {
   private Scheduler scheduler = mock(Scheduler.class);
 
   @Test
-  public void do_not_watch_command_if_disabled() throws IOException {
+  public void do_not_watch_command_if_disabled() {
     enableSetting(false);
     StopRequestWatcherImpl underTest = new StopRequestWatcherImpl(settings, scheduler, commands);
 

@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -27,7 +27,7 @@ import org.sonarqube.ws.ProjectAnalyses.SearchResponse;
 
 import static org.sonar.api.utils.DateUtils.formatDateTime;
 import static org.sonar.core.util.Protobuf.setNullable;
-import static org.sonarqube.ws.client.projectanalysis.EventCategory.fromLabel;
+import static org.sonar.server.projectanalysis.ws.EventCategory.fromLabel;
 
 class SearchResponseBuilder {
   private final Analysis.Builder wsAnalysis;

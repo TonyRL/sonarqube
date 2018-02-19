@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -47,8 +47,8 @@ import static org.sonar.db.permission.OrganizationPermission.ADMINISTER;
 import static org.sonar.server.es.SearchOptions.MAX_LIMIT;
 import static org.sonar.server.usergroups.ws.GroupWsSupport.PARAM_ORGANIZATION_KEY;
 import static org.sonar.server.ws.WsUtils.writeProtobuf;
-import static org.sonarqube.ws.WsUserGroups.Group;
-import static org.sonarqube.ws.WsUserGroups.SearchWsResponse;
+import static org.sonarqube.ws.UserGroups.Group;
+import static org.sonarqube.ws.UserGroups.SearchWsResponse;
 
 public class SearchAction implements UserGroupsWsAction {
 

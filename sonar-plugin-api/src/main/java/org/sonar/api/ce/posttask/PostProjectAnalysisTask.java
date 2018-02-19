@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -52,6 +52,14 @@ public interface PostProjectAnalysisTask {
    * @since 5.5
    */
   interface ProjectAnalysis {
+    /**
+     * When organizations are enabled in SonarQube, the organization the project belongs to.
+     *
+     * @since 7.0
+     * @return a non empty value when organizations are enabled, otherwise empty
+     */
+    Optional<Organization> getOrganization();
+
     /**
      * Details of the Compute Engine task in which the project analysis was run.
      */

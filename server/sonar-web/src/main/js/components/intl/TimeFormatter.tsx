@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -33,10 +33,8 @@ export const longFormatterOption = { hour: 'numeric', minute: 'numeric', second:
 
 export default function TimeFormatter({ children, date, long }: Props) {
   return (
-    <FormattedTime
-      children={children}
-      value={parseDate(date)}
-      {...(long ? longFormatterOption : formatterOption)}
-    />
+    <FormattedTime value={parseDate(date)} {...(long ? longFormatterOption : formatterOption)}>
+      {children}
+    </FormattedTime>
   );
 }

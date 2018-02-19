@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -24,7 +24,6 @@ import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.ListenableScheduledFuture;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicBoolean;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
 import org.sonar.api.utils.log.Logger;
@@ -43,6 +42,7 @@ public class CeProcessingSchedulerImpl implements CeProcessingScheduler {
   private final TimeUnit timeUnit;
   private final ChainingCallback[] chainingCallbacks;
   private final EnabledCeWorkerController ceWorkerController;
+  private final int gracefulStopTimeoutInMs;
 
   public CeProcessingSchedulerImpl(CeConfiguration ceConfiguration,
     CeProcessingSchedulerExecutorService processingExecutorService, CeWorkerFactory ceCeWorkerFactory,
@@ -50,6 +50,7 @@ public class CeProcessingSchedulerImpl implements CeProcessingScheduler {
     this.executorService = processingExecutorService;
 
     this.delayBetweenEnabledTasks = ceConfiguration.getQueuePollingDelay();
+    this.gracefulStopTimeoutInMs = ceConfiguration.getGracefulStopTimeoutInMs();
     this.ceWorkerController = ceWorkerController;
     this.timeUnit = MILLISECONDS;
 
@@ -65,7 +66,7 @@ public class CeProcessingSchedulerImpl implements CeProcessingScheduler {
   public void startScheduling() {
     for (ChainingCallback chainingCallback : chainingCallbacks) {
       ListenableScheduledFuture<CeWorker.Result> future = executorService.schedule(chainingCallback.worker, delayBetweenEnabledTasks, timeUnit);
-      addCallback(future, chainingCallback, executorService);
+      addCallback(future, chainingCallback);
     }
   }
 
@@ -81,7 +82,7 @@ public class CeProcessingSchedulerImpl implements CeProcessingScheduler {
     }
 
     // Workers have 40s to gracefully stop processing tasks
-    long until = System.currentTimeMillis() + 40_000L;
+    long until = System.currentTimeMillis() + gracefulStopTimeoutInMs;
     LOG.info("Waiting for workers to finish in-progress tasks");
     while (System.currentTimeMillis() < until && ceWorkerController.hasAtLeastOneProcessingWorker()) {
       try {
@@ -104,7 +105,7 @@ public class CeProcessingSchedulerImpl implements CeProcessingScheduler {
   }
 
   private class ChainingCallback implements FutureCallback<CeWorker.Result> {
-    private final AtomicBoolean keepRunning = new AtomicBoolean(true);
+    private volatile boolean keepRunning = true;
     private final CeWorker worker;
 
     @CheckForNull
@@ -116,19 +117,21 @@ public class CeProcessingSchedulerImpl implements CeProcessingScheduler {
 
     @Override
     public void onSuccess(@Nullable CeWorker.Result result) {
-      if (result == null) {
-        chainWithEnabledTaskDelay();
-      } else {
-        switch (result) {
-          case DISABLED:
-            chainWithDisabledTaskDelay();
-            break;
-          case NO_TASK:
-            chainWithEnabledTaskDelay();
-            break;
-          case TASK_PROCESSED:
-          default:
-            chainWithoutDelay();
+      if (keepRunning) {
+        if (result == null) {
+          chainWithEnabledTaskDelay();
+        } else {
+          switch (result) {
+            case DISABLED:
+              chainWithDisabledTaskDelay();
+              break;
+            case NO_TASK:
+              chainWithEnabledTaskDelay();
+              break;
+            case TASK_PROCESSED:
+            default:
+              chainWithoutDelay();
+          }
         }
       }
     }
@@ -137,44 +140,34 @@ public class CeProcessingSchedulerImpl implements CeProcessingScheduler {
     public void onFailure(Throwable t) {
       if (t instanceof Error) {
         LOG.error("Compute Engine execution failed. Scheduled processing interrupted.", t);
-      } else {
+      } else if (keepRunning) {
         chainWithoutDelay();
       }
     }
 
     private void chainWithoutDelay() {
-      if (keepRunning()) {
-        workerFuture = executorService.submit(worker);
-      }
+      workerFuture = executorService.submit(worker);
       addCallback();
     }
 
     private void chainWithEnabledTaskDelay() {
-      if (keepRunning()) {
-        workerFuture = executorService.schedule(worker, delayBetweenEnabledTasks, timeUnit);
-      }
+      workerFuture = executorService.schedule(worker, delayBetweenEnabledTasks, timeUnit);
       addCallback();
     }
 
     private void chainWithDisabledTaskDelay() {
-      if (keepRunning()) {
-        workerFuture = executorService.schedule(worker, DELAY_BETWEEN_DISABLED_TASKS, timeUnit);
-      }
+      workerFuture = executorService.schedule(worker, DELAY_BETWEEN_DISABLED_TASKS, timeUnit);
       addCallback();
     }
 
     private void addCallback() {
-      if (workerFuture != null && keepRunning()) {
-        Futures.addCallback(workerFuture, this, executorService);
+      if (workerFuture != null) {
+        Futures.addCallback(workerFuture, this);
       }
     }
 
-    private boolean keepRunning() {
-      return keepRunning.get();
-    }
-
     public void stop(boolean interrupt) {
-      this.keepRunning.set(false);
+      keepRunning = false;
       if (workerFuture != null) {
         workerFuture.cancel(interrupt);
       }

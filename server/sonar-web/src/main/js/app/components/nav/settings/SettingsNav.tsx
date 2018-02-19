@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -20,6 +20,7 @@
 import * as React from 'react';
 import * as classNames from 'classnames';
 import { IndexLink, Link } from 'react-router';
+import * as theme from '../../../../app/theme';
 import ContextNavBar from '../../../../components/nav/ContextNavBar';
 import SettingsEditionsNotifContainer from './SettingsEditionsNotifContainer';
 import NavBarTabs from '../../../../components/nav/NavBarTabs';
@@ -203,11 +204,11 @@ export default class SettingsNav extends React.PureComponent<Props> {
     return (
       <ContextNavBar
         id="context-navigation"
-        height={notifComponent ? 95 : 65}
+        height={notifComponent ? theme.contextNavHeightRaw + 20 : theme.contextNavHeightRaw}
         notif={notifComponent}>
-        <h1 className="navbar-context-header">
-          <strong>{translate('layout.settings')}</strong>
-        </h1>
+        <header className="navbar-context-header">
+          <h1>{translate('layout.settings')}</h1>
+        </header>
 
         <NavBarTabs>
           {this.renderConfigurationTab()}

@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -33,10 +33,8 @@ export const longFormatterOption = { year: 'numeric', month: 'long', day: 'numer
 
 export default function DateFormatter({ children, date, long }: Props) {
   return (
-    <FormattedDate
-      children={children}
-      value={parseDate(date)}
-      {...(long ? longFormatterOption : formatterOption)}
-    />
+    <FormattedDate value={parseDate(date)} {...(long ? longFormatterOption : formatterOption)}>
+      {children}
+    </FormattedDate>
   );
 }

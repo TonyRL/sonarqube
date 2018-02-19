@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -46,6 +46,7 @@ import org.sonar.ce.CeHttpModule;
 import org.sonar.ce.CeQueueModule;
 import org.sonar.ce.CeTaskCommonsModule;
 import org.sonar.ce.StandaloneCeDistributedInformation;
+import org.sonar.ce.async.SynchronousAsyncExecution;
 import org.sonar.ce.cleaning.CeCleaningModule;
 import org.sonar.ce.db.ReadOnlyPropertiesDao;
 import org.sonar.ce.log.CeProcessLogging;
@@ -108,6 +109,7 @@ import org.sonar.server.notification.email.AlertsEmailTemplate;
 import org.sonar.server.notification.email.EmailNotificationChannel;
 import org.sonar.server.organization.BillingValidationsProxyImpl;
 import org.sonar.server.organization.DefaultOrganizationProviderImpl;
+import org.sonar.server.organization.OrganizationFlagsImpl;
 import org.sonar.server.permission.GroupPermissionChanger;
 import org.sonar.server.permission.PermissionTemplateService;
 import org.sonar.server.permission.PermissionUpdater;
@@ -128,12 +130,14 @@ import org.sonar.server.platform.WebServerImpl;
 import org.sonar.server.platform.db.migration.MigrationConfigurationModule;
 import org.sonar.server.platform.db.migration.version.DatabaseVersion;
 import org.sonar.server.platform.monitoring.DbSection;
+import org.sonar.server.platform.monitoring.OfficialDistribution;
 import org.sonar.server.platform.monitoring.cluster.ProcessInfoProvider;
 import org.sonar.server.plugins.InstalledPluginReferentialFactory;
 import org.sonar.server.plugins.ServerExtensionInstaller;
 import org.sonar.server.plugins.privileged.PrivilegedPluginsBootstraper;
 import org.sonar.server.plugins.privileged.PrivilegedPluginsStopper;
 import org.sonar.server.property.InternalPropertiesImpl;
+import org.sonar.server.qualitygate.QualityGateModule;
 import org.sonar.server.qualityprofile.index.ActiveRuleIndexer;
 import org.sonar.server.rule.CommonRuleDefinitionsImpl;
 import org.sonar.server.rule.DefaultRuleFinder;
@@ -152,6 +156,7 @@ import org.sonar.server.user.index.UserIndexer;
 import org.sonar.server.util.OkHttpClientProvider;
 import org.sonar.server.view.index.ViewIndex;
 import org.sonar.server.view.index.ViewIndexer;
+import org.sonar.server.webhook.WebhookModule;
 import org.sonarqube.ws.Rules;
 
 import static java.util.Objects.requireNonNull;
@@ -308,7 +313,9 @@ public class ComputeEngineContainerImpl implements ComputeEngineContainer {
       ServerIdManager.class,
       UriReader.class,
       ServerImpl.class,
-      DefaultOrganizationProviderImpl.class);
+      DefaultOrganizationProviderImpl.class,
+      SynchronousAsyncExecution.class,
+      OrganizationFlagsImpl.class);
   }
 
   private static void populateLevel4(ComponentContainer container, Props props) {
@@ -416,9 +423,15 @@ public class ComputeEngineContainerImpl implements ComputeEngineContainer {
       CeTaskCommonsModule.class,
       ProjectAnalysisTaskModule.class,
       CeTaskProcessorModule.class,
+      OfficialDistribution.class,
 
       InternalPropertiesImpl.class,
       ProjectConfigurationFactory.class,
+
+      // webhooks
+      WebhookModule.class,
+
+      QualityGateModule.class,
 
       // cleaning
       CeCleaningModule.class);

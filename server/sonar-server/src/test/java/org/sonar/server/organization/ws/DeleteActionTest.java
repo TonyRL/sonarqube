@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -17,7 +17,6 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-
 package org.sonar.server.organization.ws;
 
 import org.junit.Rule;
@@ -35,6 +34,8 @@ import org.sonar.db.component.ComponentTesting;
 import org.sonar.db.component.ResourceTypesRule;
 import org.sonar.db.organization.OrganizationDto;
 import org.sonar.db.permission.template.PermissionTemplateDto;
+import org.sonar.db.qualitygate.QGateWithOrgDto;
+import org.sonar.db.qualitygate.QualityGateDto;
 import org.sonar.db.qualityprofile.QProfileDto;
 import org.sonar.db.user.GroupDto;
 import org.sonar.db.user.UserDto;
@@ -47,6 +48,7 @@ import org.sonar.server.exceptions.NotFoundException;
 import org.sonar.server.exceptions.UnauthorizedException;
 import org.sonar.server.organization.TestDefaultOrganizationProvider;
 import org.sonar.server.organization.TestOrganizationFlags;
+import org.sonar.server.qualitygate.QualityGateFinder;
 import org.sonar.server.qualityprofile.QProfileFactory;
 import org.sonar.server.qualityprofile.QProfileFactoryImpl;
 import org.sonar.server.qualityprofile.index.ActiveRuleIndexer;
@@ -65,6 +67,7 @@ import static org.sonar.api.resources.Qualifiers.APP;
 import static org.sonar.api.resources.Qualifiers.PROJECT;
 import static org.sonar.api.resources.Qualifiers.VIEW;
 import static org.sonar.db.permission.OrganizationPermission.ADMINISTER;
+import static org.sonar.db.user.UserTesting.newUserDto;
 import static org.sonar.server.organization.ws.OrganizationsWsSupport.PARAM_ORGANIZATION;
 
 public class DeleteActionTest {
@@ -87,8 +90,9 @@ public class DeleteActionTest {
   private QProfileFactory qProfileFactory = new QProfileFactoryImpl(dbClient, mock(UuidFactory.class), System2.INSTANCE, mock(ActiveRuleIndexer.class));
   private UserIndex userIndex = new UserIndex(es.client(), System2.INSTANCE);
   private UserIndexer userIndexer = new UserIndexer(dbClient, es.client());
-
-  private WsActionTester wsTester = new WsActionTester(new DeleteAction(userSession, dbClient, defaultOrganizationProvider, componentCleanerService, organizationFlags, userIndexer, qProfileFactory));
+  private QualityGateFinder qualityGateFinder = new QualityGateFinder(dbClient);
+  private WsActionTester wsTester = new WsActionTester(
+    new DeleteAction(userSession, dbClient, defaultOrganizationProvider, componentCleanerService, organizationFlags, userIndexer, qProfileFactory));
 
   @Test
   public void test_definition() {
@@ -107,6 +111,42 @@ public class DeleteActionTest {
       .matches(param -> param.isRequired())
       .matches(param -> "foo-company".equals(param.exampleValue()))
       .matches(param -> "Organization key".equals(param.description()));
+  }
+
+  @Test
+  public void organization_deletion_also_ensure_that_homepage_on_this_organization_if_it_exists_is_cleared() {
+    OrganizationDto organization = db.organizations().insert();
+    UserDto user = dbClient.userDao().insert(session, newUserDto().setHomepageType("ORGANIZATION").setHomepageParameter(organization.getUuid()));
+    session.commit();
+
+    userSession.logIn().addPermission(ADMINISTER, organization);
+
+    wsTester.newRequest()
+      .setParam(PARAM_ORGANIZATION, organization.getKey())
+      .execute();
+
+    UserDto userReloaded = dbClient.userDao().selectUserById(session, user.getId());
+    assertThat(userReloaded.getHomepageType()).isNull();
+    assertThat(userReloaded.getHomepageParameter()).isNull();
+  }
+
+  @Test
+  public void organization_deletion_also_ensure_that_homepage_on_project_belonging_to_this_organization_if_it_exists_is_cleared() {
+    OrganizationDto organization = db.organizations().insert();
+    ComponentDto project = db.components().insertPrivateProject(organization);
+    UserDto user = dbClient.userDao().insert(session,
+      newUserDto().setHomepageType("PROJECT").setHomepageParameter(project.uuid()));
+    session.commit();
+
+    userSession.logIn().addPermission(ADMINISTER, organization);
+
+    wsTester.newRequest()
+      .setParam(PARAM_ORGANIZATION, organization.getKey())
+      .execute();
+
+    UserDto userReloaded = dbClient.userDao().selectUserById(session, user.getId());
+    assertThat(userReloaded.getHomepageType()).isNull();
+    assertThat(userReloaded.getHomepageParameter()).isNull();
   }
 
   @Test
@@ -346,6 +386,31 @@ public class DeleteActionTest {
     assertThat(db.select("select uuid as \"profileKey\" from org_qprofiles"))
       .extracting(row -> (String) row.get("profileKey"))
       .containsOnly(profileInOtherOrg.getKee());
+  }
+
+  @Test
+  public void delete_quality_gates() {
+    QualityGateDto builtInQualityGate = db.qualityGates().insertBuiltInQualityGate();
+    OrganizationDto organization = db.organizations().insert();
+    db.qualityGates().associateQualityGateToOrganization(builtInQualityGate, organization);
+    OrganizationDto otherOrganization = db.organizations().insert();
+    db.qualityGates().associateQualityGateToOrganization(builtInQualityGate, otherOrganization);
+    QGateWithOrgDto qualityGate = db.qualityGates().insertQualityGate(organization);
+    QGateWithOrgDto qualityGateInOtherOrg = db.qualityGates().insertQualityGate(otherOrganization);
+    logInAsAdministrator(organization);
+
+    sendRequest(organization);
+
+    verifyOrganizationDoesNotExist(organization);
+    assertThat(db.select("select uuid as \"uuid\" from quality_gates"))
+      .extracting(row -> (String) row.get("uuid"))
+      .containsExactlyInAnyOrder(qualityGateInOtherOrg.getUuid(), builtInQualityGate.getUuid());
+    assertThat(db.select("select organization_uuid as \"organizationUuid\" from org_quality_gates"))
+      .extracting(row -> (String) row.get("organizationUuid"))
+      .containsOnly(otherOrganization.getUuid());
+
+    // Check built-in quality gate is still available in other organization
+    assertThat(db.getDbClient().qualityGateDao().selectByOrganizationAndName(db.getSession(), otherOrganization, "Sonar way")).isNotNull();
   }
 
   private void verifyOrganizationDoesNotExist(OrganizationDto organization) {

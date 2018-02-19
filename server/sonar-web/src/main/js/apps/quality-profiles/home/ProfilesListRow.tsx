@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -22,7 +22,7 @@ import { Link } from 'react-router';
 import ProfileLink from '../components/ProfileLink';
 import ProfileDate from '../components/ProfileDate';
 import ProfileActions from '../components/ProfileActions';
-import BuiltInBadge from '../components/BuiltInBadge';
+import BuiltInQualityProfileBadge from '../components/BuiltInQualityProfileBadge';
 import { translate } from '../../../helpers/l10n';
 import { getRulesUrl } from '../../../helpers/urls';
 import { isStagnant } from '../utils';
@@ -48,7 +48,7 @@ export default class ProfilesListRow extends React.PureComponent<Props> {
           organization={this.props.organization}>
           {profile.name}
         </ProfileLink>
-        {profile.isBuiltIn && <BuiltInBadge className="spacer-left" />}
+        {profile.isBuiltIn && <BuiltInQualityProfileBadge className="spacer-left" />}
       </div>
     );
   }
@@ -139,18 +139,13 @@ export default class ProfilesListRow extends React.PureComponent<Props> {
           {this.renderUsageDate()}
         </td>
         <td className="quality-profiles-table-actions thin nowrap text-right">
-          <div className="dropdown">
-            <button className="dropdown-toggle" data-toggle="dropdown">
-              <i className="icon-dropdown" />
-            </button>
-            <ProfileActions
-              fromList={true}
-              onRequestFail={this.props.onRequestFail}
-              organization={this.props.organization}
-              profile={this.props.profile}
-              updateProfiles={this.props.updateProfiles}
-            />
-          </div>
+          <ProfileActions
+            fromList={true}
+            onRequestFail={this.props.onRequestFail}
+            organization={this.props.organization}
+            profile={this.props.profile}
+            updateProfiles={this.props.updateProfiles}
+          />
         </td>
       </tr>
     );

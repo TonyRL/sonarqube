@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -164,25 +164,25 @@ class Definition extends React.PureComponent {
             )}
 
             {!loading &&
-            this.props.validationMessage != null && (
-              <span className="text-danger">
-                <i className="icon-alert-error spacer-right" />
-                <span>
-                  {translateWithParameters(
-                    'settings.state.validation_failed',
-                    this.props.validationMessage
-                  )}
+              this.props.validationMessage != null && (
+                <span className="text-danger">
+                  <i className="icon-alert-error spacer-right" />
+                  <span>
+                    {translateWithParameters(
+                      'settings.state.validation_failed',
+                      this.props.validationMessage
+                    )}
+                  </span>
                 </span>
-              </span>
-            )}
+              )}
 
             {!loading &&
-            this.state.success && (
-              <span className="text-success">
-                <i className="icon-check spacer-right" />
-                {translate('settings.state.saved')}
-              </span>
-            )}
+              this.state.success && (
+                <span className="text-success">
+                  <i className="icon-check spacer-right" />
+                  {translate('settings.state.saved')}
+                </span>
+              )}
           </div>
 
           <Input

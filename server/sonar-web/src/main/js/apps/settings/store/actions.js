@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -26,7 +26,7 @@ import {
 import { receiveValues } from './values/actions';
 import { receiveDefinitions } from './definitions/actions';
 import { startLoading, stopLoading } from './settingsPage/loading/actions';
-import { parseError } from '../../code/utils';
+import { parseError } from '../../../helpers/request';
 import { addGlobalErrorMessage, closeAllGlobalMessages } from '../../../store/globalMessages/duck';
 import { passValidation, failValidation } from './settingsPage/validationMessages/actions';
 import { cancelChange } from './settingsPage/changedValues/actions';

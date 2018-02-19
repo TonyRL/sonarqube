@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -165,7 +165,11 @@ export default class Onboarding extends React.PureComponent {
                   {translate('tutorials.skip')}
                 </a>
               )}
-              <p className="note">{translate('tutorials.find_it_back_in_help')}</p>
+              <p className="note">
+                {translate(
+                  sonarCloud ? 'tutorials.find_it_back_in_plus' : 'tutorials.find_it_back_in_help'
+                )}
+              </p>
             </div>
             <div className="page-description">
               {translateWithParameters(

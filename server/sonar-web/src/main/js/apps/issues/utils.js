@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -218,7 +218,7 @@ export type Component = {
 /*::
 export type CurrentUser =
   | { isLoggedIn: false }
-  | { isLoggedIn: true, email?: string, login: string, name: string };
+  | { isLoggedIn: true, avatar:string, email?: string, login: string, name: string };
 */
 
 export const searchAssignees = (query /*: string */, organization /*: ?string */) => {
@@ -230,7 +230,7 @@ export const searchAssignees = (query /*: string */, organization /*: ?string */
           value: user.login
         }))
       )
-    : searchUsers(query, 50).then(response =>
+    : searchUsers({ q: query }).then(response =>
         response.users.map(user => ({
           // TODO this WS returns no avatar
           avatar: user.avatar,

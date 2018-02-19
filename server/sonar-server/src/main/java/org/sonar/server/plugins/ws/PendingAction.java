@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -111,9 +111,9 @@ public class PendingAction implements PluginsWsAction {
       }
     }
 
-    pluginWSCommons.writePluginInfoList(json, newPlugins, compatiblePluginsByKey, ARRAY_INSTALLING, null);
-    pluginWSCommons.writePluginInfoList(json, updatedPlugins, compatiblePluginsByKey, ARRAY_UPDATING, null);
-    pluginWSCommons.writePluginInfoList(json, uninstalledPlugins, compatiblePluginsByKey, ARRAY_REMOVING, null);
+    pluginWSCommons.writePluginInfoList(json, newPlugins, compatiblePluginsByKey, ARRAY_INSTALLING);
+    pluginWSCommons.writePluginInfoList(json, updatedPlugins, compatiblePluginsByKey, ARRAY_UPDATING);
+    pluginWSCommons.writePluginInfoList(json, uninstalledPlugins, compatiblePluginsByKey, ARRAY_REMOVING);
   }
 
   private enum PluginInfoToKey implements Function<PluginInfo, String> {

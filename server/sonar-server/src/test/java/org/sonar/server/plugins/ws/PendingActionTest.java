@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -114,7 +114,7 @@ public class PendingActionTest {
   @Test
   public void empty_arrays_are_returned_when_update_center_is_unavailable() throws Exception {
     logInAsSystemAdministrator();
-    when(updateCenterMatrixFactory.getUpdateCenter(false)).thenReturn(Optional.<UpdateCenter>absent());
+    when(updateCenterMatrixFactory.getUpdateCenter(false)).thenReturn(Optional.absent());
 
     underTest.handle(request, response);
 

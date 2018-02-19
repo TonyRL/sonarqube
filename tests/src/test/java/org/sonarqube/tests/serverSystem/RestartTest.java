@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -29,10 +29,11 @@ import org.junit.rules.DisableOnDebug;
 import org.junit.rules.ExpectedException;
 import org.junit.rules.TestRule;
 import org.junit.rules.Timeout;
-import org.sonarqube.ws.WsSystem;
+import org.sonarqube.qa.util.Tester;
+import org.sonarqube.ws.System;
 import org.sonarqube.ws.client.PostRequest;
 import org.sonarqube.ws.client.WsClient;
-import org.sonarqube.ws.client.permission.AddUserWsRequest;
+import org.sonarqube.ws.client.permissions.AddUserRequest;
 import util.ItUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -75,7 +76,7 @@ public class RestartTest {
 
       createSystemAdministrator("big", "boss");
       ItUtils.newUserWsClient(orchestrator, "big", "boss").system().restart();
-      assertThat(newAdminWsClient(orchestrator).system().status().getStatus()).isEqualTo(WsSystem.Status.RESTARTING);
+      assertThat(newAdminWsClient(orchestrator).system().status().getStatus()).isEqualTo(System.Status.RESTARTING);
 
       // we just wait five seconds, for a lack of a better approach to waiting for the restart process to start in SQ
       Thread.sleep(5000);
@@ -97,7 +98,7 @@ public class RestartTest {
   private void createSystemAdministrator(String login, String password) {
     WsClient wsClient = newAdminWsClient(orchestrator);
     createNonSystemAdministrator(wsClient, login, password);
-    wsClient.permissions().addUser(new AddUserWsRequest().setLogin(login).setPermission("admin"));
+    wsClient.permissions().addUser(new AddUserRequest().setLogin(login).setPermission("admin"));
   }
 
   private void createNonSystemAdministrator(String login, String password) {

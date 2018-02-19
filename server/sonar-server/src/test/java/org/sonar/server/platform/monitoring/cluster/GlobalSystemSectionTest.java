@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -53,7 +53,7 @@ public class GlobalSystemSectionTest {
   }
 
   @Test
-  public void get_realm() throws Exception {
+  public void get_realm() {
     SecurityRealm realm = mock(SecurityRealm.class);
     when(realm.getName()).thenReturn("LDAP");
     when(securityRealmFactory.getRealm()).thenReturn(realm);
@@ -63,7 +63,7 @@ public class GlobalSystemSectionTest {
   }
 
   @Test
-  public void no_realm() throws Exception {
+  public void no_realm() {
     when(securityRealmFactory.getRealm()).thenReturn(null);
 
     ProtobufSystemInfo.Section protobuf = underTest.toProtobuf();
@@ -71,7 +71,7 @@ public class GlobalSystemSectionTest {
   }
 
   @Test
-  public void get_enabled_identity_providers() throws Exception {
+  public void get_enabled_identity_providers() {
     identityProviderRepository.addIdentityProvider(new TestIdentityProvider()
       .setKey("github")
       .setName("GitHub")
@@ -90,7 +90,7 @@ public class GlobalSystemSectionTest {
   }
 
   @Test
-  public void get_enabled_identity_providers_allowing_users_to_signup() throws Exception {
+  public void get_enabled_identity_providers_allowing_users_to_signup() {
     identityProviderRepository.addIdentityProvider(new TestIdentityProvider()
       .setKey("github")
       .setName("GitHub")

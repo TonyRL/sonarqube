@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -37,7 +37,7 @@ import org.junit.Test;
 import org.sonar.wsclient.issue.Issue;
 import org.sonar.wsclient.issue.IssueQuery;
 import org.sonarqube.ws.ProjectAnalyses;
-import org.sonarqube.ws.client.projectanalysis.SearchRequest;
+import org.sonarqube.ws.client.projectanalyses.SearchRequest;
 import util.ItUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -243,7 +243,7 @@ public class IssueCreationDateQPChangedTest extends AbstractIssueTest {
 
     private final String path;
 
-    private SourceCode(String path) {
+    SourceCode(String path) {
       this.path = path;
     }
   }
@@ -256,7 +256,7 @@ public class IssueCreationDateQPChangedTest extends AbstractIssueTest {
     ;
     private final String key;
 
-    private Component(String key) {
+    Component(String key) {
       this.key = key;
     }
 
@@ -275,7 +275,7 @@ public class IssueCreationDateQPChangedTest extends AbstractIssueTest {
 
     private final String path;
 
-    private QProfile(String path) {
+    QProfile(String path) {
       this.path = path;
     }
   }
@@ -343,11 +343,11 @@ public class IssueCreationDateQPChangedTest extends AbstractIssueTest {
 
     private final Date date;
 
-    private IssueCreationDate() {
+    IssueCreationDate() {
       this.date = null;
     }
 
-    private IssueCreationDate(Date date) {
+    IssueCreationDate(Date date) {
       this.date = date;
     }
 
@@ -358,8 +358,8 @@ public class IssueCreationDateQPChangedTest extends AbstractIssueTest {
     private static Date getAnalysisDate(Function<List<ProjectAnalyses.Analysis>, Optional<ProjectAnalyses.Analysis>> chooseItem) {
       return Optional.of(
         ItUtils.newWsClient(ORCHESTRATOR)
-          .projectAnalysis()
-          .search(SearchRequest.builder().setProject(SAMPLE_PROJECT_KEY).build())
+          .projectAnalyses()
+          .search(new SearchRequest().setProject(SAMPLE_PROJECT_KEY))
           .getAnalysesList())
         .flatMap(chooseItem)
         .map(ProjectAnalyses.Analysis::getDate)

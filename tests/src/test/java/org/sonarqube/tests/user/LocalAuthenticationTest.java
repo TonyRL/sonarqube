@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -26,24 +26,26 @@ import org.junit.After;
 import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
-import org.sonarqube.pageobjects.LoginPage;
-import org.sonarqube.pageobjects.Navigation;
+import org.sonarqube.qa.util.Tester;
+import org.sonarqube.qa.util.pageobjects.LoginPage;
+import org.sonarqube.qa.util.pageobjects.Navigation;
 import org.sonarqube.tests.Category4Suite;
-import org.sonarqube.tests.Tester;
-import org.sonarqube.ws.WsUserTokens;
-import org.sonarqube.ws.WsUsers;
-import org.sonarqube.ws.WsUsers.CreateWsResponse.User;
+import org.sonarqube.ws.UserTokens;
+import org.sonarqube.ws.Users;
+import org.sonarqube.ws.Users.CreateWsResponse.User;
 import org.sonarqube.ws.client.GetRequest;
 import org.sonarqube.ws.client.HttpConnector;
 import org.sonarqube.ws.client.PostRequest;
 import org.sonarqube.ws.client.WsClient;
 import org.sonarqube.ws.client.WsClientFactories;
 import org.sonarqube.ws.client.WsResponse;
-import org.sonarqube.ws.client.user.CreateRequest;
-import org.sonarqube.ws.client.usertoken.GenerateWsRequest;
-import org.sonarqube.ws.client.usertoken.RevokeWsRequest;
-import org.sonarqube.ws.client.usertoken.SearchWsRequest;
-import org.sonarqube.ws.client.usertoken.UserTokensService;
+import org.sonarqube.ws.client.users.CreateRequest;
+import org.sonarqube.ws.client.users.DeactivateRequest;
+import org.sonarqube.ws.client.usertokens.GenerateRequest;
+import org.sonarqube.ws.client.usertokens.RevokeRequest;
+import org.sonarqube.ws.client.usertokens.SearchRequest;
+import org.sonarqube.ws.client.usertokens.UserTokensService;
+import util.selenium.Selenese;
 
 import static java.lang.String.format;
 import static java.util.Arrays.asList;
@@ -60,7 +62,7 @@ public class LocalAuthenticationTest {
   public Tester tester = new Tester(orchestrator).disableOrganizations();
 
   @After
-  public void resetProperties() throws Exception {
+  public void resetProperties() {
     resetSettings(orchestrator, null, "sonar.forceAuthentication");
   }
 
@@ -105,7 +107,7 @@ public class LocalAuthenticationTest {
     User user = tester.users().generate();
     String tokenName = "Validate token based authentication";
     UserTokensService tokensService = tester.wsClient().userTokens();
-    WsUserTokens.GenerateWsResponse generateWsResponse = tokensService.generate(new GenerateWsRequest()
+    UserTokens.GenerateWsResponse generateWsResponse = tokensService.generate(new GenerateRequest()
       .setLogin(user.getLogin())
       .setName(tokenName));
     WsClient wsClient = WsClientFactories.getDefault().newClient(HttpConnector.newBuilder()
@@ -116,10 +118,10 @@ public class LocalAuthenticationTest {
 
     assertThat(response.content()).isEqualTo("{\"valid\":true}");
 
-    WsUserTokens.SearchWsResponse searchResponse = tokensService.search(new SearchWsRequest().setLogin(user.getLogin()));
+    UserTokens.SearchWsResponse searchResponse = tokensService.search(new SearchRequest().setLogin(user.getLogin()));
     assertThat(searchResponse.getUserTokensCount()).isEqualTo(1);
-    tokensService.revoke(new RevokeWsRequest().setLogin(user.getLogin()).setName(tokenName));
-    searchResponse = tokensService.search(new SearchWsRequest().setLogin(user.getLogin()));
+    tokensService.revoke(new RevokeRequest().setLogin(user.getLogin()).setName(tokenName));
+    searchResponse = tokensService.search(new SearchRequest().setLogin(user.getLogin()));
     assertThat(searchResponse.getUserTokensCount()).isEqualTo(0);
   }
 
@@ -152,7 +154,7 @@ public class LocalAuthenticationTest {
   }
 
   @Test
-  public void allow_user_login_with_2_characters() throws Exception {
+  public void allow_user_login_with_2_characters() {
     tester.users().generate(u -> u.setLogin("jo").setPassword("password"));
 
     assertThat(checkAuthenticationWithAuthenticateWebService("jo", "password")).isTrue();
@@ -162,7 +164,7 @@ public class LocalAuthenticationTest {
   public void test_authentication_in_ui() {
     tester.users().generate(u -> u.setLogin("simple-user").setPassword("password"));
     tester.users().generateAdministrator(u -> u.setLogin("admin-user").setPassword("admin-user"));
-    tester.runHtmlTests(
+    Selenese.runSelenese(orchestrator,
       "/user/LocalAuthenticationTest/login_successful.html",
       "/user/LocalAuthenticationTest/login_wrong_password.html",
       "/user/LocalAuthenticationTest/should_not_be_unlogged_when_going_to_login_page.html");
@@ -172,8 +174,8 @@ public class LocalAuthenticationTest {
   public void test_authentication_redirects_in_ui() {
     tester.users().generate(u -> u.setLogin("simple-user").setPassword("password"));
     tester.users().generateAdministrator(u -> u.setLogin("admin-user").setPassword("admin-user"));
-    tester.runHtmlTests(
-    "/user/LocalAuthenticationTest/redirect_to_login_when_not_enough_privilege.html",
+    Selenese.runSelenese(orchestrator,
+      "/user/LocalAuthenticationTest/redirect_to_login_when_not_enough_privilege.html",
       // SONAR-2132
       "/user/LocalAuthenticationTest/redirect_to_original_url_after_direct_login.html",
       "/user/LocalAuthenticationTest/redirect_to_original_url_with_parameters_after_direct_login.html",
@@ -187,7 +189,7 @@ public class LocalAuthenticationTest {
     tester.users().generateAdministrator(u -> u.setLogin("admin-user").setPassword("admin-user"));
     setServerProperty(orchestrator, "sonar.forceAuthentication", "true");
 
-    tester.runHtmlTests(
+    Selenese.runSelenese(orchestrator,
       // SONAR-3473
       "/user/LocalAuthenticationTest/force-authentication.html");
   }
@@ -213,7 +215,7 @@ public class LocalAuthenticationTest {
    * SONAR-7640
    */
   @Test
-  public void authentication_with_any_ws() throws Exception {
+  public void authentication_with_any_ws() {
     tester.users().generate(u -> u.setLogin("test").setPassword("password"));
 
     assertThat(checkAuthenticationWithAnyWS("test", "password").code()).isEqualTo(200);
@@ -234,20 +236,19 @@ public class LocalAuthenticationTest {
   @Test
   public void authenticate_on_user_that_was_disabled() {
     User user = tester.users().generate(u -> u.setLogin("test").setPassword("password"));
-    tester.users().service().deactivate(user.getLogin());
+    tester.users().service().deactivate(new DeactivateRequest().setLogin(user.getLogin()));
 
-    tester.users().service().create(CreateRequest.builder()
+    tester.users().service().create(new CreateRequest()
       .setLogin("test")
       .setName("Test")
       .setEmail("test@email.com")
       .setScmAccounts(asList("test1", "test2"))
-      .setPassword("password")
-      .build());
+      .setPassword("password"));
 
     assertThat(checkAuthenticationWithAuthenticateWebService("test", "password")).isTrue();
     assertThat(tester.users().getByLogin("test").get())
-      .extracting(WsUsers.SearchWsResponse.User::getLogin, WsUsers.SearchWsResponse.User::getName, WsUsers.SearchWsResponse.User::getEmail, u -> u.getScmAccounts().getScmAccountsList(),
-        WsUsers.SearchWsResponse.User::getExternalIdentity, WsUsers.SearchWsResponse.User::getExternalProvider)
+      .extracting(Users.SearchWsResponse.User::getLogin, Users.SearchWsResponse.User::getName, Users.SearchWsResponse.User::getEmail, u -> u.getScmAccounts().getScmAccountsList(),
+        Users.SearchWsResponse.User::getExternalIdentity, Users.SearchWsResponse.User::getExternalProvider)
       .containsOnly("test", "Test", "test@email.com", asList("test1", "test2"), "test", "sonarqube");
   }
 

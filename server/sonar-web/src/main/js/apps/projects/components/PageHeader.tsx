@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -23,15 +23,19 @@ import SearchFilterContainer from '../filters/SearchFilterContainer';
 import Tooltip from '../../../components/controls/Tooltip';
 import PerspectiveSelect from './PerspectiveSelect';
 import ProjectsSortingSelect from './ProjectsSortingSelect';
+import { CurrentUser, isLoggedIn, HomePageType } from '../../../app/types';
+import HomePageSelect from '../../../components/controls/HomePageSelect';
 import { translate } from '../../../helpers/l10n';
 import { RawQuery } from '../../../helpers/query';
 import { Project } from '../types';
 
 interface Props {
-  currentUser?: { isLoggedIn: boolean };
-  isFavorite?: boolean;
+  currentUser: CurrentUser;
+  isFavorite: boolean;
   loading: boolean;
   onPerspectiveChange: (x: { view: string; visualization?: string }) => void;
+  onQueryChange: (change: RawQuery) => void;
+  onSonarCloud: boolean;
   onSortChange: (sort: string, desc: boolean) => void;
   organization?: { key: string };
   projects?: Project[];
@@ -45,7 +49,7 @@ interface Props {
 export default function PageHeader(props: Props) {
   const { loading, total, projects, currentUser, view } = props;
   const limitReached = projects != null && total != null && projects.length < total;
-  const defaultOption = currentUser && currentUser.isLoggedIn ? 'name' : 'analysis_date';
+  const defaultOption = isLoggedIn(currentUser) ? 'name' : 'analysis_date';
 
   return (
     <header className="page-header projects-topbar-items">
@@ -79,8 +83,7 @@ export default function PageHeader(props: Props) {
       )}
 
       <SearchFilterContainer
-        className="projects-topbar-item projects-topbar-item-search"
-        isFavorite={props.isFavorite}
+        onQueryChange={props.onQueryChange}
         organization={props.organization}
         query={props.query}
       />
@@ -97,6 +100,13 @@ export default function PageHeader(props: Props) {
           </span>
         )}
       </div>
+
+      {props.isFavorite && (
+        <HomePageSelect
+          className="huge-spacer-left"
+          currentPage={{ type: HomePageType.MyProjects }}
+        />
+      )}
     </header>
   );
 }

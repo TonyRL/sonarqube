@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -18,8 +18,8 @@
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 import * as React from 'react';
-import Modal from 'react-modal';
 import { restoreQualityProfile } from '../../../api/quality-profiles';
+import Modal from '../../../components/controls/Modal';
 import { translate, translateWithParameters } from '../../../helpers/l10n';
 
 interface Props {
@@ -90,35 +90,32 @@ export default class RestoreProfileForm extends React.PureComponent<Props, State
     const { loading, profile, ruleFailures, ruleSuccesses } = this.state;
 
     return (
-      <Modal
-        isOpen={true}
-        contentLabel={header}
-        className="modal"
-        overlayClassName="modal-overlay"
-        onRequestClose={this.props.onClose}>
+      <Modal contentLabel={header} onRequestClose={this.props.onClose}>
         <form id="restore-profile-form" onSubmit={this.handleFormSubmit}>
           <div className="modal-head">
             <h2>{header}</h2>
           </div>
 
           <div className="modal-body">
-            {profile != null && ruleSuccesses != null ? ruleFailures ? (
-              <div className="alert alert-warning">
-                {translateWithParameters(
-                  'quality_profiles.restore_profile.warning',
-                  profile.name,
-                  ruleSuccesses,
-                  ruleFailures
-                )}
-              </div>
-            ) : (
-              <div className="alert alert-success">
-                {translateWithParameters(
-                  'quality_profiles.restore_profile.success',
-                  profile.name,
-                  ruleSuccesses
-                )}
-              </div>
+            {profile != null && ruleSuccesses != null ? (
+              ruleFailures ? (
+                <div className="alert alert-warning">
+                  {translateWithParameters(
+                    'quality_profiles.restore_profile.warning',
+                    profile.name,
+                    ruleSuccesses,
+                    ruleFailures
+                  )}
+                </div>
+              ) : (
+                <div className="alert alert-success">
+                  {translateWithParameters(
+                    'quality_profiles.restore_profile.success',
+                    profile.name,
+                    ruleSuccesses
+                  )}
+                </div>
+              )
             ) : (
               <div className="modal-field">
                 <label htmlFor="restore-profile-backup">

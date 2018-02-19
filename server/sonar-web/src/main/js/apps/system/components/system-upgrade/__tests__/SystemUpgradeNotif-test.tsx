@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -17,6 +17,7 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
+/* eslint-disable import/order */
 import * as React from 'react';
 import { mount, shallow } from 'enzyme';
 import { click } from '../../../../../helpers/testUtils';
@@ -80,29 +81,20 @@ beforeEach(() => {
 
 it('should display correctly', async () => {
   const wrapper = shallow(<SystemUpgradeNotif />);
-  expect(wrapper).toMatchSnapshot();
-
-  const instance = wrapper.instance() as SystemUpgradeNotif;
-  instance.mounted = true;
-  instance.fetchSystemUpgrade();
-
+  expect(wrapper.type()).toBeNull();
   await new Promise(setImmediate);
   wrapper.update();
   expect(wrapper).toMatchSnapshot();
 });
 
 it('should display nothing', async () => {
-  getSystemUpgrades.mockImplementationOnce(() =>
-    Promise.resolve({ updateCenterRefresh: '', upgrades: [] })
-  );
+  getSystemUpgrades.mockImplementationOnce(() => {
+    return Promise.resolve({ updateCenterRefresh: '', upgrades: [] });
+  });
   const wrapper = shallow(<SystemUpgradeNotif />);
-  const instance = wrapper.instance() as SystemUpgradeNotif;
-  instance.mounted = true;
-  instance.fetchSystemUpgrade();
-
   await new Promise(setImmediate);
   wrapper.update();
-  expect(wrapper).toMatchSnapshot();
+  expect(wrapper.type()).toBeNull();
 });
 
 it('should fetch upgrade when mounting', () => {
@@ -112,12 +104,8 @@ it('should fetch upgrade when mounting', () => {
 
 it('should open the upgrade form', async () => {
   const wrapper = shallow(<SystemUpgradeNotif />);
-  const instance = wrapper.instance() as SystemUpgradeNotif;
-  instance.mounted = true;
-  instance.fetchSystemUpgrade();
   await new Promise(setImmediate);
   wrapper.update();
-
   click(wrapper.find('button'));
   expect(wrapper.find('SystemUpgradeForm').exists()).toBeTruthy();
 });

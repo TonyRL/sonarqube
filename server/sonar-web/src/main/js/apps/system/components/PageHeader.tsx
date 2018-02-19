@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -25,8 +25,9 @@ interface Props {
   isCluster: boolean;
   loading: boolean;
   logLevel: string;
-  showActions: boolean;
   onLogLevelChange: () => void;
+  serverId?: string;
+  showActions: boolean;
 }
 
 export default function PageHeader(props: Props) {
@@ -39,6 +40,7 @@ export default function PageHeader(props: Props) {
           canRestart={!props.isCluster}
           cluster={props.isCluster}
           logLevel={props.logLevel}
+          serverId={props.serverId}
           onLogLevelChange={props.onLogLevelChange}
         />
       )}

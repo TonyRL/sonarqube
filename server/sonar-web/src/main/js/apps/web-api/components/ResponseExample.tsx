@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -43,8 +43,8 @@ export default class ResponseExample extends React.PureComponent<Props, State> {
     this.fetchResponseExample();
   }
 
-  componentDidUpdate(nextProps: Props) {
-    if (nextProps.action !== this.props.action) {
+  componentDidUpdate(prevProps: Props) {
+    if (prevProps.action !== this.props.action) {
       this.fetchResponseExample();
     }
   }

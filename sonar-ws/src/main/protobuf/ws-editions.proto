@@ -21,7 +21,7 @@ syntax = "proto2";
 package sonarqube.ws.editions;
 
 option java_package = "org.sonarqube.ws";
-option java_outer_classname = "WsEditions";
+option java_outer_classname = "Editions";
 option optimize_for = SPEED;
 
 // GET api/editions/status

@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -17,7 +17,6 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-
 package org.sonar.db.component;
 
 import com.google.common.base.Joiner;
@@ -30,9 +29,11 @@ import javax.annotation.Nullable;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.sonar.api.resources.Scopes;
+import org.sonar.db.WildcardPosition;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static java.lang.String.format;
+import static org.sonar.db.DaoDatabaseUtils.buildLikeValue;
 import static org.sonar.db.component.ComponentValidator.checkComponentKey;
 import static org.sonar.db.component.ComponentValidator.checkComponentName;
 import static org.sonar.db.component.DbTagsReader.readDbTags;
@@ -138,7 +139,6 @@ public class ComponentDto {
   private String moduleUuid;
   private String moduleUuidPath;
   private String copyComponentUuid;
-  private String developerUuid;
   private String scope;
   private String qualifier;
   private String path;
@@ -157,6 +157,10 @@ public class ComponentDto {
     checkArgument(!Strings.isNullOrEmpty(parent.getUuidPath()));
     checkArgument(!Strings.isNullOrEmpty(parent.uuid()));
     return parent.getUuidPath() + parent.uuid() + UUID_PATH_SEPARATOR;
+  }
+
+  public String getUuidPathLikeIncludingSelf() {
+    return buildLikeValue(formatUuidPathFromParent(this), WildcardPosition.AFTER);
   }
 
   public Long getId() {
@@ -198,7 +202,7 @@ public class ComponentDto {
   /**
    * List of ancestor UUIDs, ordered by depth in tree.
    */
-  List<String> getUuidPathAsList() {
+  public List<String> getUuidPathAsList() {
     return UUID_PATH_SPLITTER.splitToList(uuidPath);
   }
 
@@ -401,16 +405,6 @@ public class ComponentDto {
     return this;
   }
 
-  @CheckForNull
-  public String getDeveloperUuid() {
-    return developerUuid;
-  }
-
-  public ComponentDto setDeveloperUuid(@Nullable String developerUuid) {
-    this.developerUuid = developerUuid;
-    return this;
-  }
-
   public Date getCreatedAt() {
     return createdAt;
   }
@@ -488,7 +482,6 @@ public class ComponentDto {
       .append("rootUuid", rootUuid)
       .append("mainBranchProjectUuid", mainBranchProjectUuid)
       .append("copyComponentUuid", copyComponentUuid)
-      .append("developerUuid", developerUuid)
       .append("path", path)
       .append("deprecatedKey", deprecatedKey)
       .append("name", name)
@@ -513,7 +506,6 @@ public class ComponentDto {
     copy.moduleUuid = moduleUuid;
     copy.moduleUuidPath = moduleUuidPath;
     copy.copyComponentUuid = copyComponentUuid;
-    copy.developerUuid = developerUuid;
     copy.scope = scope;
     copy.qualifier = qualifier;
     copy.path = path;

@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -42,6 +42,7 @@ import org.sonar.db.user.UserDto;
 import org.sonar.server.component.index.ComponentIndex;
 import org.sonar.server.component.index.ComponentIndexDefinition;
 import org.sonar.server.component.index.ComponentIndexer;
+import org.sonar.server.component.ws.SearchAction.SearchRequest;
 import org.sonar.server.es.EsTester;
 import org.sonar.server.i18n.I18nRule;
 import org.sonar.server.organization.TestDefaultOrganizationProvider;
@@ -50,10 +51,9 @@ import org.sonar.server.permission.index.PermissionIndexerTester;
 import org.sonar.server.tester.UserSessionRule;
 import org.sonar.server.ws.TestRequest;
 import org.sonar.server.ws.WsActionTester;
+import org.sonarqube.ws.Components.Component;
+import org.sonarqube.ws.Components.SearchWsResponse;
 import org.sonarqube.ws.MediaTypes;
-import org.sonarqube.ws.WsComponents.Component;
-import org.sonarqube.ws.WsComponents.SearchWsResponse;
-import org.sonarqube.ws.client.component.SearchWsRequest;
 
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptySet;
@@ -123,6 +123,12 @@ public class SearchActionTest {
 
     assertThat(action.params()).hasSize(6);
 
+    WebService.Param pageSize = action.param("ps");
+    assertThat(pageSize.isRequired()).isFalse();
+    assertThat(pageSize.defaultValue()).isEqualTo("100");
+    assertThat(pageSize.maximumValue()).isEqualTo(500);
+    assertThat(pageSize.description()).isEqualTo("Page size. Must be greater than 0 and less than 500");
+
     WebService.Param qualifiers = action.param("qualifiers");
     assertThat(qualifiers.isRequired()).isTrue();
 
@@ -135,31 +141,31 @@ public class SearchActionTest {
   }
 
   @Test
-  public void search_by_key_query() throws IOException {
+  public void search_by_key_query() {
     insertProjectsAuthorizedForUser(
       ComponentTesting.newPrivateProjectDto(db.getDefaultOrganization()).setDbKey("project-_%-key"),
       ComponentTesting.newPrivateProjectDto(db.getDefaultOrganization()).setDbKey("project-key-without-escaped-characters"));
 
-    SearchWsResponse response = call(new SearchWsRequest().setQuery("project-_%-key").setQualifiers(singletonList(PROJECT)));
+    SearchWsResponse response = call(new SearchRequest().setQuery("project-_%-key").setQualifiers(singletonList(PROJECT)));
 
     assertThat(response.getComponentsList()).extracting(Component::getKey).containsOnly("project-_%-key");
   }
 
   @Test
-  public void search_for_files() throws IOException {
+  public void search_for_files() {
     ComponentDto project = ComponentTesting.newPrivateProjectDto(db.getDefaultOrganization());
     ComponentDto file1 = newFileDto(project).setDbKey("file1");
     ComponentDto file2 = newFileDto(project).setDbKey("file2");
     db.components().insertComponents(project, file1, file2);
     setBrowsePermissionOnUserAndIndex(project);
 
-    SearchWsResponse response = call(new SearchWsRequest().setQuery(file1.getDbKey()).setQualifiers(singletonList(FILE)));
+    SearchWsResponse response = call(new SearchRequest().setQuery(file1.getDbKey()).setQualifiers(singletonList(FILE)));
 
     assertThat(response.getComponentsList()).extracting(Component::getKey).containsOnly(file1.getDbKey());
   }
 
   @Test
-  public void search_with_pagination() throws IOException {
+  public void search_with_pagination() {
     OrganizationDto organizationDto = db.organizations().insert();
     List<ComponentDto> componentDtoList = new ArrayList<>();
     for (int i = 1; i <= 9; i++) {
@@ -167,25 +173,25 @@ public class SearchActionTest {
     }
     insertProjectsAuthorizedForUser(componentDtoList.toArray(new ComponentDto[] {}));
 
-    SearchWsResponse response = call(new SearchWsRequest().setOrganization(organizationDto.getKey()).setPage(2).setPageSize(3).setQualifiers(singletonList(PROJECT)));
+    SearchWsResponse response = call(new SearchRequest().setOrganization(organizationDto.getKey()).setPage(2).setPageSize(3).setQualifiers(singletonList(PROJECT)));
 
     assertThat(response.getComponentsList()).extracting(Component::getKey).containsExactly("project-key-4", "project-key-5", "project-key-6");
   }
 
   @Test
-  public void search_with_language() throws IOException {
+  public void search_with_language() {
     OrganizationDto organizationDto = db.organizations().insert();
     insertProjectsAuthorizedForUser(
       ComponentTesting.newPrivateProjectDto(organizationDto).setDbKey("java-project").setLanguage("java"),
       ComponentTesting.newPrivateProjectDto(organizationDto).setDbKey("cpp-project").setLanguage("cpp"));
 
-    SearchWsResponse response = call(new SearchWsRequest().setOrganization(organizationDto.getKey()).setLanguage("java").setQualifiers(singletonList(PROJECT)));
+    SearchWsResponse response = call(new SearchRequest().setOrganization(organizationDto.getKey()).setLanguage("java").setQualifiers(singletonList(PROJECT)));
 
     assertThat(response.getComponentsList()).extracting(Component::getKey).containsOnly("java-project");
   }
 
   @Test
-  public void return_only_components_from_projects_on_which_user_has_browse_permission() throws IOException {
+  public void return_only_components_from_projects_on_which_user_has_browse_permission() {
     ComponentDto project1 = ComponentTesting.newPrivateProjectDto(db.getDefaultOrganization());
     ComponentDto file1 = newFileDto(project1).setDbKey("file1");
     ComponentDto file2 = newFileDto(project1).setDbKey("file2");
@@ -194,7 +200,7 @@ public class SearchActionTest {
     db.components().insertComponents(project1, file1, file2, project2, file3);
     setBrowsePermissionOnUserAndIndex(project1);
 
-    SearchWsResponse response = call(new SearchWsRequest().setQualifiers(singletonList(FILE)));
+    SearchWsResponse response = call(new SearchRequest().setQualifiers(singletonList(FILE)));
 
     assertThat(response.getComponentsList()).extracting(Component::getKey)
       .containsExactlyInAnyOrder(file1.getDbKey(), file2.getDbKey());
@@ -202,7 +208,7 @@ public class SearchActionTest {
   }
 
   @Test
-  public void return_project_key() throws IOException {
+  public void return_project_key() {
     ComponentDto project = ComponentTesting.newPublicProjectDto(db.getDefaultOrganization());
     ComponentDto module = ComponentTesting.newModuleDto(project);
     ComponentDto file1 = newFileDto(module).setDbKey("file1");
@@ -211,7 +217,7 @@ public class SearchActionTest {
     db.components().insertComponents(project, module, file1, file2, file3);
     setBrowsePermissionOnUserAndIndex(project);
 
-    SearchWsResponse response = call(new SearchWsRequest().setQualifiers(asList(PROJECT, MODULE, FILE)));
+    SearchWsResponse response = call(new SearchRequest().setQualifiers(asList(PROJECT, MODULE, FILE)));
 
     assertThat(response.getComponentsList()).extracting(Component::getKey, Component::getProject)
       .containsOnly(tuple(project.getDbKey(), project.getDbKey()),
@@ -227,7 +233,7 @@ public class SearchActionTest {
     ComponentDto branch = db.components().insertProjectBranch(project);
     setBrowsePermissionOnUserAndIndex(project, branch);
 
-    SearchWsResponse response = call(new SearchWsRequest().setQualifiers(asList(PROJECT, MODULE, FILE)));
+    SearchWsResponse response = call(new SearchRequest().setQualifiers(asList(PROJECT, MODULE, FILE)));
 
     assertThat(response.getComponentsList()).extracting(Component::getKey)
       .containsOnly(project.getDbKey());
@@ -238,7 +244,7 @@ public class SearchActionTest {
     expectedException.expect(IllegalArgumentException.class);
     expectedException.expectMessage("Value of parameter 'qualifiers' (Unknown-Qualifier) must be one of: [BRC, DIR, FIL, TRK]");
 
-    call(new SearchWsRequest().setQualifiers(singletonList("Unknown-Qualifier")));
+    call(new SearchRequest().setQualifiers(singletonList("Unknown-Qualifier")));
   }
 
   @Test
@@ -246,7 +252,7 @@ public class SearchActionTest {
     expectedException.expect(IllegalArgumentException.class);
     expectedException.expectMessage("The 'qualifiers' parameter is missing");
 
-    call(new SearchWsRequest());
+    call(new SearchRequest());
   }
 
   @Test
@@ -279,7 +285,7 @@ public class SearchActionTest {
     Arrays.stream(projects).forEach(project -> authorizationIndexerTester.allowOnlyUser(project, user));
   }
 
-  private SearchWsResponse call(SearchWsRequest wsRequest) {
+  private SearchWsResponse call(SearchRequest wsRequest) {
     TestRequest request = ws.newRequest();
     setNullable(wsRequest.getOrganization(), p -> request.setParam(PARAM_ORGANIZATION, p));
     setNullable(wsRequest.getLanguage(), p -> request.setParam(PARAM_LANGUAGE, p));

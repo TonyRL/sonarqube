@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -31,10 +31,12 @@ it('should match snapshot', () => {
 
 it('should not be displayed', () => {
   expect(
-    shallow(<UnconnectedOrganization organization={organization} shouldBeDisplayed={false} />)
-  ).toMatchSnapshot();
+    shallow(
+      <UnconnectedOrganization organization={organization} shouldBeDisplayed={false} />
+    ).type()
+  ).toBeNull();
 
   expect(
-    shallow(<UnconnectedOrganization organization={null} shouldBeDisplayed={true} />)
-  ).toMatchSnapshot();
+    shallow(<UnconnectedOrganization organization={null} shouldBeDisplayed={true} />).type()
+  ).toBeNull();
 });

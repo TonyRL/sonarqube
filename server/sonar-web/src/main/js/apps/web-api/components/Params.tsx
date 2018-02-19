@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -55,19 +55,19 @@ export default function Params({ params, showDeprecated, showInternal }: Props) 
                 )}
 
                 {showDeprecated &&
-                param.deprecatedKey && (
-                  <div className="little-spacer-top">
-                    <code>{param.deprecatedKey}</code>
-                  </div>
-                )}
+                  param.deprecatedKey && (
+                    <div className="little-spacer-top">
+                      <code>{param.deprecatedKey}</code>
+                    </div>
+                  )}
 
                 {showDeprecated &&
-                param.deprecatedKey &&
-                param.deprecatedKeySince && (
-                  <div className="little-spacer-top">
-                    <DeprecatedBadge since={param.deprecatedKeySince} />
-                  </div>
-                )}
+                  param.deprecatedKey &&
+                  param.deprecatedKeySince && (
+                    <div className="little-spacer-top">
+                      <DeprecatedBadge since={param.deprecatedKeySince} />
+                    </div>
+                  )}
 
                 <div className="note little-spacer-top">
                   {param.required ? 'required' : 'optional'}

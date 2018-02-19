@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -72,6 +72,7 @@ public class ReportPersistComponentsStepTest extends BaseStepTest {
   private static final String PROJECT_KEY = "PROJECT_KEY";
   private static final String MODULE_KEY = "MODULE_KEY";
   private static final String ORGANIZATION_UUID = "org1";
+  private static final String QUALITY_GATE_UUID = "gg1";
 
   @Rule
   public DbTester db = DbTester.create(System2.INSTANCE);
@@ -81,7 +82,7 @@ public class ReportPersistComponentsStepTest extends BaseStepTest {
   public MutableDbIdsRepositoryRule dbIdsRepository = MutableDbIdsRepositoryRule.create(treeRootHolder);
   @Rule
   public AnalysisMetadataHolderRule analysisMetadataHolder = new AnalysisMetadataHolderRule()
-    .setOrganizationUuid(ORGANIZATION_UUID);
+    .setOrganizationUuid(ORGANIZATION_UUID, QUALITY_GATE_UUID);
 
   private System2 system2 = mock(System2.class);
   private DbClient dbClient = db.getDbClient();

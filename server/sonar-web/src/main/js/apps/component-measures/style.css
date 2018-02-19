@@ -1,3 +1,22 @@
+/*
+ * SonarQube
+ * Copyright (C) 2009-2018 SonarSource SA
+ * mailto:info AT sonarsource DOT com
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 3 of the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software Foundation,
+ * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+ */
 .domain-measures-value {
   margin-right: 4px;
 }
@@ -12,8 +31,8 @@
 }
 
 .domain-measures-leak {
-  background-color: #fbf3d5;
-  border: 1px solid #eae3c7;
+  background-color: var(--leakColor);
+  border: 1px solid var(--leakBorderColor);
   padding: 4px 6px;
 }
 
@@ -24,8 +43,8 @@
 
 .domain-measures-leak-header {
   display: inline-block;
-  background-color: #fbf3d5;
-  border: 1px solid #eae3c7;
+  background-color: var(--leakColor);
+  border: 1px solid var(--leakBorderColor);
   padding: 4px 10px;
   white-space: nowrap;
 }
@@ -63,7 +82,7 @@
 }
 
 .measure-details-component-row.selected {
-  background-color: #cae3f2 !important;
+  background-color: var(--lightBlue) !important;
 }
 
 .measure-details-component-cell {
@@ -81,7 +100,7 @@
   line-height: 18px;
   margin-top: -2px;
   margin-bottom: -2px;
-  font-size: 12px;
+  font-size: var(--smallFontSize);
 }
 
 .domain-measures-value .level {
@@ -99,6 +118,18 @@
 
 .measure-details-treemap-legend.color-box-legend {
   margin-right: 0;
+}
+
+.measure-details-viewer .issue-list {
+  /* no math, just a good guess */
+  min-width: 600px;
+  width: 800px;
+}
+
+@media (max-width: 1320px) {
+  .measure-details-viewer .issue-list {
+    width: calc(60vw - 80px);
+  }
 }
 
 .measure-view-select {
@@ -122,7 +153,7 @@
 
 .measure-overview-bubble-chart {
   position: relative;
-  border: 1px solid #e6e6e6;
+  border: 1px solid var(--barBorderColor);
   background-color: #fff;
 }
 
@@ -135,7 +166,7 @@
   display: flex;
   align-items: center;
   padding: 16px;
-  border-bottom: 1px solid #e6e6e6;
+  border-bottom: 1px solid var(--barBorderColor);
 }
 
 .measure-overview-bubble-chart-title {
@@ -151,15 +182,15 @@
 
 .measure-overview-bubble-chart-footer {
   padding: 15px 60px;
-  border-top: 1px solid #e6e6e6;
+  border-top: 1px solid var(--barBorderColor);
   text-align: center;
-  font-size: 12px;
+  font-size: var(--smallFontSize);
   line-height: 1.4;
 }
 
 .measure-overview-bubble-chart-axis {
-  color: #777;
-  font-size: 12px;
+  color: var(--secondFontColor);
+  font-size: var(--smallFontSize);
 }
 
 .measure-overview-bubble-chart-axis.x {

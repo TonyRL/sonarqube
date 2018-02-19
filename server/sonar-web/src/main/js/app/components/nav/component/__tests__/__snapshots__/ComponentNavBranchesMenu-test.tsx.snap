@@ -5,163 +5,179 @@ exports[`renders list 1`] = `
   className="dropdown-menu"
 >
   <div
-    className="search-box menu-search"
+    className="menu-search"
   >
-    <button
-      className="search-box-submit button-clean"
-    >
-      <i
-        className="icon-search-new"
-      />
-    </button>
-    <input
+    <SearchBox
       autoFocus={true}
-      className="search-box-input"
       onChange={[Function]}
       onKeyDown={[Function]}
-      placeholder="search_verb"
-      type="search"
+      placeholder="branches.search_for_branches"
       value=""
     />
   </div>
   <ul
     className="menu menu-vertically-limited"
   >
-    <ComponentNavBranchesMenuItem
-      branch={
-        Object {
-          "isMain": true,
-          "name": "master",
-        }
-      }
-      component={
-        Object {
-          "key": "component",
-        }
-      }
-      onSelect={[Function]}
-      selected={true}
-    />
-    <li
-      className="divider"
-    />
-    <li
-      className="dropdown-header"
+    <React.Fragment
+      key="master"
     >
-      branches.orphan_branches
-      <Tooltip
-        overlay="branches.orphan_branches.tooltip"
-        placement="bottom"
-      >
-        <i
-          className="icon-help spacer-left"
-        />
-      </Tooltip>
-    </li>
-    <ComponentNavBranchesMenuItem
-      branch={
-        Object {
-          "isMain": false,
-          "isOrphan": true,
-          "mergeBranch": "master",
-          "name": "baz",
-          "status": Object {
-            "bugs": 0,
-            "codeSmells": 0,
-            "vulnerabilities": 0,
-          },
-          "type": "SHORT",
+      <ComponentNavBranchesMenuItem
+        branch={
+          Object {
+            "isMain": true,
+            "name": "master",
+          }
         }
-      }
-      component={
-        Object {
-          "key": "component",
+        component={
+          Object {
+            "key": "component",
+          }
         }
-      }
-      onSelect={[Function]}
-      selected={false}
-    />
-    <ComponentNavBranchesMenuItem
-      branch={
-        Object {
-          "isMain": false,
-          "isOrphan": undefined,
-          "mergeBranch": "master",
-          "name": "foo",
-          "status": Object {
-            "bugs": 0,
-            "codeSmells": 0,
-            "vulnerabilities": 0,
-          },
-          "type": "SHORT",
-        }
-      }
-      component={
-        Object {
-          "key": "component",
-        }
-      }
-      onSelect={[Function]}
-      selected={false}
-    />
-    <li
-      className="divider"
-    />
-    <ComponentNavBranchesMenuItem
-      branch={
-        Object {
-          "isMain": false,
-          "name": "bar",
-          "type": "LONG",
-        }
-      }
-      component={
-        Object {
-          "key": "component",
-        }
-      }
-      onSelect={[Function]}
-      selected={false}
-    />
-    <li
-      className="divider"
-    />
-    <li
-      className="dropdown-header"
+        key="master"
+        onSelect={[Function]}
+        selected={true}
+      />
+    </React.Fragment>
+    <React.Fragment
+      key="baz"
     >
-      branches.orphan_branches
-      <Tooltip
-        overlay="branches.orphan_branches.tooltip"
-        placement="bottom"
+      <li
+        className="divider"
+      />
+      <li
+        className="dropdown-header"
       >
-        <i
-          className="icon-help spacer-left"
-        />
-      </Tooltip>
-    </li>
-    <ComponentNavBranchesMenuItem
-      branch={
-        Object {
-          "isMain": false,
-          "isOrphan": true,
-          "mergeBranch": "master",
-          "name": "baz",
-          "status": Object {
-            "bugs": 0,
-            "codeSmells": 0,
-            "vulnerabilities": 0,
-          },
-          "type": "SHORT",
+        branches.orphan_branches
+        <Tooltip
+          overlay="branches.orphan_branches.tooltip"
+          placement="bottom"
+        >
+          <i
+            className="icon-help spacer-left"
+          />
+        </Tooltip>
+      </li>
+      <ComponentNavBranchesMenuItem
+        branch={
+          Object {
+            "isMain": false,
+            "isOrphan": true,
+            "mergeBranch": "master",
+            "name": "baz",
+            "status": Object {
+              "bugs": 0,
+              "codeSmells": 0,
+              "vulnerabilities": 0,
+            },
+            "type": "SHORT",
+          }
         }
-      }
-      component={
-        Object {
-          "key": "component",
+        component={
+          Object {
+            "key": "component",
+          }
         }
-      }
-      onSelect={[Function]}
-      selected={false}
-    />
+        key="baz"
+        onSelect={[Function]}
+        selected={false}
+      />
+    </React.Fragment>
+    <React.Fragment
+      key="foo"
+    >
+      <ComponentNavBranchesMenuItem
+        branch={
+          Object {
+            "isMain": false,
+            "isOrphan": undefined,
+            "mergeBranch": "master",
+            "name": "foo",
+            "status": Object {
+              "bugs": 0,
+              "codeSmells": 0,
+              "vulnerabilities": 0,
+            },
+            "type": "SHORT",
+          }
+        }
+        component={
+          Object {
+            "key": "component",
+          }
+        }
+        key="foo"
+        onSelect={[Function]}
+        selected={false}
+      />
+    </React.Fragment>
+    <React.Fragment
+      key="bar"
+    >
+      <li
+        className="divider"
+      />
+      <ComponentNavBranchesMenuItem
+        branch={
+          Object {
+            "isMain": false,
+            "name": "bar",
+            "type": "LONG",
+          }
+        }
+        component={
+          Object {
+            "key": "component",
+          }
+        }
+        key="bar"
+        onSelect={[Function]}
+        selected={false}
+      />
+    </React.Fragment>
+    <React.Fragment
+      key="baz"
+    >
+      <li
+        className="divider"
+      />
+      <li
+        className="dropdown-header"
+      >
+        branches.orphan_branches
+        <Tooltip
+          overlay="branches.orphan_branches.tooltip"
+          placement="bottom"
+        >
+          <i
+            className="icon-help spacer-left"
+          />
+        </Tooltip>
+      </li>
+      <ComponentNavBranchesMenuItem
+        branch={
+          Object {
+            "isMain": false,
+            "isOrphan": true,
+            "mergeBranch": "master",
+            "name": "baz",
+            "status": Object {
+              "bugs": 0,
+              "codeSmells": 0,
+              "vulnerabilities": 0,
+            },
+            "type": "SHORT",
+          }
+        }
+        component={
+          Object {
+            "key": "component",
+          }
+        }
+        key="baz"
+        onSelect={[Function]}
+        selected={false}
+      />
+    </React.Fragment>
   </ul>
 </div>
 `;
@@ -171,70 +187,71 @@ exports[`searches 1`] = `
   className="dropdown-menu"
 >
   <div
-    className="search-box menu-search"
+    className="menu-search"
   >
-    <button
-      className="search-box-submit button-clean"
-    >
-      <i
-        className="icon-search-new"
-      />
-    </button>
-    <input
+    <SearchBox
       autoFocus={true}
-      className="search-box-input"
       onChange={[Function]}
       onKeyDown={[Function]}
-      placeholder="search_verb"
-      type="search"
+      placeholder="branches.search_for_branches"
       value="bar"
     />
   </div>
   <ul
     className="menu menu-vertically-limited"
   >
-    <ComponentNavBranchesMenuItem
-      branch={
-        Object {
-          "isMain": false,
-          "isOrphan": undefined,
-          "mergeBranch": "master",
-          "name": "foobar",
-          "status": Object {
-            "bugs": 0,
-            "codeSmells": 0,
-            "vulnerabilities": 0,
-          },
-          "type": "SHORT",
+    <React.Fragment
+      key="foobar"
+    >
+      <ComponentNavBranchesMenuItem
+        branch={
+          Object {
+            "isMain": false,
+            "isOrphan": undefined,
+            "mergeBranch": "master",
+            "name": "foobar",
+            "status": Object {
+              "bugs": 0,
+              "codeSmells": 0,
+              "vulnerabilities": 0,
+            },
+            "type": "SHORT",
+          }
         }
-      }
-      component={
-        Object {
-          "key": "component",
+        component={
+          Object {
+            "key": "component",
+          }
         }
-      }
-      onSelect={[Function]}
-      selected={true}
-    />
-    <li
-      className="divider"
-    />
-    <ComponentNavBranchesMenuItem
-      branch={
-        Object {
-          "isMain": false,
-          "name": "bar",
-          "type": "LONG",
+        key="foobar"
+        onSelect={[Function]}
+        selected={true}
+      />
+    </React.Fragment>
+    <React.Fragment
+      key="bar"
+    >
+      <li
+        className="divider"
+      />
+      <ComponentNavBranchesMenuItem
+        branch={
+          Object {
+            "isMain": false,
+            "name": "bar",
+            "type": "LONG",
+          }
         }
-      }
-      component={
-        Object {
-          "key": "component",
+        component={
+          Object {
+            "key": "component",
+          }
         }
-      }
-      onSelect={[Function]}
-      selected={false}
-    />
+        key="bar"
+        onSelect={[Function]}
+        selected={false}
+      />
+    </React.Fragment>
   </ul>
 </div>
 `;

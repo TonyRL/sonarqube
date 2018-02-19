@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -74,6 +74,8 @@ export default class App extends React.PureComponent {
 
   componentDidMount() {
     this.mounted = true;
+    // $FlowFixMe
+    document.body.classList.add('white-page');
     this.props.fetchMetrics();
     this.fetchMeasures(this.props);
     key.setScope('measures-files');
@@ -95,6 +97,8 @@ export default class App extends React.PureComponent {
 
   componentWillUnmount() {
     this.mounted = false;
+    // $FlowFixMe
+    document.body.classList.remove('white-page');
     key.deleteScope('measures-files');
     const footer = document.getElementById('footer');
     if (footer) {
@@ -117,7 +121,11 @@ export default class App extends React.PureComponent {
           });
         }
       },
-      () => this.setState({ loading: false })
+      () => {
+        if (this.mounted) {
+          this.setState({ loading: false });
+        }
+      }
     );
   };
 
@@ -182,20 +190,20 @@ export default class App extends React.PureComponent {
           />
         )}
         {metric == null &&
-        hasBubbleChart(query.metric) && (
-          <MeasureOverviewContainer
-            branch={branch && getBranchName(branch)}
-            className="layout-page-main"
-            rootComponent={component}
-            currentUser={this.props.currentUser}
-            domain={query.metric}
-            leakPeriod={leakPeriod}
-            metrics={metrics}
-            router={this.props.router}
-            selected={query.selected}
-            updateQuery={this.updateQuery}
-          />
-        )}
+          hasBubbleChart(query.metric) && (
+            <MeasureOverviewContainer
+              branch={branch && getBranchName(branch)}
+              className="layout-page-main"
+              rootComponent={component}
+              currentUser={this.props.currentUser}
+              domain={query.metric}
+              leakPeriod={leakPeriod}
+              metrics={metrics}
+              router={this.props.router}
+              selected={query.selected}
+              updateQuery={this.updateQuery}
+            />
+          )}
       </div>
     );
   }

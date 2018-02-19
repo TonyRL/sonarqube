@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -53,7 +53,7 @@ public class TrackerBaseInputFactoryTest {
     when(dbClient.openSession(false)).thenReturn(dbSession);
     when(dbClient.fileSourceDao()).thenReturn(fileSourceDao);
     when(movedFilesRepository.getOriginalFile(any(Component.class)))
-      .thenReturn(Optional.<MovedFilesRepository.OriginalFile>absent());
+      .thenReturn(Optional.absent());
   }
 
   @Test

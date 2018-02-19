@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -102,7 +102,7 @@ public class ServerPerfTest extends AbstractPerfTest {
     return end;
   }
 
-  private static long extractStopDate(List<String> lines) throws IOException {
+  private static long extractStopDate(List<String> lines) {
     Collections.reverse(lines);
     Date end = ServerLogs.extractFirstDate(lines);
     return end.getTime();

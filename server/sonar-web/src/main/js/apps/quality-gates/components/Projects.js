@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -44,12 +44,13 @@ export default class Projects extends React.PureComponent {
   }
 
   renderView() {
-    const { qualityGate, edit } = this.props;
+    const { qualityGate, edit, organization } = this.props;
 
     this.projectsView = new ProjectsView({
       qualityGate,
       edit,
-      container: this.refs.container
+      container: this.refs.container,
+      organization
     });
     this.projectsView.render();
   }

@@ -1,7 +1,7 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2016 SonarSource SA
- * mailto:contact AT sonarsource DOT com
+ * Copyright (C) 2009-2018 SonarSource SA
+ * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -22,5 +22,5 @@ import { shallow } from 'enzyme';
 import NewDuplicationsFilter from '../NewDuplicationsFilter';
 
 it('renders', () => {
-  expect(shallow(<NewDuplicationsFilter query={{}} />)).toMatchSnapshot();
+  expect(shallow(<NewDuplicationsFilter onQueryChange={jest.fn()} query={{}} />)).toMatchSnapshot();
 });

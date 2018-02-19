@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -131,13 +131,13 @@ export default class ListView extends React.PureComponent {
           selectedComponent={this.props.selectedKey}
         />
         {this.props.paging &&
-        this.props.components.length > 0 && (
-          <ListFooter
-            count={this.props.components.length}
-            total={this.props.paging.total}
-            loadMore={this.props.fetchMore}
-          />
-        )}
+          this.props.components.length > 0 && (
+            <ListFooter
+              count={this.props.components.length}
+              total={this.props.paging.total}
+              loadMore={this.props.fetchMore}
+            />
+          )}
       </div>
     );
   }

@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -18,10 +18,10 @@
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 import * as React from 'react';
-import Modal from 'react-modal';
-import * as Select from 'react-select';
 import { sortBy } from 'lodash';
 import { getImporters, createQualityProfile } from '../../../api/quality-profiles';
+import Modal from '../../../components/controls/Modal';
+import Select from '../../../components/controls/Select';
 import { translate } from '../../../helpers/l10n';
 
 interface Props {
@@ -108,12 +108,7 @@ export default class CreateProfileForm extends React.PureComponent<Props, State>
     );
 
     return (
-      <Modal
-        isOpen={true}
-        contentLabel={header}
-        className="modal"
-        overlayClassName="modal-overlay"
-        onRequestClose={this.props.onClose}>
+      <Modal contentLabel={header} onRequestClose={this.props.onClose}>
         <form id="create-profile-form" onSubmit={this.handleFormSubmit}>
           <div className="modal-head">
             <h2>{header}</h2>
@@ -176,6 +171,8 @@ export default class CreateProfileForm extends React.PureComponent<Props, State>
                   </p>
                 </div>
               ))}
+              {/* drop me when we stop supporting ie11 */}
+              <input type="hidden" name="hello-ie11" value="" />
             </div>
           )}
 

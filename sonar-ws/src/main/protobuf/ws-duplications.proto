@@ -21,7 +21,7 @@ syntax = "proto3";
 package sonarqube.ws.duplication;
 
 option java_package = "org.sonarqube.ws";
-option java_outer_classname = "WsDuplications";
+option java_outer_classname = "Duplications";
 option optimize_for = SPEED;
 
 // WS api/duplications/show

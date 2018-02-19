@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -24,7 +24,7 @@ import org.sonar.db.qualityprofile.ActiveRuleKey;
 public interface ActiveRule {
 
   enum Inheritance {
-    NONE, OVERRIDES, INHERITED;
+    NONE, OVERRIDES, INHERITED
   }
 
   long createdAt();

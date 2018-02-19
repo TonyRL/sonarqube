@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -19,11 +19,11 @@
  */
 // @flow
 import React from 'react';
-import Modal from 'react-modal';
-import Select, { Creatable } from 'react-select';
 import { pickBy, sortBy } from 'lodash';
 import SearchSelect from '../../../components/controls/SearchSelect';
 import Checkbox from '../../../components/controls/Checkbox';
+import Modal from '../../../components/controls/Modal';
+import Select, { Creatable } from '../../../components/controls/Select';
 import Tooltip from '../../../components/controls/Tooltip';
 import MarkdownTips from '../../../components/common/MarkdownTips';
 import SeverityHelper from '../../../components/shared/SeverityHelper';
@@ -92,7 +92,7 @@ export default class BulkChangeModal extends React.PureComponent {
 
     Promise.all([
       this.loadIssues(),
-      searchIssueTags({ organization: this.state.organization, ps: 500 })
+      searchIssueTags({ organization: this.state.organization })
     ]).then(([issues, tags]) => {
       if (this.mounted) {
         this.setState({
@@ -109,44 +109,40 @@ export default class BulkChangeModal extends React.PureComponent {
     this.mounted = false;
   }
 
+  loadIssues = () => this.props.fetchIssues({ additionalFields: 'actions,transitions', ps: 250 });
+
+  getDefaultAssignee = () => {
+    const { currentUser } = this.props;
+    const { issues } = this.state;
+    const options = [];
+
+    if (currentUser.isLoggedIn) {
+      const canBeAssignedToMe =
+        issues.filter(issue => issue.assignee !== currentUser.login).length > 0;
+      if (canBeAssignedToMe) {
+        options.push({
+          avatar: currentUser.avatar,
+          label: currentUser.name,
+          value: currentUser.login
+        });
+      }
+    }
+
+    const canBeUnassigned = issues.filter(issue => issue.assignee).length > 0;
+    if (canBeUnassigned) {
+      options.push({ label: translate('unassigned'), value: '' });
+    }
+
+    return options;
+  };
+
   handleCloseClick = (e /*: Event & { target: HTMLElement } */) => {
     e.preventDefault();
     e.target.blur();
     this.props.onClose();
   };
 
-  loadIssues = () => {
-    return this.props.fetchIssues({ additionalFields: 'actions,transitions', ps: 250 });
-  };
-
-  handleAssigneeSearch = (query /*: string */) => {
-    if (query.length > 1) {
-      return searchAssignees(query, this.state.organization);
-    } else {
-      const { currentUser } = this.props;
-      const { issues } = this.state;
-      const options = [];
-
-      if (currentUser.isLoggedIn) {
-        const canBeAssignedToMe =
-          issues.filter(issue => issue.assignee !== currentUser.login).length > 0;
-        if (canBeAssignedToMe) {
-          options.push({
-            email: currentUser.email,
-            label: currentUser.name,
-            value: currentUser.login
-          });
-        }
-      }
-
-      const canBeUnassigned = issues.filter(issue => issue.assignee).length > 0;
-      if (canBeUnassigned) {
-        options.push({ label: translate('unassigned'), value: '' });
-      }
-
-      return Promise.resolve(options);
-    }
-  };
+  handleAssigneeSearch = (query /*: string */) => searchAssignees(query, this.state.organization);
 
   handleAssigneeSelect = (assignee /*: string */) => {
     this.setState({ assignee });
@@ -270,20 +266,16 @@ export default class BulkChangeModal extends React.PureComponent {
     </div>
   );
 
-  renderAssigneeOption = (option /*: { avatar?: string, email?: string, label: string } */) => (
-    <span>
-      {(option.avatar != null || option.email != null) && (
-        <Avatar
-          className="little-spacer-right"
-          email={option.email}
-          hash={option.avatar}
-          name={option.label}
-          size={16}
-        />
-      )}
-      {option.label}
-    </span>
-  );
+  renderAssigneeOption = (option /*: { avatar?: string, email?: string, label: string } */) => {
+    return (
+      <span>
+        {option.avatar != null && (
+          <Avatar className="spacer-right" hash={option.avatar} name={option.label} size={16} />
+        )}
+        {option.label}
+      </span>
+    );
+  };
 
   renderAssigneeField = () => {
     const affected /*: number */ = this.state.issues.filter(hasAction('assign')).length;
@@ -294,9 +286,10 @@ export default class BulkChangeModal extends React.PureComponent {
 
     const input = (
       <SearchSelect
+        defaultOptions={this.getDefaultAssignee()}
         onSearch={this.handleAssigneeSearch}
         onSelect={this.handleAssigneeSelect}
-        minimumQueryLength={0}
+        minimumQueryLength={2}
         renderOption={this.renderAssigneeOption}
         resetOnBlur={false}
         value={this.state.assignee}
@@ -511,12 +504,7 @@ export default class BulkChangeModal extends React.PureComponent {
 
   render() {
     return (
-      <Modal
-        isOpen={true}
-        contentLabel="modal"
-        className="modal"
-        overlayClassName="modal-overlay"
-        onRequestClose={this.props.onClose}>
+      <Modal contentLabel="modal" onRequestClose={this.props.onClose}>
         {this.state.loading ? this.renderLoading() : this.renderForm()}
       </Modal>
     );

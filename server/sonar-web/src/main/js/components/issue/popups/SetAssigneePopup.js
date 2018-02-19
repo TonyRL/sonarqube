@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -19,11 +19,12 @@
  */
 // @flow
 import React from 'react';
-import { debounce, map } from 'lodash';
+import { map } from 'lodash';
 import Avatar from '../../../components/ui/Avatar';
 import BubblePopup from '../../../components/common/BubblePopup';
 import SelectList from '../../../components/common/SelectList';
 import SelectListItem from '../../../components/common/SelectListItem';
+import SearchBox from '../../../components/controls/SearchBox';
 import getCurrentUserFromStore from '../../../app/utils/getCurrentUserFromStore';
 import { areThereCustomOrganizations } from '../../../store/organizations/utils';
 import { searchMembers } from '../../../api/organizations';
@@ -68,8 +69,6 @@ export default class SetAssigneePopup extends React.PureComponent {
   constructor(props /*: Props */) {
     super(props);
     this.organizationEnabled = areThereCustomOrganizations();
-    this.searchUsers = debounce(this.searchUsers, 250);
-    this.searchMembers = debounce(this.searchMembers, 250);
     this.defaultUsersArray = [{ login: '', name: translate('unassigned') }];
 
     const currentUser = getCurrentUserFromStore();
@@ -92,9 +91,8 @@ export default class SetAssigneePopup extends React.PureComponent {
     }).then(this.handleSearchResult, this.props.onFail);
   };
 
-  searchUsers = (query /*: string */) => {
-    searchUsers(query, LIST_SIZE).then(this.handleSearchResult, this.props.onFail);
-  };
+  searchUsers = (query /*: string */) =>
+    searchUsers({ q: query, ps: LIST_SIZE }).then(this.handleSearchResult, this.props.onFail);
 
   handleSearchResult = (data /*: Object */) => {
     this.setState({
@@ -103,9 +101,8 @@ export default class SetAssigneePopup extends React.PureComponent {
     });
   };
 
-  handleSearchChange = (evt /*: SyntheticInputEvent */) => {
-    const query = evt.target.value;
-    if (query.length < 2) {
+  handleSearchChange = (query /*: string */) => {
+    if (query.length === 0) {
       this.setState({
         query,
         users: this.defaultUsersArray,
@@ -127,18 +124,13 @@ export default class SetAssigneePopup extends React.PureComponent {
         position={this.props.popupPosition}
         customClass="bubble-popup-menu bubble-popup-bottom">
         <div className="multi-select">
-          <div className="search-box menu-search">
-            <button className="search-box-submit button-clean">
-              <i className="icon-search-new" />
-            </button>
-            <input
-              type="search"
-              value={this.state.query}
-              className="search-box-input"
-              placeholder={translate('search_verb')}
-              onChange={this.handleSearchChange}
-              autoComplete="off"
+          <div className="menu-search">
+            <SearchBox
               autoFocus={true}
+              minLength={2}
+              onChange={this.handleSearchChange}
+              placeholder={translate('search.search_for_users')}
+              value={this.state.query}
             />
           </div>
           <SelectList
@@ -148,13 +140,7 @@ export default class SetAssigneePopup extends React.PureComponent {
             {this.state.users.map(user => (
               <SelectListItem key={user.login} item={user.login}>
                 {!!user.login && (
-                  <Avatar
-                    className="spacer-right"
-                    email={user.email}
-                    hash={user.avatar}
-                    name={user.name}
-                    size={16}
-                  />
+                  <Avatar className="spacer-right" hash={user.avatar} name={user.name} size={16} />
                 )}
                 <span
                   className="vertical-middle"

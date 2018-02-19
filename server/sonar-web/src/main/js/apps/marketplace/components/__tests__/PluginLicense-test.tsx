@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -26,5 +26,5 @@ it('should display the license field', () => {
 });
 
 it('should not display anything', () => {
-  expect(shallow(<PluginLicense />)).toMatchSnapshot();
+  expect(shallow(<PluginLicense />).type()).toBeNull();
 });

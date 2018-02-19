@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -159,7 +159,7 @@ public class ReportSubmitterTest {
   }
 
   @Test
-  public void provision_project_if_does_not_exist() throws Exception {
+  public void provision_project_if_does_not_exist() {
     OrganizationDto organization = db.organizations().insert();
     userSession
       .addPermission(OrganizationPermission.SCAN, organization.getUuid())

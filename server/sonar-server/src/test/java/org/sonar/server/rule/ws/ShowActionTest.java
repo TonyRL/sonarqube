@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -17,7 +17,6 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-
 package org.sonar.server.rule.ws;
 
 import java.io.IOException;
@@ -116,7 +115,7 @@ public class ShowActionTest {
   }
 
   @Test
-  public void should_show_rule_key() throws IOException {
+  public void should_show_rule_key() {
     RuleDefinitionDto rule = insertRule();
 
     Rules.ShowResponse result = actionTester.newRequest()
@@ -126,7 +125,7 @@ public class ShowActionTest {
   }
 
   @Test
-  public void should_show_rule_tags_in_default_organization() throws IOException {
+  public void should_show_rule_tags_in_default_organization() {
     RuleDefinitionDto rule = insertRule();
     RuleMetadataDto metadata = insertMetadata(dbTester.getDefaultOrganization(), rule, setTags("tag1", "tag2"));
 
@@ -138,7 +137,7 @@ public class ShowActionTest {
   }
 
   @Test
-  public void should_show_rule_tags_in_specific_organization() throws IOException {
+  public void should_show_rule_tags_in_specific_organization() {
     RuleDefinitionDto rule = insertRule();
     OrganizationDto organization = dbTester.organizations().insert();
     RuleMetadataDto metadata = insertMetadata(organization, rule, setTags("tag1", "tag2"));
@@ -152,7 +151,7 @@ public class ShowActionTest {
   }
 
   @Test
-  public void show_rule_with_activation() throws Exception {
+  public void show_rule_with_activation() {
     OrganizationDto organization = dbTester.organizations().insert();
 
     QProfileDto profile = QProfileTesting.newXooP1(organization);
@@ -195,7 +194,7 @@ public class ShowActionTest {
   }
 
   @Test
-  public void show_rule_without_activation() throws Exception {
+  public void show_rule_without_activation() {
     OrganizationDto organization = dbTester.organizations().insert();
 
     QProfileDto profile = QProfileTesting.newXooP1(organization);
@@ -224,7 +223,7 @@ public class ShowActionTest {
   }
 
   @Test
-  public void throw_NotFoundException_if_organization_cannot_be_found() throws Exception {
+  public void throw_NotFoundException_if_organization_cannot_be_found() {
     RuleDefinitionDto rule = dbTester.rules().insert();
 
     thrown.expect(NotFoundException.class);
@@ -370,7 +369,7 @@ public class ShowActionTest {
   }
 
   @Test
-  public void encode_html_description_of_custom_rule() throws Exception {
+  public void encode_html_description_of_custom_rule() {
     // Template rule
     RuleDto templateRule = RuleTesting.newTemplateRule(RuleKey.of("java", "S001"));
     RuleDao ruleDao = dbClient.ruleDao();

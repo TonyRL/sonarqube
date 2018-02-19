@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -97,4 +97,6 @@ public interface PurgeMapper {
   void deleteWebhookDeliveriesByProjectUuid(@Param("projectUuid") String projectUuid);
 
   void deleteBranchByUuid(@Param("uuid") String uuid);
+
+  void deleteLiveMeasuresByProjectUuid(@Param("projectUuid") String projectUuid);
 }

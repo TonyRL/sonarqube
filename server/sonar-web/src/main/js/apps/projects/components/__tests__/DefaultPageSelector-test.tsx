@@ -1,7 +1,7 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2016 SonarSource SA
- * mailto:contact AT sonarsource DOT com
+ * Copyright (C) 2009-2018 SonarSource SA
+ * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -17,8 +17,10 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-jest.mock('../AllProjects', () => ({
-  default: function AllProjects() {
+/* eslint-disable import/first, import/order */
+jest.mock('../AllProjectsContainer', () => ({
+  // eslint-disable-next-line
+  default: function AllProjectsContainer() {
     return null;
   }
 }));
@@ -35,6 +37,7 @@ jest.mock('../../../../api/components', () => ({
 import * as React from 'react';
 import { mount } from 'enzyme';
 import DefaultPageSelector from '../DefaultPageSelector';
+import { CurrentUser } from '../../../../app/types';
 import { doAsync } from '../../../../helpers/testUtils';
 
 const isFavoriteSet = require('../../../../helpers/storage').isFavoriteSet as jest.Mock<any>;
@@ -82,8 +85,17 @@ it('fetches favorites', () => {
   });
 });
 
-function mountRender(user: any = { isLoggedIn: true }, query: any = {}, replace: any = jest.fn()) {
-  return mount(<DefaultPageSelector location={{ pathname: '/projects', query }} />, {
-    context: { currentUser: user, router: { replace } }
-  });
+function mountRender(
+  currentUser: CurrentUser = { isLoggedIn: true },
+  query: any = {},
+  replace: any = jest.fn()
+) {
+  return mount(
+    <DefaultPageSelector
+      currentUser={currentUser}
+      location={{ pathname: '/projects', query }}
+      onSonarCloud={false}
+    />,
+    { context: { router: { replace } } }
+  );
 }

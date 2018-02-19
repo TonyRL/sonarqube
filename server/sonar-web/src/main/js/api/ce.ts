@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -70,11 +70,8 @@ export function cancelAllTasks(): Promise<any> {
 
 export function getTasksForComponent(
   componentKey: string
-): Promise<{
-  queue: PendingTask[];
-  current: Task;
-}> {
-  return getJSON('/api/ce/component', { componentKey });
+): Promise<{ queue: PendingTask[]; current: Task }> {
+  return getJSON('/api/ce/component', { componentKey }).catch(throwGlobalError);
 }
 
 export function getTypes(): Promise<any> {

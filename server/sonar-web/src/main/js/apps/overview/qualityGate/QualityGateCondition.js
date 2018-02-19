@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -155,11 +155,11 @@ export default class QualityGateCondition extends React.PureComponent {
             {metric.name}
           </div>
           {!isDiff &&
-          condition.period != null && (
-            <div className="overview-quality-gate-condition-period">
-              {translate('quality_gates.conditions.leak')}
-            </div>
-          )}
+            condition.period != null && (
+              <div className="overview-quality-gate-condition-period">
+                {translate('quality_gates.conditions.leak')}
+              </div>
+            )}
           <div className="overview-quality-gate-threshold">
             {operator} {formatMeasure(threshold, metric.type)}
           </div>

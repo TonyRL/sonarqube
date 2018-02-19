@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -79,7 +79,7 @@ export default class PluginsList extends React.PureComponent<Props> {
 
   render() {
     return (
-      <div id="marketplace-plugins">
+      <div className="boxed-group boxed-group-inner" id="marketplace-plugins">
         <ul>
           {this.props.plugins.map(plugin => (
             <li key={plugin.key} className="panel panel-vertical">

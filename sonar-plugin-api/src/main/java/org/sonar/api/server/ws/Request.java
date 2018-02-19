@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -44,7 +44,7 @@ import static org.sonar.api.utils.DateUtils.parseDateTimeQuietly;
  */
 public abstract class Request {
 
-  private static final String MSG_PARAMETER_MISSING = "The '%s' parameter is missing";
+  protected static final String MSG_PARAMETER_MISSING = "The '%s' parameter is missing";
 
   /**
    * Returns the name of the HTTP method with which this request was made. Possible

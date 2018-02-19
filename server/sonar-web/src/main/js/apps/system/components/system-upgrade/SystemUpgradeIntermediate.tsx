@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -54,11 +54,9 @@ export default class SystemUpgradeIntermediate extends React.PureComponent<Props
           className="button-link little-spacer-bottom"
           href="#"
           onClick={this.toggleIntermediatVersions}>
-          {showMore ? (
-            translate('system.hide_intermediate_versions')
-          ) : (
-            translate('system.show_intermediate_versions')
-          )}
+          {showMore
+            ? translate('system.hide_intermediate_versions')
+            : translate('system.show_intermediate_versions')}
           <i
             className={classNames('little-spacer-left', {
               'icon-arrow-down': !showMore,

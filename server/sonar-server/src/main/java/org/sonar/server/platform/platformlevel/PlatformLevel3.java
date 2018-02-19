@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -21,6 +21,7 @@ package org.sonar.server.platform.platformlevel;
 
 import org.sonar.api.utils.UriReader;
 import org.sonar.core.util.DefaultHttpDownloader;
+import org.sonar.server.async.AsyncExecutionModule;
 import org.sonar.server.organization.DefaultOrganizationProviderImpl;
 import org.sonar.server.organization.OrganizationFlagsImpl;
 import org.sonar.server.platform.ServerIdManager;
@@ -47,6 +48,7 @@ public class PlatformLevel3 extends PlatformLevel {
       UriReader.class,
       DefaultHttpDownloader.class,
       DefaultOrganizationProviderImpl.class,
-      OrganizationFlagsImpl.class);
+      OrganizationFlagsImpl.class,
+      AsyncExecutionModule.class);
   }
 }

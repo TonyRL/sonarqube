@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -19,19 +19,32 @@
  */
 import * as React from 'react';
 import * as classNames from 'classnames';
+import { IconProps } from './types';
+import * as theme from '../../app/theme';
 
-interface Props {
-  className?: string;
+export interface Props extends IconProps {
   favorite: boolean;
-  size?: number;
 }
 
-export default function FavoriteIcon({ className, favorite, size = 16 }: Props) {
+export default function FavoriteIcon({
+  className,
+  favorite,
+  fill = theme.orange,
+  size = 16
+}: Props) {
   return (
-    <span className={classNames('icon-star', { 'icon-star-favorite': favorite }, className)}>
-      <svg width={size} height={size} viewBox="0 0 16 16">
-        <path d="M15.4275,5.77678C15.4275,5.90773 15.3501,6.05059 15.1953,6.20536L11.9542,9.36608L12.7221,13.8304C12.728,13.872 12.731,13.9316 12.731,14.0089C12.731,14.1339 12.6998,14.2396 12.6373,14.3259C12.5748,14.4122 12.484,14.4554 12.3649,14.4554C12.2518,14.4554 12.1328,14.4197 12.0078,14.3482L7.99888,12.2411L3.98995,14.3482C3.85901,14.4197 3.73996,14.4554 3.63281,14.4554C3.50781,14.4554 3.41406,14.4122 3.35156,14.3259C3.28906,14.2396 3.25781,14.1339 3.25781,14.0089C3.25781,13.9732 3.26377,13.9137 3.27567,13.8304L4.04353,9.36608L0.793531,6.20536C0.644719,6.04464 0.570313,5.90178 0.570313,5.77678C0.570313,5.55654 0.736979,5.41964 1.07031,5.36606L5.55245,4.71428L7.56138,0.651781C7.67447,0.407729 7.8203,0.285703 7.99888,0.285703C8.17745,0.285703 8.32328,0.407729 8.43638,0.651781L10.4453,4.71428L14.9274,5.36606C15.2608,5.41964 15.4274,5.55654 15.4274,5.77678L15.4275,5.77678Z" />
-      </svg>
-    </span>
+    <svg
+      className={classNames('icon-outline', { 'is-filled': favorite }, className)}
+      style={{ color: fill }}
+      width={size}
+      height={size}
+      viewBox="0 0 16 16"
+      version="1.1"
+      xmlnsXlink="http://www.w3.org/1999/xlink"
+      xmlSpace="preserve">
+      <g transform="matrix(0.988024,0,0,0.988024,0.0957953,0.717719)">
+        <path d="M15.428,5.777C15.428,5.908 15.35,6.051 15.195,6.205L11.954,9.366L12.722,13.83C12.728,13.872 12.731,13.932 12.731,14.009C12.731,14.134 12.7,14.24 12.637,14.326C12.575,14.412 12.484,14.455 12.365,14.455C12.252,14.455 12.133,14.42 12.008,14.348L7.999,12.241L3.99,14.348C3.859,14.42 3.74,14.455 3.633,14.455C3.508,14.455 3.414,14.412 3.352,14.326C3.289,14.24 3.258,14.134 3.258,14.009C3.258,13.973 3.264,13.914 3.276,13.83L4.044,9.366L0.794,6.205C0.645,6.045 0.57,5.902 0.57,5.777C0.57,5.557 0.737,5.42 1.07,5.366L5.552,4.714L7.561,0.652C7.674,0.408 7.82,0.286 7.999,0.286C8.177,0.286 8.323,0.408 8.436,0.652L10.445,4.714L14.927,5.366C15.261,5.42 15.427,5.557 15.427,5.777L15.428,5.777Z" />
+      </g>
+    </svg>
   );
 }

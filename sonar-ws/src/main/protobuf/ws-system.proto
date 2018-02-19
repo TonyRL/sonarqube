@@ -21,7 +21,7 @@ syntax = "proto2";
 package sonarqube.ws.system;
 
 option java_package = "org.sonarqube.ws";
-option java_outer_classname = "WsSystem";
+option java_outer_classname = "System";
 option optimize_for = SPEED;
 
 // GET api/system/health

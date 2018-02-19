@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -20,82 +20,34 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import Helmet from 'react-helmet';
-import {
-  fetchQualityGate,
-  setQualityGateAsDefault,
-  unsetQualityGateAsDefault
-} from '../../../api/quality-gates';
+import { fetchQualityGate } from '../../../api/quality-gates';
 import DetailsHeader from './DetailsHeader';
 import DetailsContent from './DetailsContent';
-import RenameView from '../views/rename-view';
-import CopyView from '../views/copy-view';
-import DeleteView from '../views/delete-view';
-import { getQualityGatesUrl, getQualityGateUrl } from '../../../helpers/urls';
 
 export default class Details extends React.PureComponent {
+  static contextTypes = {
+    router: PropTypes.object.isRequired
+  };
+
   componentDidMount() {
+    this.props.fetchMetrics();
     this.fetchDetails();
   }
 
-  componentDidUpdate(nextProps) {
-    if (nextProps.params.id !== this.props.params.id) {
+  componentDidUpdate(prevProps) {
+    if (prevProps.params.id !== this.props.params.id) {
       this.fetchDetails();
     }
   }
 
-  fetchDetails() {
-    const { id } = this.props.params;
-    fetchQualityGate(id).then(qualityGate => this.props.onShow(qualityGate));
-  }
-
-  handleRenameClick() {
-    const { qualityGate, onRename } = this.props;
-
-    new RenameView({
-      qualityGate,
-      onRename: (qualityGate, newName) => {
-        onRename(qualityGate, newName);
-      }
-    }).render();
-  }
-
-  handleCopyClick() {
-    const { qualityGate, onCopy, organization } = this.props;
-    const { router } = this.context;
-
-    new CopyView({
-      qualityGate,
-      onCopy: newQualityGate => {
-        onCopy(newQualityGate);
-        router.push(getQualityGateUrl(newQualityGate.id, organization && organization.key));
-      }
-    }).render();
-  }
-
-  handleSetAsDefaultClick() {
-    const { qualityGate, onSetAsDefault, onUnsetAsDefault } = this.props;
-
-    if (qualityGate.isDefault) {
-      unsetQualityGateAsDefault(qualityGate.id).then(() => onUnsetAsDefault(qualityGate));
-    } else {
-      setQualityGateAsDefault(qualityGate.id).then(() => onSetAsDefault(qualityGate));
-    }
-  }
-
-  handleDeleteClick() {
-    const { qualityGate, onDelete, organization } = this.props;
-    const { router } = this.context;
-    new DeleteView({
-      qualityGate,
-      onDelete: qualityGate => {
-        onDelete(qualityGate);
-        router.replace(getQualityGatesUrl(organization && organization.key));
-      }
-    }).render();
-  }
+  fetchDetails = () =>
+    fetchQualityGate({
+      id: this.props.params.id,
+      organization: this.props.organization && this.props.organization.key
+    }).then(qualityGate => this.props.onShow(qualityGate), () => {});
 
   render() {
-    const { qualityGate, edit, metrics } = this.props;
+    const { organization, metrics, qualityGate } = this.props;
     const { onAddCondition, onDeleteCondition, onSaveCondition } = this.props;
 
     if (!qualityGate) {
@@ -107,27 +59,22 @@ export default class Details extends React.PureComponent {
         <Helmet title={qualityGate.name} />
         <DetailsHeader
           qualityGate={qualityGate}
-          edit={edit}
-          onRename={this.handleRenameClick.bind(this)}
-          onCopy={this.handleCopyClick.bind(this)}
-          onSetAsDefault={this.handleSetAsDefaultClick.bind(this)}
-          onDelete={this.handleDeleteClick.bind(this)}
-          organization={this.props.organization}
+          onRename={this.props.onRename}
+          onCopy={this.props.onCopy}
+          onSetAsDefault={this.props.onSetAsDefault}
+          onDelete={this.props.onDelete}
+          organization={organization && organization.key}
         />
 
         <DetailsContent
           gate={qualityGate}
-          canEdit={edit}
           metrics={metrics}
           onAddCondition={onAddCondition}
           onSaveCondition={onSaveCondition}
           onDeleteCondition={onDeleteCondition}
+          organization={organization && organization.key}
         />
       </div>
     );
   }
 }
-
-Details.contextTypes = {
-  router: PropTypes.object.isRequired
-};

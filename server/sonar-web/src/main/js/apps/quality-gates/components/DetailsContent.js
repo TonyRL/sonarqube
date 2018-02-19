@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -24,11 +24,12 @@ import { translate } from '../../../helpers/l10n';
 
 export default class DetailsContent extends React.PureComponent {
   render() {
-    const { gate, canEdit, metrics } = this.props;
+    const { gate, metrics, organization } = this.props;
     const { onAddCondition, onDeleteCondition, onSaveCondition } = this.props;
     const conditions = gate.conditions || [];
+    const actions = gate.actions || {};
 
-    const defaultMessage = canEdit
+    const defaultMessage = actions.associateProjects
       ? translate('quality_gates.projects_for_default.edit')
       : translate('quality_gates.projects_for_default');
 
@@ -38,15 +39,24 @@ export default class DetailsContent extends React.PureComponent {
           qualityGate={gate}
           conditions={conditions}
           metrics={metrics}
-          edit={canEdit}
+          edit={actions.manageConditions}
           onAddCondition={onAddCondition}
           onSaveCondition={onSaveCondition}
           onDeleteCondition={onDeleteCondition}
+          organization={organization}
         />
 
         <div id="quality-gate-projects" className="quality-gate-section">
           <h3 className="spacer-bottom">{translate('quality_gates.projects')}</h3>
-          {gate.isDefault ? defaultMessage : <Projects qualityGate={gate} edit={canEdit} />}
+          {gate.isDefault ? (
+            defaultMessage
+          ) : (
+            <Projects
+              qualityGate={gate}
+              edit={actions.associateProjects}
+              organization={organization}
+            />
+          )}
         </div>
       </div>
     );

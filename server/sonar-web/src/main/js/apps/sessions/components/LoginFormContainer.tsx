@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -18,10 +18,10 @@
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 import * as React from 'react';
+import * as PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import LoginForm from './LoginForm';
 import { doLogin } from '../../../store/rootActions';
-import { tryGetGlobalNavigation } from '../../../api/nav';
 import { IdentityProvider, getIdentityProviders } from '../../../api/users';
 import { getBaseUrl } from '../../../helpers/urls';
 
@@ -32,27 +32,29 @@ interface Props {
 
 interface State {
   identityProviders?: IdentityProvider[];
-  onSonarCloud: boolean;
 }
 
 class LoginFormContainer extends React.PureComponent<Props, State> {
   mounted: boolean;
-  state: State = { onSonarCloud: false };
+
+  static contextTypes = {
+    onSonarCloud: PropTypes.bool
+  };
+
+  state: State = {};
 
   componentDidMount() {
     this.mounted = true;
-    Promise.all([
-      getIdentityProviders(),
-      tryGetGlobalNavigation()
-    ]).then(([identityProvidersResponse, appState]) => {
-      if (this.mounted) {
-        this.setState({
-          onSonarCloud:
-            appState.settings && appState.settings['sonar.sonarcloud.enabled'] === 'true',
-          identityProviders: identityProvidersResponse.identityProviders
-        });
-      }
-    });
+    getIdentityProviders().then(
+      identityProvidersResponse => {
+        if (this.mounted) {
+          this.setState({
+            identityProviders: identityProvidersResponse.identityProviders
+          });
+        }
+      },
+      () => {}
+    );
   }
 
   componentWillUnmount() {
@@ -74,7 +76,7 @@ class LoginFormContainer extends React.PureComponent<Props, State> {
   };
 
   render() {
-    const { identityProviders, onSonarCloud } = this.state;
+    const { identityProviders } = this.state;
     if (!identityProviders) {
       return null;
     }
@@ -82,7 +84,7 @@ class LoginFormContainer extends React.PureComponent<Props, State> {
     return (
       <LoginForm
         identityProviders={identityProviders}
-        onSonarCloud={onSonarCloud}
+        onSonarCloud={this.context.onSonarCloud}
         onSubmit={this.handleSubmit}
         returnTo={this.getReturnUrl()}
       />

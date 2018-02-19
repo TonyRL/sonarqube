@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -27,8 +27,8 @@ import org.sonar.api.server.ws.Response;
 import org.sonar.api.server.ws.WebService;
 import org.sonar.scanner.protocol.input.FileData;
 import org.sonar.scanner.protocol.input.ProjectRepositories;
-import org.sonarqube.ws.WsBatch.WsProjectResponse;
-import org.sonarqube.ws.WsBatch.WsProjectResponse.FileData.Builder;
+import org.sonarqube.ws.Batch.WsProjectResponse;
+import org.sonarqube.ws.Batch.WsProjectResponse.FileData.Builder;
 
 import static org.sonar.core.util.Protobuf.setNullable;
 import static org.sonar.server.ws.KeyExamples.KEY_BRANCH_EXAMPLE_001;

@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -117,9 +117,9 @@ export default class GraphsTooltips extends React.PureComponent {
               />
             )}
             {events &&
-            events.length > 0 && (
-              <GraphsTooltipsContentEvents addSeparator={addSeparator} events={events} />
-            )}
+              events.length > 0 && (
+                <GraphsTooltipsContentEvents addSeparator={addSeparator} events={events} />
+              )}
           </table>
         </div>
       </BubblePopup>

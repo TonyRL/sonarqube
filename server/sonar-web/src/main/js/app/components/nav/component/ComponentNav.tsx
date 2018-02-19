@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -18,16 +18,15 @@
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 import * as React from 'react';
-import ComponentNavFavorite from './ComponentNavFavorite';
-import ComponentNavBranch from './ComponentNavBranch';
-import ComponentNavBreadcrumbs from './ComponentNavBreadcrumbs';
+import ComponentNavHeader from './ComponentNavHeader';
 import ComponentNavMeta from './ComponentNavMeta';
 import ComponentNavMenu from './ComponentNavMenu';
 import ComponentNavBgTaskNotif from './ComponentNavBgTaskNotif';
 import RecentHistory from '../../RecentHistory';
+import * as theme from '../../../theme';
 import { Branch, Component } from '../../../types';
 import ContextNavBar from '../../../../components/nav/ContextNavBar';
-import { getTasksForComponent, PendingTask, Task } from '../../../../api/ce';
+import { Task } from '../../../../api/ce';
 import { STATUSES } from '../../../../apps/background-tasks/constants';
 import './ComponentNav.css';
 
@@ -35,50 +34,24 @@ interface Props {
   branches: Branch[];
   currentBranch?: Branch;
   component: Component;
-  location: {};
-}
-
-interface State {
   currentTask?: Task;
   isInProgress?: boolean;
   isPending?: boolean;
+  location: {};
 }
 
-export default class ComponentNav extends React.PureComponent<Props, State> {
+export default class ComponentNav extends React.PureComponent<Props> {
   mounted: boolean;
 
-  state: State = {};
-
   componentDidMount() {
-    this.mounted = true;
-    this.loadStatus();
     this.populateRecentHistory();
   }
 
   componentDidUpdate(prevProps: Props) {
     if (this.props.component.key !== prevProps.component.key) {
-      this.loadStatus();
       this.populateRecentHistory();
     }
   }
-
-  componentWillUnmount() {
-    this.mounted = false;
-  }
-
-  loadStatus = () => {
-    getTasksForComponent(
-      this.props.component.key
-    ).then((r: { queue: PendingTask[]; current: Task }) => {
-      if (this.mounted) {
-        this.setState({
-          currentTask: r.current,
-          isInProgress: r.queue.some(task => task.status === STATUSES.IN_PROGRESS),
-          isPending: r.queue.some(task => task.status === STATUSES.PENDING)
-        });
-      }
-    });
-  };
 
   populateRecentHistory = () => {
     const { breadcrumbs } = this.props.component;
@@ -94,7 +67,7 @@ export default class ComponentNav extends React.PureComponent<Props, State> {
   };
 
   render() {
-    const { currentTask, isInProgress, isPending } = this.state;
+    const { currentTask, isInProgress, isPending } = this.props;
     let notifComponent;
     if (isInProgress || isPending || (currentTask && currentTask.status === STATUSES.FAILED)) {
       notifComponent = (
@@ -109,25 +82,15 @@ export default class ComponentNav extends React.PureComponent<Props, State> {
     return (
       <ContextNavBar
         id="context-navigation"
-        height={notifComponent ? 95 : 65}
+        height={notifComponent ? theme.contextNavHeightRaw + 20 : theme.contextNavHeightRaw}
         notif={notifComponent}>
-        <ComponentNavFavorite
-          component={this.props.component.key}
-          favorite={this.props.component.isFavorite}
-        />
-        <ComponentNavBreadcrumbs
+        <ComponentNavHeader
+          branches={this.props.branches}
           component={this.props.component}
-          breadcrumbs={this.props.component.breadcrumbs}
+          currentBranch={this.props.currentBranch}
+          // to close dropdown on any location change
+          location={this.props.location}
         />
-        {this.props.currentBranch && (
-          <ComponentNavBranch
-            branches={this.props.branches}
-            component={this.props.component}
-            currentBranch={this.props.currentBranch}
-            // to close dropdown on any location change
-            location={this.props.location}
-          />
-        )}
         <ComponentNavMeta branch={this.props.currentBranch} component={this.props.component} />
         <ComponentNavMenu
           branch={this.props.currentBranch}

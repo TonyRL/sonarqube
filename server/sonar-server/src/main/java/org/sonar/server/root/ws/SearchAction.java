@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -28,7 +28,7 @@ import org.sonar.db.DbClient;
 import org.sonar.db.DbSession;
 import org.sonar.db.user.UserDto;
 import org.sonar.server.user.UserSession;
-import org.sonarqube.ws.WsRoot;
+import org.sonarqube.ws.Roots;
 
 import static org.sonar.server.ws.WsUtils.writeProtobuf;
 
@@ -69,13 +69,13 @@ public class SearchAction implements RootsWsAction {
   }
 
   private static void writeResponse(Request request, Response response, List<UserDto> dtos) {
-    WsRoot.SearchWsResponse.Builder responseBuilder = WsRoot.SearchWsResponse.newBuilder();
-    WsRoot.Root.Builder rootBuilder = WsRoot.Root.newBuilder();
+    Roots.SearchResponse.Builder responseBuilder = Roots.SearchResponse.newBuilder();
+    Roots.RootContent.Builder rootBuilder = Roots.RootContent.newBuilder();
     dtos.forEach(dto -> responseBuilder.addRoots(toRoot(rootBuilder, dto)));
     writeProtobuf(responseBuilder.build(), request, response);
   }
 
-  private static WsRoot.Root toRoot(WsRoot.Root.Builder builder, UserDto dto) {
+  private static Roots.RootContent toRoot(Roots.RootContent.Builder builder, UserDto dto) {
     builder.clear();
     builder.setLogin(dto.getLogin());
     if (dto.getName() != null) {

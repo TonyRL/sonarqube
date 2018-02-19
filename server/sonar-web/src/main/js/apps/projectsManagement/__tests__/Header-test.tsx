@@ -1,7 +1,7 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2016 SonarSource SA
- * mailto:contact AT sonarsource DOT com
+ * Copyright (C) 2009-2018 SonarSource SA
+ * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -23,7 +23,7 @@ import Header, { Props } from '../Header';
 import { Visibility } from '../../../app/types';
 import { click } from '../../../helpers/testUtils';
 
-const organization = { key: 'org', name: 'org', projectVisibility: 'public' };
+const organization = { key: 'org', name: 'org', projectVisibility: Visibility.Public };
 
 it('renders', () => {
   expect(shallowRender()).toMatchSnapshot();
@@ -48,6 +48,7 @@ it('changes default visibility', () => {
   expect(onVisibilityChange).toBeCalledWith(Visibility.Private);
 
   modalWrapper.prop<Function>('onClose')();
+  wrapper.update();
   expect(wrapper.find('ChangeVisibilityForm').exists()).toBeFalsy();
 });
 

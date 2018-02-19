@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -19,8 +19,7 @@
  */
 package org.sonar.server.computation.task.projectanalysis.step;
 
-import com.google.common.base.Optional;
-import java.util.Collections;
+import java.util.Optional;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -33,12 +32,10 @@ import org.sonar.server.computation.task.projectanalysis.qualitygate.QualityGate
 import org.sonar.server.computation.task.projectanalysis.qualitygate.QualityGateService;
 import org.sonar.server.qualitygate.ShortLivingBranchQualityGate;
 
-import static java.lang.String.format;
+import static java.util.Collections.emptyList;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.guava.api.Assertions.assertThat;
+import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 public class LoadQualityGateStepTest {
@@ -73,20 +70,18 @@ public class LoadQualityGateStepTest {
   @Test
   public void execute_sets_default_QualityGate_when_project_has_no_settings() {
     when(settingsRepository.getConfiguration()).thenReturn(new MapSettings().asConfig());
+    QualityGate defaultGate = mock(QualityGate.class);
+    when(qualityGateService.findDefaultQualityGate(any())).thenReturn(defaultGate);
 
     underTest.execute();
 
-    verifyNoQualityGate();
-
-    // verify only project is processed
-    verify(settingsRepository).getConfiguration();
-    verifyNoMoreInteractions(settingsRepository);
+    assertThat(mutableQualityGateHolder.getQualityGate().get()).isSameAs(defaultGate);
   }
 
   @Test
   public void execute_sets_default_QualityGate_when_property_value_is_not_a_long() {
     expectedException.expect(IllegalStateException.class);
-    expectedException.expectMessage(format("Unsupported value (%s) in property sonar.qualitygate", "10 sds"));
+    expectedException.expectMessage("Unsupported value (10 sds) in property sonar.qualitygate");
 
     when(settingsRepository.getConfiguration()).thenReturn(new MapSettings().setProperty("sonar.qualitygate", "10 sds").asConfig());
 
@@ -94,18 +89,8 @@ public class LoadQualityGateStepTest {
   }
 
   @Test
-  public void execute_sets_default_QualityGate_if_it_can_not_be_found_by_service() {
-    when(settingsRepository.getConfiguration()).thenReturn(new MapSettings().setProperty("sonar.qualitygate", 10).asConfig());
-    when(qualityGateService.findById(10)).thenReturn(Optional.absent());
-
-    underTest.execute();
-
-    verifyNoQualityGate();
-  }
-
-  @Test
   public void execute_sets_QualityGate_if_it_can_be_found_by_service() {
-    QualityGate qualityGate = new QualityGate(465, "name", Collections.emptyList());
+    QualityGate qualityGate = new QualityGate(10, "name", emptyList());
 
     when(settingsRepository.getConfiguration()).thenReturn(new MapSettings().setProperty("sonar.qualitygate", 10).asConfig());
     when(qualityGateService.findById(10)).thenReturn(Optional.of(qualityGate));
@@ -113,10 +98,6 @@ public class LoadQualityGateStepTest {
     underTest.execute();
 
     assertThat(mutableQualityGateHolder.getQualityGate().get()).isSameAs(qualityGate);
-  }
-
-  private void verifyNoQualityGate() {
-    assertThat(mutableQualityGateHolder.getQualityGate()).isAbsent();
   }
 
 }

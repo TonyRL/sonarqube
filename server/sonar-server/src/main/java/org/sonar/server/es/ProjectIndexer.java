@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -40,7 +40,8 @@ public interface ProjectIndexer extends ResilientIndexer {
     PROJECT_DELETION,
     PROJECT_KEY_UPDATE,
     PROJECT_TAGS_UPDATE,
-    PERMISSION_CHANGE
+    PERMISSION_CHANGE,
+    MEASURE_CHANGE
   }
 
   /**

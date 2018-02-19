@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -19,7 +19,7 @@
  */
 // @flow
 import * as api from '../../../../api/permissions';
-import { parseError } from '../../../code/utils';
+import { parseError } from '../../../../helpers/request';
 import {
   raiseError,
   REQUEST_HOLDERS,
@@ -87,9 +87,7 @@ export const updateQuery = (query /*: string */ = '', organization /*: ?string *
   dispatch /*: Dispatch */
 ) => {
   dispatch({ type: UPDATE_QUERY, query });
-  if (query.length === 0 || query.length > 2) {
-    dispatch(loadHolders(organization));
-  }
+  dispatch(loadHolders(organization));
 };
 
 export const updateFilter = (filter /*: string */, organization /*: ?string */) => (

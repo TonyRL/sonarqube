@@ -1,7 +1,7 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2016 SonarSource SA
- * mailto:contact AT sonarsource DOT com
+ * Copyright (C) 2009-2018 SonarSource SA
+ * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -17,15 +17,16 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-jest.mock('../../../../api/quality-profiles', () => ({
-  searchUsers: jest.fn(() => Promise.resolve([])),
-  searchGroups: jest.fn(() => Promise.resolve([]))
-}));
-
+/* eslint-disable import/order */
 import * as React from 'react';
 import { mount, shallow } from 'enzyme';
 import ProfilePermissions from '../ProfilePermissions';
 import { click } from '../../../../helpers/testUtils';
+
+jest.mock('../../../../api/quality-profiles', () => ({
+  searchUsers: jest.fn(() => Promise.resolve([])),
+  searchGroups: jest.fn(() => Promise.resolve([]))
+}));
 
 const searchUsers = require('../../../../api/quality-profiles').searchUsers as jest.Mock<any>;
 const searchGroups = require('../../../../api/quality-profiles').searchGroups as jest.Mock<any>;
@@ -49,16 +50,21 @@ it('renders', () => {
   expect(wrapper).toMatchSnapshot();
 });
 
-it('opens add users form', () => {
+it('opens add users form', async () => {
+  searchUsers.mockImplementationOnce(() =>
+    Promise.resolve({ users: [{ login: 'luke', name: 'Luke Skywalker' }] })
+  );
   const wrapper = shallow(<ProfilePermissions profile={profile} />);
-  (wrapper.instance() as ProfilePermissions).mounted = true;
-  wrapper.setState({ loading: false, users: [{ login: 'luke', name: 'Luke Skywalker' }] });
+  expect(searchUsers).toHaveBeenCalled();
+  await new Promise(setImmediate);
+  wrapper.update();
   expect(wrapper.find('ProfilePermissionsForm').exists()).toBeFalsy();
 
   click(wrapper.find('button'));
   expect(wrapper.find('ProfilePermissionsForm').exists()).toBeTruthy();
 
   wrapper.find('ProfilePermissionsForm').prop<Function>('onClose')();
+  wrapper.update();
   expect(wrapper.find('ProfilePermissionsForm').exists()).toBeFalsy();
 });
 

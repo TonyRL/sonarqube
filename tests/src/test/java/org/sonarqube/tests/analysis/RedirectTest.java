@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -36,7 +36,7 @@ import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.rules.RuleChain;
 import org.sonarqube.tests.Category3Suite;
-import org.sonarqube.tests.Tester;
+import org.sonarqube.qa.util.Tester;
 import util.ItUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -93,7 +93,6 @@ public class RedirectTest {
   public void testFollowRedirectWithAuthentication() {
     orchestrator.getServer();
     SonarScanner sonarScanner = SonarScanner.create(ItUtils.projectDir("shared/xoo-sample"))
-      .setScannerVersion("2.7")
       .setProperty("sonar.host.url", "http://localhost:" + redirectPort)
       .setProperties(
         "sonar.login", com.sonar.orchestrator.container.Server.ADMIN_LOGIN,

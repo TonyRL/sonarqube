@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -109,7 +109,7 @@ public class EsTester extends ExternalResource {
       Random random = new Random();
       cluster.beforeTest(random, random.nextDouble());
       cluster.wipe(NO_TEMPLATES_SURVIVING_WIPE);
-    } catch (IOException | InterruptedException e) {
+    } catch (IOException e) {
       throw new RuntimeException(e);
     }
   }
@@ -146,7 +146,7 @@ public class EsTester extends ExternalResource {
   }
 
   @Override
-  public void before() throws Throwable {
+  public void before() {
     if (cluster == null) {
       init();
     }

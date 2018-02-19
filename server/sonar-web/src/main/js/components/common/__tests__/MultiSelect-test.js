@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -26,17 +26,17 @@ const props = {
   elements: [],
   onSearch: () => {},
   onSelect: () => {},
-  onUnselect: () => {}
+  onUnselect: () => {},
+  placeholder: ''
 };
 
 const elements = ['foo', 'bar', 'baz'];
 
 it('should render multiselect with selected elements', () => {
   const multiselect = shallow(<MultiSelect {...props} />);
-  // Will not have any element in the list since its filled with componentDidMount the first time
+  // Will not only the selected element
   expect(multiselect).toMatchSnapshot();
 
-  // Will have some elements
   multiselect.setProps({ elements });
   expect(multiselect).toMatchSnapshot();
   multiselect.setState({ activeIdx: 2 });
@@ -47,5 +47,5 @@ it('should render multiselect with selected elements', () => {
 
 it('should render with the focus inside the search input', () => {
   const multiselect = mount(<MultiSelect {...props} />);
-  expect(multiselect.find('input').node).toBe(document.activeElement);
+  expect(multiselect.find('input').getDOMNode()).toBe(document.activeElement);
 });

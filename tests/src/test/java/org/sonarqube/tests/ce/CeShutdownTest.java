@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -25,16 +25,15 @@ import java.io.File;
 import java.io.IOException;
 import java.util.regex.Pattern;
 import org.apache.commons.io.FileUtils;
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.DisableOnDebug;
 import org.junit.rules.TemporaryFolder;
 import org.junit.rules.TestRule;
 import org.junit.rules.Timeout;
-import org.sonarqube.tests.LogsTailer;
+import org.sonarqube.qa.util.LogsTailer;
 import org.sonarqube.ws.client.WsClient;
-import org.sonarqube.ws.client.ce.ActivityStatusWsRequest;
+import org.sonarqube.ws.client.ce.ActivityStatusRequest;
 import util.ItUtils;
 
 import static com.google.common.base.Preconditions.checkState;
@@ -49,7 +48,7 @@ public class CeShutdownTest {
 
   @Test
   public void stopping_CE_waits_for_in_progress_task_to_be_finished() throws Exception {
-    try (ComputeEngine ce = new ComputeEngine()) {
+    try (ComputeEngine ce = new ComputeEngine(40_000)) {
 
       try (LogsTailer.Watch watch = ce.logs().watch("CE analysis is paused")) {
         ce.triggerTask();
@@ -77,9 +76,8 @@ public class CeShutdownTest {
   }
 
   @Test
-  @Ignore("TODO make the graceful stop timeout configurable. 40 seconds is too long for a test.")
   public void stopping_CE_kills_in_progress_tasks_if_too_long_to_gracefully_stop() throws Exception {
-    try (ComputeEngine ce = new ComputeEngine()) {
+    try (ComputeEngine ce = new ComputeEngine(10)) {
 
       try (LogsTailer.Watch watch = ce.logs().watch("CE analysis is paused")) {
         ce.triggerTask();
@@ -95,11 +93,10 @@ public class CeShutdownTest {
         assertThat(ce.countInProgressTasks()).isEqualTo(1);
       }
 
-      // resume the in-progress task, so that it can
-      // finish successfully
+      // wait for task to be hard killed
       try (LogsTailer.Watch watch = ce.logs().watch("Process [ce] is stopped")) {
         watch.waitForLog();
-        assertThat(ce.hasTaskFinishedSuccessfully()).isTrue();
+        assertThat(ce.hasTaskFinishedSuccessfully()).isFalse();
         assertThat(ce.hasErrorLogs()).isTrue();
       }
     }
@@ -113,12 +110,13 @@ public class CeShutdownTest {
     private final LogsTailer logsTailer;
     private final LogsTailer.Content content = new LogsTailer.Content();
 
-    ComputeEngine() throws Exception {
+    ComputeEngine(int timeOutInMs) throws Exception {
       pauseFile = temp.newFile();
       FileUtils.touch(pauseFile);
 
       orchestrator = Orchestrator.builderEnv()
         .setServerProperty("sonar.ce.pauseTask.path", pauseFile.getAbsolutePath())
+        .setServerProperty("sonar.ce.gracefulStopTimeOutInMs", "" + timeOutInMs)
         .addPlugin(ItUtils.xooPlugin())
         .addPlugin(ItUtils.pluginArtifact("server-plugin"))
         .build();
@@ -135,7 +133,7 @@ public class CeShutdownTest {
       return logsTailer;
     }
 
-    void triggerTask() throws InterruptedException {
+    void triggerTask() {
       orchestrator.executeBuild(SonarScanner.create(new File("projects/shared/xoo-sample"), "sonar.projectKey", "foo"), false);
     }
 
@@ -144,14 +142,14 @@ public class CeShutdownTest {
     }
 
     int countInProgressTasks() {
-      return adminWsClient.ce().activityStatus(ActivityStatusWsRequest.newBuilder().build()).getInProgress();
+      return adminWsClient.ce().activityStatus(new ActivityStatusRequest()).getInProgress();
     }
 
-    boolean hasTaskFinishedSuccessfully() throws Exception {
+    boolean hasTaskFinishedSuccessfully() {
       return content.hasLineMatching(Pattern.compile(".* INFO .*Executed task \\| project=foo \\| type=REPORT.*"));
     }
 
-    boolean hasErrorLogs() throws IOException {
+    boolean hasErrorLogs() {
       return content.hasText(" ERROR ");
     }
 
@@ -165,7 +163,7 @@ public class CeShutdownTest {
     }
 
     @Override
-    public void close() throws Exception {
+    public void close() {
       if (stopper != null) {
         stopper.interrupt();
       }

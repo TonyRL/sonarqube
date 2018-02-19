@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -76,11 +76,15 @@ class AboutApp extends React.PureComponent {
       window.location = 'https://about.sonarcloud.io';
     } else {
       this.loadData();
+      // $FlowFixMe
+      document.body.classList.add('white-page');
     }
   }
 
   componentWillUnmount() {
     this.mounted = false;
+    // $FlowFixMe
+    document.body.classList.remove('white-page');
   }
 
   loadProjects() {
@@ -156,12 +160,12 @@ class AboutApp extends React.PureComponent {
         </div>
 
         {customText != null &&
-        customText.value && (
-          <div
-            className="about-page-section"
-            dangerouslySetInnerHTML={{ __html: customText.value }}
-          />
-        )}
+          customText.value && (
+            <div
+              className="about-page-section"
+              dangerouslySetInnerHTML={{ __html: customText.value }}
+            />
+          )}
 
         <AboutLanguages />
 

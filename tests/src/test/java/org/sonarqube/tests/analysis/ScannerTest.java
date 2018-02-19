@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -26,15 +26,14 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Map;
 import org.apache.commons.io.FileUtils;
-import org.junit.Assume;
 import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import org.junit.rules.TemporaryFolder;
+import org.sonarqube.qa.util.Tester;
 import org.sonarqube.tests.Category3Suite;
-import org.sonarqube.ws.client.component.SearchWsRequest;
+import org.sonarqube.ws.client.components.SearchRequest;
 import util.ItUtils;
 
 import static java.util.Collections.singletonList;
@@ -43,9 +42,7 @@ import static util.ItUtils.getComponent;
 import static util.ItUtils.getComponentNavigation;
 import static util.ItUtils.getMeasureAsDouble;
 import static util.ItUtils.getMeasuresAsDoubleByMetricKey;
-import static util.ItUtils.newAdminWsClient;
 import static util.ItUtils.resetSettings;
-import static util.ItUtils.setServerProperty;
 
 public class ScannerTest {
 
@@ -53,14 +50,13 @@ public class ScannerTest {
   public static Orchestrator orchestrator = Category3Suite.ORCHESTRATOR;
 
   @Rule
-  public ExpectedException thrown = ExpectedException.none();
-
-  @Rule
   public TemporaryFolder temp = new TemporaryFolder();
 
+  @Rule
+  public Tester tester = new Tester(orchestrator).disableOrganizations();
+
   @Before
-  public void deleteData() {
-    orchestrator.resetData();
+  public void setUp() {
     ItUtils.restoreProfile(orchestrator, getClass().getResource("/analysis/BatchTest/one-issue-per-line.xml"));
   }
 
@@ -72,7 +68,7 @@ public class ScannerTest {
     scan("shared/xoo-multi-modules-sample");
     scan("shared/xoo-multi-modules-sample", "sonar.branch", "branch/0.x");
 
-    assertThat(newAdminWsClient(orchestrator).components().search(new SearchWsRequest().setQualifiers(singletonList("TRK"))).getComponentsList()).hasSize(2);
+    assertThat(tester.wsClient().components().search(new SearchRequest().setQualifiers(singletonList("TRK"))).getComponentsList()).hasSize(2);
     assertThat(getComponent(orchestrator, "com.sonarsource.it.samples:multi-modules-sample").getName()).isEqualTo("Sonar :: Integration Tests :: Multi-modules Sample");
     assertThat(getComponent(orchestrator, "com.sonarsource.it.samples:multi-modules-sample:branch/0.x").getName())
       .isEqualTo("Sonar :: Integration Tests :: Multi-modules Sample branch/0.x");
@@ -102,7 +98,7 @@ public class ScannerTest {
     assertThat(result.getLogs()).doesNotContain(moduleBKey + ":" + propKey);
 
     // Set property only on root project
-    setServerProperty(orchestrator, rootModuleKey, propKey, "project");
+    tester.settings().setProjectSetting(rootModuleKey, propKey, "project");
 
     result = scan("shared/xoo-multi-modules-sample", "sonar.showSettings", propKey);
 
@@ -110,7 +106,7 @@ public class ScannerTest {
     assertThat(result.getLogs()).contains(moduleBKey + ":" + propKey + " = project");
 
     // Override property on moduleB
-    setServerProperty(orchestrator, moduleBKey, propKey, "moduleB");
+    tester.settings().setProjectSetting(moduleBKey, propKey, "moduleB");
 
     result = scan("shared/xoo-multi-modules-sample", "sonar.showSettings", propKey);
 
@@ -128,7 +124,7 @@ public class ScannerTest {
     String moduleBKey = rootModuleKey + ":module_b";
 
     // Set property on provisioned project
-    setServerProperty(orchestrator, rootModuleKey, propKey, "project");
+    tester.settings().setProjectSetting(rootModuleKey, propKey, "project");
 
     BuildResult result = scan("shared/xoo-multi-modules-sample", "sonar.showSettings", propKey);
 
@@ -255,16 +251,15 @@ public class ScannerTest {
 
     File cache = new File(userHome, "cache");
     assertThat(cache).exists().isDirectory();
-    int cachedFiles = FileUtils.listFiles(cache, new String[] {"jar"}, true).size();
+    int cachedFiles = FileUtils.listFiles(cache, new String[]{"jar"}, true).size();
     assertThat(cachedFiles).isGreaterThan(5);
     assertThat(result.getLogs()).contains("User cache: " + cache.getAbsolutePath());
-    assertThat(result.getLogs()).contains("Download sonar-xoo-plugin-");
 
     result = scan("shared/xoo-sample",
       "sonar.userHome", userHome.getAbsolutePath());
-    assertThat(cachedFiles).isEqualTo(cachedFiles);
+    int cachedFiles2 = FileUtils.listFiles(cache, new String[]{"jar"}, true).size();
+    assertThat(cachedFiles).isEqualTo(cachedFiles2);
     assertThat(result.getLogs()).contains("User cache: " + cache.getAbsolutePath());
-    assertThat(result.getLogs()).doesNotContain("Download sonar-xoo-plugin-");
   }
 
   @Test
@@ -282,10 +277,9 @@ public class ScannerTest {
    * SONAR-4239
    */
   @Test
-  public void should_display_project_url_after_analysis() throws IOException {
+  public void should_display_project_url_after_analysis() {
     orchestrator.getServer().provisionProject("com.sonarsource.it.samples:multi-modules-sample", "Sonar :: Integration Tests :: Multi-modules Sample");
     orchestrator.getServer().associateProjectToQualityProfile("com.sonarsource.it.samples:multi-modules-sample", "xoo", "one-issue-per-line");
-    Assume.assumeTrue(orchestrator.getServer().version().isGreaterThanOrEquals("3.6"));
 
     BuildResult result = scan("shared/xoo-multi-modules-sample");
 
@@ -296,13 +290,9 @@ public class ScannerTest {
 
     assertThat(result.getLogs()).contains("/dashboard/index/com.sonarsource.it.samples:multi-modules-sample:mybranch");
 
-    try {
-      setServerProperty(orchestrator, null, "sonar.core.serverBaseURL", "http://foo:123/sonar");
-      result = scan("shared/xoo-multi-modules-sample");
-      assertThat(result.getLogs()).contains("http://foo:123/sonar/dashboard/index/com.sonarsource.it.samples:multi-modules-sample");
-    } finally {
-      resetSettings(orchestrator, null, "sonar.core.serverBaseURL");
-    }
+    tester.settings().setGlobalSettings("sonar.core.serverBaseURL", "http://foo:123/sonar");
+    result = scan("shared/xoo-multi-modules-sample");
+    assertThat(result.getLogs()).contains("http://foo:123/sonar/dashboard/index/com.sonarsource.it.samples:multi-modules-sample");
   }
 
   /**
@@ -351,7 +341,7 @@ public class ScannerTest {
    * SONAR-4547
    */
   @Test
-  public void display_MessageException_without_stacktrace() throws Exception {
+  public void display_MessageException_without_stacktrace() {
     orchestrator.getServer().provisionProject("sample", "xoo-sample");
     orchestrator.getServer().associateProjectToQualityProfile("sample", "xoo", "one-issue-per-line");
     BuildResult result = scanQuietly("shared/xoo-sample", "raiseMessageException", "true");
@@ -368,7 +358,7 @@ public class ScannerTest {
    * SONAR-4751
    */
   @Test
-  public void file_extensions_are_case_insensitive() throws Exception {
+  public void file_extensions_are_case_insensitive() {
     orchestrator.getServer().provisionProject("case-sensitive-file-extensions", "Case Sensitive");
     orchestrator.getServer().associateProjectToQualityProfile("case-sensitive-file-extensions", "xoo", "one-issue-per-line");
     scan("analysis/case-sensitive-file-extensions");
@@ -401,9 +391,8 @@ public class ScannerTest {
   }
 
   private SonarScanner configureScanner(String projectPath, String... props) {
-    SonarScanner scanner = SonarScanner.create(ItUtils.projectDir(projectPath))
+    return SonarScanner.create(ItUtils.projectDir(projectPath))
       .setProperties(props);
-    return scanner;
   }
 
 }

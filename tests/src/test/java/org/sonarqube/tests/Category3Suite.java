@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -37,13 +37,17 @@ import org.sonarqube.tests.analysis.SSLTest;
 import org.sonarqube.tests.analysis.ScannerTest;
 import org.sonarqube.tests.analysis.SettingsEncryptionTest;
 import org.sonarqube.tests.analysis.TempFolderTest;
-import org.sonarqube.tests.measure.DecimalScaleMetricTest;
 import org.sonarqube.tests.plugins.VersionPluginTest;
 import org.sonarqube.tests.webhook.WebhooksTest;
 
 import static util.ItUtils.pluginArtifact;
 import static util.ItUtils.xooPlugin;
 
+/**
+ * @deprecated use dedicated suites in each package (see {@link org.sonarqube.tests.measure.MeasureSuite}
+ * for instance)
+ */
+@Deprecated
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
   // analysis
@@ -62,8 +66,6 @@ import static util.ItUtils.xooPlugin;
   SSLTest.class,
   FavoriteTest.class,
   RedirectTest.class,
-  // measures
-  DecimalScaleMetricTest.class,
   WebhooksTest.class
 })
 public class Category3Suite {
@@ -90,6 +92,7 @@ public class Category3Suite {
 
     // reduce memory for Elasticsearch to 128M
     .setServerProperty("sonar.search.javaOpts", "-Xms128m -Xmx128m")
+//    .setServerProperty("sonar.web.javaAdditionalOpts", "-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=5005")
 
     .build();
 }

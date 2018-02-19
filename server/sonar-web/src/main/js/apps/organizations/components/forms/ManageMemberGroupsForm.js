@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -19,11 +19,12 @@
  */
 // @flow
 import React from 'react';
-import Modal from 'react-modal';
 import { keyBy, pickBy } from 'lodash';
 import { getUserGroups } from '../../../../api/users';
+import Modal from '../../../../components/controls/Modal';
 import { translate, translateWithParameters } from '../../../../helpers/l10n';
 import OrganizationGroupCheckbox from '../OrganizationGroupCheckbox';
+import { ActionsDropdownItem } from '../../../../components/controls/ActionsDropdown';
 /*:: import type { Member } from '../../../../store/organizationsMembers/actions'; */
 /*:: import type { Organization, OrgGroup } from '../../../../store/organizations/duck'; */
 
@@ -45,14 +46,22 @@ type State = {
 */
 
 export default class ManageMemberGroupsForm extends React.PureComponent {
+  /*:: mounted: boolean */
   /*:: props: Props; */
 
   state /*: State */ = {
     open: false
   };
 
-  openForm = (evt /*: MouseEvent */) => {
-    evt.preventDefault();
+  componentDidMount() {
+    this.mounted = true;
+  }
+
+  componentWillUnmount() {
+    this.mounted = false;
+  }
+
+  openForm = () => {
     this.loadUserGroups();
     this.setState({ open: true });
   };
@@ -63,9 +72,18 @@ export default class ManageMemberGroupsForm extends React.PureComponent {
 
   loadUserGroups = () => {
     this.setState({ loading: true });
-    getUserGroups(this.props.member.login, this.props.organization.key).then(response => {
-      this.setState({ loading: false, userGroups: keyBy(response.groups, 'name') });
-    });
+    getUserGroups(this.props.member.login, this.props.organization.key).then(
+      response => {
+        if (this.mounted) {
+          this.setState({ loading: false, userGroups: keyBy(response.groups, 'name') });
+        }
+      },
+      () => {
+        if (this.mounted) {
+          this.setState({ loading: false });
+        }
+      }
+    );
   };
 
   isGroupSelected = (groupName /*: string */) => {
@@ -105,15 +123,11 @@ export default class ManageMemberGroupsForm extends React.PureComponent {
   };
 
   renderModal() {
+    const header = translate('organization.members.manage_groups');
     return (
-      <Modal
-        isOpen={true}
-        contentLabel="modal form"
-        className="modal"
-        overlayClassName="modal-overlay"
-        onRequestClose={this.closeForm}>
+      <Modal key="manage-member-modal" contentLabel={header} onRequestClose={this.closeForm}>
         <header className="modal-head">
-          <h2>{translate('organization.members.manage_groups')}</h2>
+          <h2>{header}</h2>
         </header>
         <form onSubmit={this.handleSubmit}>
           <div className="modal-body">
@@ -151,11 +165,14 @@ export default class ManageMemberGroupsForm extends React.PureComponent {
   }
 
   render() {
-    return (
-      <a onClick={this.openForm} href="#">
+    const buttonComponent = (
+      <ActionsDropdownItem onClick={this.openForm}>
         {translate('organization.members.manage_groups')}
-        {this.state.open && this.renderModal()}
-      </a>
+      </ActionsDropdownItem>
     );
+    if (this.state.open) {
+      return [buttonComponent, this.renderModal()];
+    }
+    return buttonComponent;
   }
 }

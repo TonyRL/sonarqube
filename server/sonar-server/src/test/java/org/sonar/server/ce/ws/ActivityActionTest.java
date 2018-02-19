@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -50,11 +50,11 @@ import org.sonar.server.ws.TestRequest;
 import org.sonar.server.ws.TestResponse;
 import org.sonar.server.ws.WsActionTester;
 import org.sonar.test.JsonAssert;
+import org.sonarqube.ws.Ce;
 import org.sonarqube.ws.Common;
 import org.sonarqube.ws.MediaTypes;
-import org.sonarqube.ws.WsCe;
-import org.sonarqube.ws.WsCe.ActivityResponse;
-import org.sonarqube.ws.WsCe.Task;
+import org.sonarqube.ws.Ce.ActivityResponse;
+import org.sonarqube.ws.Ce.Task;
 
 import static java.util.Arrays.asList;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -69,12 +69,12 @@ import static org.sonar.db.ce.CeQueueDto.Status.PENDING;
 import static org.sonar.db.ce.CeTaskCharacteristicDto.BRANCH_KEY;
 import static org.sonar.db.ce.CeTaskCharacteristicDto.BRANCH_TYPE_KEY;
 import static org.sonar.db.component.BranchType.LONG;
-import static org.sonarqube.ws.client.ce.CeWsParameters.PARAM_COMPONENT_ID;
-import static org.sonarqube.ws.client.ce.CeWsParameters.PARAM_COMPONENT_QUERY;
-import static org.sonarqube.ws.client.ce.CeWsParameters.PARAM_MAX_EXECUTED_AT;
-import static org.sonarqube.ws.client.ce.CeWsParameters.PARAM_MIN_SUBMITTED_AT;
-import static org.sonarqube.ws.client.ce.CeWsParameters.PARAM_STATUS;
-import static org.sonarqube.ws.client.ce.CeWsParameters.PARAM_TYPE;
+import static org.sonar.server.ce.ws.CeWsParameters.PARAM_COMPONENT_ID;
+import static org.sonar.server.ce.ws.CeWsParameters.PARAM_COMPONENT_QUERY;
+import static org.sonar.server.ce.ws.CeWsParameters.PARAM_MAX_EXECUTED_AT;
+import static org.sonar.server.ce.ws.CeWsParameters.PARAM_MIN_SUBMITTED_AT;
+import static org.sonar.server.ce.ws.CeWsParameters.PARAM_STATUS;
+import static org.sonar.server.ce.ws.CeWsParameters.PARAM_TYPE;
 
 public class ActivityActionTest {
 
@@ -110,7 +110,7 @@ public class ActivityActionTest {
     Task task = activityResponse.getTasks(0);
     assertThat(task.getOrganization()).isEqualTo(org2.getKey());
     assertThat(task.getId()).isEqualTo("T2");
-    assertThat(task.getStatus()).isEqualTo(WsCe.TaskStatus.FAILED);
+    assertThat(task.getStatus()).isEqualTo(Ce.TaskStatus.FAILED);
     assertThat(task.getComponentId()).isEqualTo(project2.uuid());
     assertThat(task.hasAnalysisId()).isFalse();
     assertThat(task.getExecutionTimeMs()).isEqualTo(500L);
@@ -118,7 +118,7 @@ public class ActivityActionTest {
 
     task = activityResponse.getTasks(1);
     assertThat(task.getId()).isEqualTo("T1");
-    assertThat(task.getStatus()).isEqualTo(WsCe.TaskStatus.SUCCESS);
+    assertThat(task.getStatus()).isEqualTo(Ce.TaskStatus.SUCCESS);
     assertThat(task.getComponentId()).isEqualTo(project1.uuid());
     assertThat(task.getLogs()).isFalse();
     assertThat(task.getOrganization()).isEqualTo(org1.getKey());
@@ -226,7 +226,7 @@ public class ActivityActionTest {
 
     assertThat(activityResponse.getTasksCount()).isEqualTo(1);
     assertThat(activityResponse.getTasks(0).getId()).isEqualTo("T1");
-    assertThat(activityResponse.getTasks(0).getStatus()).isEqualTo(WsCe.TaskStatus.SUCCESS);
+    assertThat(activityResponse.getTasks(0).getStatus()).isEqualTo(Ce.TaskStatus.SUCCESS);
     assertThat(activityResponse.getTasks(0).getComponentId()).isEqualTo(project1.uuid());
   }
 
@@ -242,7 +242,7 @@ public class ActivityActionTest {
   }
 
   @Test
-  public void search_activity_by_component_name() throws IOException {
+  public void search_activity_by_component_name() {
     ComponentDto struts = db.components().insertPrivateProject(c -> c.setName("old apache struts"));
     ComponentDto zookeeper = db.components().insertPrivateProject(c -> c.setName("new apache zookeeper"));
     ComponentDto eclipse = db.components().insertPrivateProject(c -> c.setName("eclipse"));
@@ -284,7 +284,7 @@ public class ActivityActionTest {
   }
 
   @Test
-  public void search_task_id_in_queue_ignoring_other_parameters() throws IOException {
+  public void search_task_id_in_queue_ignoring_other_parameters() {
     logInAsSystemAdministrator();
     ComponentDto project = db.components().insertPrivateProject();
     insertQueue("T1", project, IN_PROGRESS);
@@ -354,9 +354,9 @@ public class ActivityActionTest {
     ActivityResponse response = ws.newRequest().executeProtobuf(ActivityResponse.class);
 
     assertThat(response.getTasksList())
-      .extracting(Task::getId, WsCe.Task::getBranch, WsCe.Task::getBranchType, WsCe.Task::getStatus, WsCe.Task::getComponentKey)
+      .extracting(Task::getId, Ce.Task::getBranch, Ce.Task::getBranchType, Ce.Task::getStatus, Ce.Task::getComponentKey)
       .containsExactlyInAnyOrder(
-        tuple("T1", longLivingBranch.getBranch(), Common.BranchType.LONG, WsCe.TaskStatus.SUCCESS, longLivingBranch.getKey()));
+        tuple("T1", longLivingBranch.getBranch(), Common.BranchType.LONG, Ce.TaskStatus.SUCCESS, longLivingBranch.getKey()));
   }
 
   @Test
@@ -375,10 +375,10 @@ public class ActivityActionTest {
       .executeProtobuf(ActivityResponse.class);
 
     assertThat(response.getTasksList())
-      .extracting(Task::getId, WsCe.Task::getBranch, WsCe.Task::getBranchType, WsCe.Task::getStatus)
+      .extracting(Task::getId, Ce.Task::getBranch, Ce.Task::getBranchType, Ce.Task::getStatus)
       .containsExactlyInAnyOrder(
-        tuple("T1", branch, Common.BranchType.LONG, WsCe.TaskStatus.IN_PROGRESS),
-        tuple("T2", branch, Common.BranchType.LONG, WsCe.TaskStatus.PENDING));
+        tuple("T1", branch, Common.BranchType.LONG, Ce.TaskStatus.IN_PROGRESS),
+        tuple("T2", branch, Common.BranchType.LONG, Ce.TaskStatus.PENDING));
   }
 
   @Test
@@ -395,8 +395,8 @@ public class ActivityActionTest {
 
   @Test
   public void fail_if_page_size_greater_than_1000() {
-    expectedException.expect(BadRequestException.class);
-    expectedException.expectMessage("The 'ps' parameter must be less than 1000");
+    expectedException.expect(IllegalArgumentException.class);
+    expectedException.expectMessage("'ps' value (1001) must be less than 1000");
 
     ws.newRequest()
       .setParam(Param.PAGE_SIZE, "1001")

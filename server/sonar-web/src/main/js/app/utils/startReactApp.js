@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -47,7 +47,11 @@ import componentRoutes from '../../apps/component/routes';
 import componentMeasuresRoutes from '../../apps/component-measures/routes';
 import customMeasuresRoutes from '../../apps/custom-measures/routes';
 import groupsRoutes from '../../apps/groups/routes';
-import issuesRoutes from '../../apps/issues/routes';
+import Issues from '../../apps/issues/components/AppContainer';
+import Explore from '../../apps/explore/Explore';
+import ExploreIssues from '../../apps/explore/ExploreIssues';
+import ExploreProjects from '../../apps/explore/ExploreProjects';
+import IssuesPageSelector from '../../apps/issues/IssuesPageSelector';
 import marketplaceRoutes from '../../apps/marketplace/routes';
 import metricsRoutes from '../../apps/metrics/routes';
 import overviewRoutes from '../../apps/overview/routes';
@@ -163,11 +167,15 @@ const startReactApp = () => {
                   <Route path="account" childRoutes={accountRoutes} />
                   <Route path="coding_rules" childRoutes={codingRulesRoutes} />
                   <Route path="component" childRoutes={componentRoutes} />
+                  <Route path="explore" component={Explore}>
+                    <Route path="issues" component={ExploreIssues} />
+                    <Route path="projects" component={ExploreProjects} />
+                  </Route>
                   <Route
                     path="extension/:pluginKey/:extensionKey"
                     component={GlobalPageExtension}
                   />
-                  <Route path="issues" childRoutes={issuesRoutes} />
+                  <Route path="issues" component={IssuesPageSelector} />
                   <Route path="organizations" childRoutes={organizationsRoutes} />
                   <Route path="projects" childRoutes={projectsRoutes} />
                   <Route path="quality_gates" childRoutes={qualityGatesRoutes} />
@@ -177,7 +185,8 @@ const startReactApp = () => {
 
                   <Route
                     getComponent={() =>
-                      import('../components/ComponentContainer').then(i => i.default)}>
+                      import('../components/ComponentContainer').then(i => i.default)
+                    }>
                     <Route path="code" childRoutes={codeRoutes} />
                     <Route path="component_measures" childRoutes={componentMeasuresRoutes} />
                     <Route path="dashboard" childRoutes={overviewRoutes} />
@@ -187,7 +196,7 @@ const startReactApp = () => {
                       path="project/extension/:pluginKey/:extensionKey"
                       component={ProjectPageExtension}
                     />
-                    <Route path="project/issues" childRoutes={issuesRoutes} />
+                    <Route path="project/issues" component={Issues} />
                     <Route path="project/quality_gate" childRoutes={projectQualityGateRoutes} />
                     <Route
                       path="project/quality_profiles"

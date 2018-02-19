@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -19,6 +19,7 @@
  */
 import React from 'react';
 import { Link } from 'react-router';
+import BuiltInQualityGateBadge from './BuiltInQualityGateBadge';
 import { translate } from '../../../helpers/l10n';
 import { getQualityGateUrl } from '../../../helpers/urls';
 
@@ -28,17 +29,20 @@ export default function List({ organization, qualityGates }) {
       {qualityGates.map(qualityGate => (
         <Link
           key={qualityGate.id}
-          to={getQualityGateUrl(qualityGate.id, organization && organization.key)}
+          to={getQualityGateUrl(String(qualityGate.id), organization && organization.key)}
           activeClassName="active"
           className="list-group-item"
           data-id={qualityGate.id}>
           <table>
             <tbody>
               <tr>
-                <td className="text-top">{qualityGate.name}</td>
-                <td className="text-top thin nowrap spacer-left">
+                <td>{qualityGate.name}</td>
+                <td className="thin nowrap spacer-left text-right">
                   {qualityGate.isDefault && (
-                    <span className="badge pull-right">{translate('default')}</span>
+                    <span className="text-middle badge">{translate('default')}</span>
+                  )}
+                  {qualityGate.isBuiltIn && (
+                    <BuiltInQualityGateBadge className="little-spacer-left" tooltip={false} />
                   )}
                 </td>
               </tr>

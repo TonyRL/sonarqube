@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -17,7 +17,6 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-
 package org.sonar.server.rule.ws;
 
 import java.io.IOException;
@@ -84,11 +83,11 @@ import static org.mockito.Mockito.mock;
 import static org.sonar.api.rule.Severity.BLOCKER;
 import static org.sonar.db.rule.RuleTesting.setSystemTags;
 import static org.sonar.db.rule.RuleTesting.setTags;
-import static org.sonarqube.ws.client.rule.RulesWsParameters.PARAM_ACTIVATION;
-import static org.sonarqube.ws.client.rule.RulesWsParameters.PARAM_COMPARE_TO_PROFILE;
-import static org.sonarqube.ws.client.rule.RulesWsParameters.PARAM_ORGANIZATION;
-import static org.sonarqube.ws.client.rule.RulesWsParameters.PARAM_QPROFILE;
-import static org.sonarqube.ws.client.rule.RulesWsParameters.PARAM_RULE_KEY;
+import static org.sonar.server.rule.ws.RulesWsParameters.PARAM_ACTIVATION;
+import static org.sonar.server.rule.ws.RulesWsParameters.PARAM_COMPARE_TO_PROFILE;
+import static org.sonar.server.rule.ws.RulesWsParameters.PARAM_ORGANIZATION;
+import static org.sonar.server.rule.ws.RulesWsParameters.PARAM_QPROFILE;
+import static org.sonar.server.rule.ws.RulesWsParameters.PARAM_RULE_KEY;
 
 public class SearchActionTest {
 
@@ -201,7 +200,7 @@ public class SearchActionTest {
     RuleDefinitionDto rule2 = db.rules().insert(r1 -> r1.setName("Some other stuff"));
     indexRules();
 
-    verify(r -> r.setParam("q", "Best other"), new RuleDefinitionDto[0]);
+    verify(r -> r.setParam("q", "Best other"));
     verify(r -> r.setParam("q", "Best rule"), rule1);
     verify(r -> r.setParam("q", "rule ever"), rule1);
   }
@@ -223,7 +222,7 @@ public class SearchActionTest {
     indexRules();
 
     verify(r -> r.setParam("q", "Best "), rule1);
-    verify(r -> r.setParam("q", "bold"), new RuleDefinitionDto[0]);
+    verify(r -> r.setParam("q", "bold"));
     verify(r -> r.setParam("q", "now&forever"), rule1);
   }
 
@@ -234,7 +233,7 @@ public class SearchActionTest {
     indexRules();
 
     verify(r -> r.setParam("q", "Best good"), rule1);
-    verify(r -> r.setParam("q", "Best Another"), new RuleDefinitionDto[0]);
+    verify(r -> r.setParam("q", "Best Another"));
   }
 
   @Test
@@ -285,7 +284,7 @@ public class SearchActionTest {
   }
 
   @Test
-  public void should_filter_on_organization_specific_tags() throws IOException {
+  public void should_filter_on_organization_specific_tags() {
     OrganizationDto organization = db.organizations().insert();
     RuleDefinitionDto rule1 = createJavaRule();
     RuleMetadataDto metadata1 = insertMetadata(organization, rule1, setTags("tag1", "tag2"));
@@ -301,7 +300,7 @@ public class SearchActionTest {
   }
 
   @Test
-  public void when_searching_for_several_tags_combine_them_with_OR() throws IOException {
+  public void when_searching_for_several_tags_combine_them_with_OR() {
     OrganizationDto organization = db.organizations().insert();
     RuleDefinitionDto bothTagsRule = createJavaRule();
     insertMetadata(organization, bothTagsRule, setTags("tag1", "tag2"));
@@ -321,7 +320,7 @@ public class SearchActionTest {
   }
 
   @Test
-  public void should_list_tags_in_tags_facet() throws IOException {
+  public void should_list_tags_in_tags_facet() {
     OrganizationDto organization = db.organizations().insert();
     RuleDefinitionDto rule = db.rules().insert(setSystemTags("tag1", "tag3", "tag5", "tag7", "tag9", "x"));
     RuleMetadataDto metadata = insertMetadata(organization, rule, setTags("tag2", "tag4", "tag6", "tag8", "tagA"));
@@ -337,7 +336,7 @@ public class SearchActionTest {
   }
 
   @Test
-  public void should_list_tags_ordered_by_count_then_by_name_in_tags_facet() throws IOException {
+  public void should_list_tags_ordered_by_count_then_by_name_in_tags_facet() {
     OrganizationDto organization = db.organizations().insert();
     RuleDefinitionDto rule = db.rules().insert(setSystemTags("tag7", "tag5", "tag3", "tag1", "tag9", "x"));
     RuleMetadataDto metadata = insertMetadata(organization, rule, setTags("tag2", "tag4", "tag6", "tag8", "tagA"));
@@ -354,7 +353,7 @@ public class SearchActionTest {
   }
 
   @Test
-  public void should_include_selected_matching_tag_in_facet() throws IOException {
+  public void should_include_selected_matching_tag_in_facet() {
     RuleDefinitionDto rule = db.rules().insert(setSystemTags("tag1", "tag2", "tag3", "tag4", "tag5", "tag6", "tag7", "tag8", "tag9", "tagA", "x"));
     indexRules();
 
@@ -366,7 +365,7 @@ public class SearchActionTest {
   }
 
   @Test
-  public void should_included_selected_non_matching_tag_in_facet() throws IOException {
+  public void should_included_selected_non_matching_tag_in_facet() {
     RuleDefinitionDto rule = db.rules().insert(setSystemTags("tag1", "tag2", "tag3", "tag4", "tag5", "tag6", "tag7", "tag8", "tag9", "tagA"));
     indexRules();
 
@@ -378,7 +377,7 @@ public class SearchActionTest {
   }
 
   @Test
-  public void should_return_organization_specific_tags() throws IOException {
+  public void should_return_organization_specific_tags() {
     OrganizationDto organization = db.organizations().insert();
     RuleDefinitionDto rule = createJavaRule();
     RuleMetadataDto metadata = insertMetadata(organization, rule, setTags("tag1", "tag2"));
@@ -395,7 +394,7 @@ public class SearchActionTest {
   }
 
   @Test
-  public void should_not_return_tags_of_foreign_organization() throws IOException {
+  public void should_not_return_tags_of_foreign_organization() {
     OrganizationDto organizationWithSpecificTags = db.organizations().insert();
     OrganizationDto myOrganization = db.organizations().insert();
     RuleDefinitionDto rule = db.rules().insert(setSystemTags("system1", "system2"));
@@ -438,7 +437,7 @@ public class SearchActionTest {
   }
 
   @Test
-  public void return_lang_key_field_when_language_name_is_not_available() throws Exception {
+  public void return_lang_key_field_when_language_name_is_not_available() {
     OrganizationDto organization = db.organizations().insert();
     String unknownLanguage = "unknown_" + randomAlphanumeric(5);
     RuleDefinitionDto rule = db.rules().insert(r -> r.setLanguage(unknownLanguage));
@@ -458,7 +457,7 @@ public class SearchActionTest {
   }
 
   @Test
-  public void search_debt_rules_with_default_and_overridden_debt_values() throws Exception {
+  public void search_debt_rules_with_default_and_overridden_debt_values() {
     RuleDefinitionDto rule = db.rules().insert(r ->
       r.setLanguage("java")
         .setDefRemediationFunction(DebtRemediationFunction.Type.LINEAR_OFFSET.name())
@@ -493,7 +492,7 @@ public class SearchActionTest {
   }
 
   @Test
-  public void search_debt_rules_with_default_linear_offset_and_overridden_constant_debt() throws Exception {
+  public void search_debt_rules_with_default_linear_offset_and_overridden_constant_debt() {
     RuleDefinitionDto rule = db.rules().insert(r ->
       r.setLanguage("java")
         .setDefRemediationFunction(DebtRemediationFunction.Type.LINEAR_OFFSET.name())
@@ -523,13 +522,12 @@ public class SearchActionTest {
     assertThat(searchedRule.getDefaultRemFnType()).isEqualTo(DebtRemediationFunction.Type.LINEAR_OFFSET.name());
     assertThat(searchedRule.getDebtOverloaded()).isTrue();
     assertThat(searchedRule.getDebtRemFnCoeff()).isEmpty();
-    ;
     assertThat(searchedRule.getDebtRemFnOffset()).isEqualTo("5min");
     assertThat(searchedRule.getDebtRemFnType()).isEqualTo(DebtRemediationFunction.Type.CONSTANT_ISSUE.name());
   }
 
   @Test
-  public void search_debt_rules_with_default_linear_offset_and_overridden_linear_debt() throws Exception {
+  public void search_debt_rules_with_default_linear_offset_and_overridden_linear_debt() {
     RuleDefinitionDto rule = db.rules().insert(r ->
       r.setLanguage("java")
         .setDefRemediationFunction(DebtRemediationFunction.Type.LINEAR_OFFSET.name())
@@ -564,7 +562,7 @@ public class SearchActionTest {
   }
 
   @Test
-  public void search_template_rules() throws Exception {
+  public void search_template_rules() {
     RuleDefinitionDto templateRule = db.rules().insert(r ->
       r.setLanguage("java")
         .setIsTemplate(true));
@@ -588,7 +586,7 @@ public class SearchActionTest {
   }
 
   @Test
-  public void search_custom_rules_from_template_key() throws Exception {
+  public void search_custom_rules_from_template_key() {
     RuleDefinitionDto templateRule = db.rules().insert(r ->
       r.setLanguage("java")
         .setIsTemplate(true));
@@ -612,7 +610,7 @@ public class SearchActionTest {
   }
 
   @Test
-  public void search_all_active_rules() throws Exception {
+  public void search_all_active_rules() {
     OrganizationDto organization = db.organizations().insert();
     QProfileDto profile = db.qualityProfiles().insert(organization, p -> p.setLanguage("java"));
     RuleDefinitionDto rule = createJavaRule();
@@ -637,7 +635,7 @@ public class SearchActionTest {
   }
 
   @Test
-  public void search_profile_active_rules() throws Exception {
+  public void search_profile_active_rules() {
     OrganizationDto organization = db.organizations().insert();
     QProfileDto profile = db.qualityProfiles().insert(organization, p -> p.setLanguage("java"));
     QProfileDto waterproofProfile = db.qualityProfiles().insert(organization, p -> p.setLanguage("java"));
@@ -864,7 +862,7 @@ public class SearchActionTest {
   }
 
   @Test
-  public void statuses_facet_should_be_sticky() throws Exception {
+  public void statuses_facet_should_be_sticky() {
     RuleDefinitionDto rule1 = db.rules().insert(r -> r.setLanguage("java"));
     RuleDefinitionDto rule2 = db.rules().insert(r -> r.setLanguage("java").setStatus(RuleStatus.BETA));
     RuleDefinitionDto rule3 = db.rules().insert(r -> r.setLanguage("java").setStatus(RuleStatus.DEPRECATED));
@@ -885,7 +883,7 @@ public class SearchActionTest {
   }
 
   @Test
-  public void compare_to_another_profile() throws Exception {
+  public void compare_to_another_profile() {
     OrganizationDto organization = db.organizations().insert();
     QProfileDto profile = db.qualityProfiles().insert(organization, p -> p.setLanguage(JAVA));
     QProfileDto anotherProfile = db.qualityProfiles().insert(organization, p -> p.setLanguage(JAVA));
@@ -918,7 +916,7 @@ public class SearchActionTest {
   }
 
   @SafeVarargs
-  private final <T> void checkField(RuleDefinitionDto rule, String fieldName, Extractor<Rule, T> responseExtractor, T... expected) throws IOException {
+  private final <T> void checkField(RuleDefinitionDto rule, String fieldName, Extractor<Rule, T> responseExtractor, T... expected) {
     SearchResponse result = ws.newRequest()
       .setParam("f", fieldName)
       .executeProtobuf(SearchResponse.class);

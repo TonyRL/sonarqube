@@ -1,7 +1,7 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2016 SonarSource SA
- * mailto:contact AT sonarsource DOT com
+ * Copyright (C) 2009-2018 SonarSource SA
+ * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -18,10 +18,10 @@
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 import * as React from 'react';
-import Modal from 'react-modal';
 import SettingForm from './SettingForm';
 import { translate } from '../../../helpers/l10n';
 import { SettingValue } from '../../../api/settings';
+import Modal from '../../../components/controls/Modal';
 
 interface Props {
   onChange: () => void;
@@ -34,12 +34,7 @@ export default function LongBranchesPatternForm(props: Props) {
   const header = translate('branches.detection_of_long_living_branches');
 
   return (
-    <Modal
-      isOpen={true}
-      contentLabel={header}
-      className="modal"
-      overlayClassName="modal-overlay"
-      onRequestClose={props.onClose}>
+    <Modal contentLabel={header} onRequestClose={props.onClose}>
       <header className="modal-head">
         <h2>{header}</h2>
       </header>

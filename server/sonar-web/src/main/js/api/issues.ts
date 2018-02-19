@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -18,6 +18,7 @@
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 import { getJSON, post, postJSON, RequestData } from '../helpers/request';
+import { RawIssue } from '../helpers/issues';
 
 export interface IssueResponse {
   components?: Array<{}>;
@@ -30,7 +31,7 @@ interface IssuesResponse {
   components?: Array<{}>;
   debtTotal?: number;
   facets: Array<{}>;
-  issues: Array<{}>;
+  issues: RawIssue[];
   paging: {
     pageIndex: number;
     pageSize: number;
@@ -89,7 +90,7 @@ export function getIssuesCount(query: RequestData): Promise<any> {
 }
 
 export function searchIssueTags(
-  data: { organization?: string; ps?: number; q?: string } = { ps: 500 }
+  data: { organization?: string; ps?: number; q?: string } = { ps: 100 }
 ): Promise<string[]> {
   return getJSON('/api/issues/tags', data).then(r => r.tags);
 }

@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -32,7 +32,6 @@ import org.sonar.api.utils.System2;
 import org.sonar.api.web.UserRole;
 import org.sonar.db.DbTester;
 import org.sonar.db.component.ComponentDto;
-import org.sonar.db.component.SnapshotDto;
 import org.sonar.db.organization.OrganizationDto;
 import org.sonar.server.component.TestComponentFinder;
 import org.sonar.server.exceptions.ForbiddenException;
@@ -40,8 +39,8 @@ import org.sonar.server.exceptions.NotFoundException;
 import org.sonar.server.tester.UserSessionRule;
 import org.sonar.server.ws.TestRequest;
 import org.sonar.server.ws.WsActionTester;
-import org.sonarqube.ws.WsComponents.Component;
-import org.sonarqube.ws.WsComponents.ShowWsResponse;
+import org.sonarqube.ws.Components.Component;
+import org.sonarqube.ws.Components.ShowWsResponse;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.tuple;
@@ -69,7 +68,7 @@ public class ShowActionTest {
   private WsActionTester ws = new WsActionTester(new ShowAction(userSession, db.getDbClient(), TestComponentFinder.from(db)));
 
   @Test
-  public void verify_definition() throws Exception {
+  public void verify_definition() {
     WebService.Action action = ws.getDef();
 
     assertThat(action.since()).isEqualTo("5.4");
@@ -106,7 +105,7 @@ public class ShowActionTest {
   }
 
   @Test
-  public void json_example() throws IOException {
+  public void json_example() {
     userSession.logIn().setRoot();
     insertJsonExampleComponentsAndSnapshots();
 
@@ -119,7 +118,7 @@ public class ShowActionTest {
   }
 
   @Test
-  public void tags_displayed_only_for_project() throws IOException {
+  public void tags_displayed_only_for_project() {
     userSession.logIn().setRoot();
     insertJsonExampleComponentsAndSnapshots();
 
@@ -155,7 +154,7 @@ public class ShowActionTest {
   }
 
   @Test
-  public void show_with_ancestors_when_not_project() throws Exception {
+  public void show_with_ancestors_when_not_project() {
     ComponentDto project = db.components().insertPrivateProject();
     ComponentDto module = db.components().insertComponent(newModuleDto(project));
     ComponentDto directory = db.components().insertComponent(newDirectory(module, "dir"));
@@ -169,7 +168,7 @@ public class ShowActionTest {
   }
 
   @Test
-  public void show_without_ancestors_when_project() throws Exception {
+  public void show_without_ancestors_when_project() {
     ComponentDto project = db.components().insertPrivateProject();
     db.components().insertComponent(newModuleDto(project));
     userSession.addProjectPermission(USER, project);
@@ -181,7 +180,7 @@ public class ShowActionTest {
   }
 
   @Test
-  public void show_with_last_analysis_date() throws Exception {
+  public void show_with_last_analysis_date() {
     ComponentDto project = db.components().insertPrivateProject();
     db.components().insertSnapshots(
       newAnalysis(project).setCreatedAt(1_000_000_000L).setLast(false),
@@ -195,7 +194,7 @@ public class ShowActionTest {
   }
 
   @Test
-  public void show_with_leak_period_date() throws Exception {
+  public void show_with_leak_period_date() {
     ComponentDto project = db.components().insertPrivateProject();
     db.components().insertSnapshots(
       newAnalysis(project).setPeriodDate(1_000_000_000L).setLast(false),
@@ -210,7 +209,7 @@ public class ShowActionTest {
   }
 
   @Test
-  public void show_with_ancestors_and_analysis_date() throws Exception {
+  public void show_with_ancestors_and_analysis_date() {
     ComponentDto project = db.components().insertPrivateProject();
     db.components().insertSnapshot(newAnalysis(project).setCreatedAt(3_000_000_000L).setLast(true));
     ComponentDto module = db.components().insertComponent(newModuleDto(project));
@@ -226,7 +225,7 @@ public class ShowActionTest {
   }
 
   @Test
-  public void should_return_visibility_for_private_project() throws Exception {
+  public void should_return_visibility_for_private_project() {
     userSession.logIn().setRoot();
     ComponentDto privateProject = db.components().insertPrivateProject();
 
@@ -236,7 +235,7 @@ public class ShowActionTest {
   }
 
   @Test
-  public void should_return_visibility_for_public_project() throws Exception {
+  public void should_return_visibility_for_public_project() {
     userSession.logIn().setRoot();
     ComponentDto publicProject = db.components().insertPublicProject();
 
@@ -246,7 +245,7 @@ public class ShowActionTest {
   }
 
   @Test
-  public void should_return_visibility_for_view() throws Exception {
+  public void should_return_visibility_for_view() {
     userSession.logIn().setRoot();
     ComponentDto view = db.components().insertView();
 
@@ -255,7 +254,7 @@ public class ShowActionTest {
   }
 
   @Test
-  public void should_not_return_visibility_for_module() throws Exception {
+  public void should_not_return_visibility_for_module() {
     userSession.logIn().setRoot();
     ComponentDto privateProject = db.components().insertPrivateProject();
     ComponentDto module = db.components().insertComponent(newModuleDto(privateProject));
@@ -265,7 +264,7 @@ public class ShowActionTest {
   }
 
   @Test
-  public void display_version() throws Exception {
+  public void display_version() {
     ComponentDto project = db.components().insertPrivateProject();
     ComponentDto module = db.components().insertComponent(newModuleDto(project));
     ComponentDto directory = db.components().insertComponent(newDirectory(module, "dir"));

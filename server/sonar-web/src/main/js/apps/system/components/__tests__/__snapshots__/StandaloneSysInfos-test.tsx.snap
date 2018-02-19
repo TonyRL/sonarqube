@@ -17,10 +17,12 @@ exports[`should render correctly 1`] = `
       Object {
         "High Availability": true,
         "Logs Level": "DEBUG",
+        "Server ID": "MyServerId",
       }
     }
   />
   <HealthCard
+    key="Web"
     name="Web"
     onClick={[Function]}
     open={false}
@@ -33,6 +35,7 @@ exports[`should render correctly 1`] = `
     }
   />
   <HealthCard
+    key="Compute Engine"
     name="Compute Engine"
     onClick={[Function]}
     open={true}
@@ -45,6 +48,7 @@ exports[`should render correctly 1`] = `
     }
   />
   <HealthCard
+    key="Search Engine"
     name="Search Engine"
     onClick={[Function]}
     open={false}

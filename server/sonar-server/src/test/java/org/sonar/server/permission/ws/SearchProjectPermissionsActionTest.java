@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -34,7 +34,7 @@ import org.sonar.server.exceptions.ForbiddenException;
 import org.sonar.server.exceptions.NotFoundException;
 import org.sonar.server.exceptions.UnauthorizedException;
 import org.sonar.server.i18n.I18nRule;
-import org.sonarqube.ws.WsPermissions;
+import org.sonarqube.ws.Permissions;
 
 import static java.lang.String.format;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -66,8 +66,7 @@ public class SearchProjectPermissionsActionTest extends BasePermissionWsTest<Sea
     i18n.setProjectPermissions();
     ResourceTypesRule rootResourceTypes = newRootResourceTypes();
     PermissionWsSupport wsSupport = newPermissionWsSupport();
-    SearchProjectPermissionsDataLoader dataLoader = new SearchProjectPermissionsDataLoader(db.getDbClient(), wsSupport, rootResourceTypes);
-    return new SearchProjectPermissionsAction(db.getDbClient(), userSession, i18n, rootResourceTypes, dataLoader, wsSupport);
+    return new SearchProjectPermissionsAction(db.getDbClient(), userSession, i18n, rootResourceTypes, wsSupport);
   }
 
   @Test
@@ -123,7 +122,7 @@ public class SearchProjectPermissionsActionTest extends BasePermissionWsTest<Sea
   }
 
   @Test
-  public void search_project_permissions() throws Exception {
+  public void search_project_permissions() {
     UserDto user1 = db.users().insertUser();
     UserDto user2 = db.users().insertUser();
     UserDto user3 = db.users().insertUser();
@@ -162,7 +161,7 @@ public class SearchProjectPermissionsActionTest extends BasePermissionWsTest<Sea
   }
 
   @Test
-  public void empty_result() throws Exception {
+  public void empty_result() {
     String result = newRequest().execute().getInput();
 
     assertJson(result)
@@ -171,7 +170,7 @@ public class SearchProjectPermissionsActionTest extends BasePermissionWsTest<Sea
   }
 
   @Test
-  public void search_project_permissions_with_project_permission() throws Exception {
+  public void search_project_permissions_with_project_permission() {
     ComponentDto project = db.components().insertComponent(newPrivateProjectDto(db.getDefaultOrganization(), "project-uuid"));
     userSession.logIn().addProjectPermission(UserRole.ADMIN, project);
 
@@ -183,7 +182,7 @@ public class SearchProjectPermissionsActionTest extends BasePermissionWsTest<Sea
   }
 
   @Test
-  public void has_projects_ordered_by_name() throws Exception {
+  public void has_projects_ordered_by_name() {
     OrganizationDto organizationDto = db.organizations().insert();
     for (int i = 9; i >= 1; i--) {
       db.components().insertComponent(ComponentTesting.newPrivateProjectDto(organizationDto)
@@ -201,7 +200,7 @@ public class SearchProjectPermissionsActionTest extends BasePermissionWsTest<Sea
   }
 
   @Test
-  public void search_by_query_on_name() throws Exception {
+  public void search_by_query_on_name() {
     componentDb.insertProjectAndSnapshot(ComponentTesting.newPrivateProjectDto(db.getDefaultOrganization()).setName("project-name"));
     componentDb.insertProjectAndSnapshot(ComponentTesting.newPrivateProjectDto(db.getDefaultOrganization()).setName("another-name"));
 
@@ -214,7 +213,7 @@ public class SearchProjectPermissionsActionTest extends BasePermissionWsTest<Sea
   }
 
   @Test
-  public void search_by_query_on_key_must_match_exactly() throws Exception {
+  public void search_by_query_on_key_must_match_exactly() {
     OrganizationDto organizationDto = db.organizations().insert();
     componentDb.insertProjectAndSnapshot(ComponentTesting.newPrivateProjectDto(organizationDto).setDbKey("project-key"));
     componentDb.insertProjectAndSnapshot(ComponentTesting.newPrivateProjectDto(organizationDto).setDbKey("another-key"));
@@ -229,7 +228,7 @@ public class SearchProjectPermissionsActionTest extends BasePermissionWsTest<Sea
   }
 
   @Test
-  public void handle_more_than_1000_projects() throws Exception {
+  public void handle_more_than_1000_projects() {
     for (int i = 1; i <= 1001; i++) {
       componentDb.insertProjectAndSnapshot(newPrivateProjectDto(db.getDefaultOrganization(), "project-uuid-" + i));
     }
@@ -244,14 +243,14 @@ public class SearchProjectPermissionsActionTest extends BasePermissionWsTest<Sea
   }
 
   @Test
-  public void filter_by_qualifier() throws Exception {
+  public void filter_by_qualifier() {
     OrganizationDto organizationDto = db.organizations().insert();
     db.components().insertComponent(newView(organizationDto, "view-uuid"));
     db.components().insertComponent(newPrivateProjectDto(organizationDto, "project-uuid"));
 
-    WsPermissions.SearchProjectPermissionsWsResponse result = newRequest()
+    Permissions.SearchProjectPermissionsWsResponse result = newRequest()
       .setParam(PARAM_QUALIFIER, Qualifiers.PROJECT)
-      .executeProtobuf(WsPermissions.SearchProjectPermissionsWsResponse.class);
+      .executeProtobuf(Permissions.SearchProjectPermissionsWsResponse.class);
 
     assertThat(result.getProjectsList())
       .extracting("id")
@@ -260,7 +259,7 @@ public class SearchProjectPermissionsActionTest extends BasePermissionWsTest<Sea
   }
 
   @Test
-  public void fail_if_not_logged_in() throws Exception {
+  public void fail_if_not_logged_in() {
     userSession.anonymous();
 
     expectedException.expect(UnauthorizedException.class);
@@ -269,7 +268,7 @@ public class SearchProjectPermissionsActionTest extends BasePermissionWsTest<Sea
   }
 
   @Test
-  public void fail_if_not_admin() throws Exception {
+  public void fail_if_not_admin() {
     userSession.logIn();
 
     expectedException.expect(ForbiddenException.class);
@@ -278,7 +277,7 @@ public class SearchProjectPermissionsActionTest extends BasePermissionWsTest<Sea
   }
 
   @Test
-  public void display_all_project_permissions() throws Exception {
+  public void display_all_project_permissions() {
     String result = newRequest().execute().getInput();
 
     assertJson(result)

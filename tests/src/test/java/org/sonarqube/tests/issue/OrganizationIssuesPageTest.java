@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -17,7 +17,6 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-
 package org.sonarqube.tests.issue;
 
 import com.sonar.orchestrator.Orchestrator;
@@ -25,11 +24,11 @@ import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
-import org.sonarqube.pageobjects.Navigation;
+import org.sonarqube.qa.util.pageobjects.Navigation;
 import org.sonarqube.tests.Category6Suite;
-import org.sonarqube.tests.Tester;
+import org.sonarqube.qa.util.Tester;
 import org.sonarqube.ws.Organizations;
-import org.sonarqube.ws.WsUsers;
+import org.sonarqube.ws.Users;
 import util.issue.IssueRule;
 
 import static util.ItUtils.restoreProfile;
@@ -48,11 +47,11 @@ public class OrganizationIssuesPageTest {
 
   private Organizations.Organization org1;
   private Organizations.Organization org2;
-  private WsUsers.CreateWsResponse.User user1;
-  private WsUsers.CreateWsResponse.User user2;
+  private Users.CreateWsResponse.User user1;
+  private Users.CreateWsResponse.User user2;
 
   @Before
-  public void setUp() throws Exception {
+  public void setUp() {
     org1 = tester.organizations().generate();
     org2 = tester.organizations().generate();
     user1 = tester.users().generate();
@@ -81,7 +80,7 @@ public class OrganizationIssuesPageTest {
   }
 
   private String provisionProject(Organizations.Organization organization) {
-    return tester.projects().generate(organization).getKey();
+    return tester.projects().provision(organization).getKey();
   }
 
   private void analyseProject(String projectKey, String organization) {

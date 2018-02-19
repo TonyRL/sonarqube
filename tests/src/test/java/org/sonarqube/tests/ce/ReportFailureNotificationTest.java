@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -42,13 +42,13 @@ import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.sonarqube.tests.Category6Suite;
-import org.sonarqube.tests.Tester;
+import org.sonarqube.qa.util.Tester;
 import org.sonarqube.ws.Organizations;
-import org.sonarqube.ws.WsProjects;
-import org.sonarqube.ws.WsUsers;
+import org.sonarqube.ws.Projects;
+import org.sonarqube.ws.Users;
 import org.sonarqube.ws.client.PostRequest;
 import org.sonarqube.ws.client.WsClient;
-import org.sonarqube.ws.client.permission.AddUserWsRequest;
+import org.sonarqube.ws.client.permissions.AddUserRequest;
 import org.subethamail.wiser.Wiser;
 import org.subethamail.wiser.WiserMessage;
 
@@ -67,7 +67,7 @@ public class ReportFailureNotificationTest {
   private static Wiser smtpServer;
 
   @BeforeClass
-  public static void before() throws Exception {
+  public static void before() {
     smtpServer = new Wiser(0);
     smtpServer.start();
     System.out.println("SMTP Server port: " + smtpServer.getServer().getPort());
@@ -81,7 +81,7 @@ public class ReportFailureNotificationTest {
   }
 
   @Before
-  public void prepare() throws Exception {
+  public void prepare() {
     tester.settings().setGlobalSettings(
       "email.smtp_host.secured", smtpServer.getServer().getHostName(),
       "email.smtp_port.secured", valueOf(smtpServer.getServer().getPort()));
@@ -102,19 +102,19 @@ public class ReportFailureNotificationTest {
   @Test
   public void send_notification_on_report_processing_failures_to_global_and_project_subscribers() throws Exception {
     Organizations.Organization organization = tester.organizations().getDefaultOrganization();
-    WsUsers.CreateWsResponse.User user1 = tester.users().generateMember(organization, t -> t.setPassword("user1").setEmail("user1@bar.com"));
-    WsUsers.CreateWsResponse.User user2 = tester.users().generateMember(organization, t -> t.setPassword("user2").setEmail("user2@bar.com"));
-    WsUsers.CreateWsResponse.User user3 = tester.users().generateMember(organization, t -> t.setPassword("user3").setEmail("user3@bar.com"));
-    WsProjects.CreateWsResponse.Project project1 = tester.projects().generate(organization, t -> t.setName("Project1"));
-    WsProjects.CreateWsResponse.Project project2 = tester.projects().generate(organization, t -> t.setName("Project2"));
-    WsProjects.CreateWsResponse.Project project3 = tester.projects().generate(organization, t -> t.setName("Project3"));
+    Users.CreateWsResponse.User user1 = tester.users().generateMember(organization, t -> t.setPassword("user1").setEmail("user1@bar.com"));
+    Users.CreateWsResponse.User user2 = tester.users().generateMember(organization, t -> t.setPassword("user2").setEmail("user2@bar.com"));
+    Users.CreateWsResponse.User user3 = tester.users().generateMember(organization, t -> t.setPassword("user3").setEmail("user3@bar.com"));
+    Projects.CreateWsResponse.Project project1 = tester.projects().provision(organization, t -> t.setName("Project1"));
+    Projects.CreateWsResponse.Project project2 = tester.projects().provision(organization, t -> t.setName("Project2"));
+    Projects.CreateWsResponse.Project project3 = tester.projects().provision(organization, t -> t.setName("Project3"));
     // user 1 is admin of project 1 and will subscribe to global notifications
-    tester.wsClient().permissions().addUser(new AddUserWsRequest()
+    tester.wsClient().permissions().addUser(new AddUserRequest()
       .setLogin(user1.getLogin())
       .setPermission("admin")
       .setProjectKey(project1.getKey()));
     // user 2 is admin of project 2 but won't subscribe to global notifications
-    tester.wsClient().permissions().addUser(new AddUserWsRequest()
+    tester.wsClient().permissions().addUser(new AddUserRequest()
       .setLogin(user2.getLogin())
       .setPermission("admin")
       .setProjectKey(project2.getKey()));
@@ -177,7 +177,7 @@ public class ReportFailureNotificationTest {
     assertThat(waitForEmails()).isEmpty();
   }
 
-  private static void assertSubjectAndContent(WsProjects.CreateWsResponse.Project project, List<MimeMessage> messages) {
+  private static void assertSubjectAndContent(Projects.CreateWsResponse.Project project, List<MimeMessage> messages) {
     assertThat(messages.stream().map(toSubject()).collect(Collectors.toSet()))
       .containsOnly("[SONARQUBE] " + project.getName() + ": Background task in failure");
     Set<String> content = messages.stream().map(toContent()).collect(Collectors.toSet());
@@ -221,7 +221,7 @@ public class ReportFailureNotificationTest {
     };
   }
 
-  private void subscribeToReportFailures(WsUsers.CreateWsResponse.User user1, String password, @Nullable WsProjects.CreateWsResponse.Project project) {
+  private void subscribeToReportFailures(Users.CreateWsResponse.User user1, String password, @Nullable Projects.CreateWsResponse.Project project) {
     WsClient wsClient = newUserWsClient(orchestrator, user1.getLogin(), password);
     PostRequest request = new PostRequest("api/notifications/add")
       .setParam("type", "CeReportTaskFailure")
@@ -233,7 +233,7 @@ public class ReportFailureNotificationTest {
       .failIfNotSuccessful();
   }
 
-  private void unsubscribeFromReportFailures(WsUsers.CreateWsResponse.User user1, String password, @Nullable WsProjects.CreateWsResponse.Project project) {
+  private void unsubscribeFromReportFailures(Users.CreateWsResponse.User user1, String password, @Nullable Projects.CreateWsResponse.Project project) {
     WsClient wsClient = newUserWsClient(orchestrator, user1.getLogin(), password);
     PostRequest request = new PostRequest("api/notifications/remove")
       .setParam("type", "CeReportTaskFailure")
@@ -245,7 +245,7 @@ public class ReportFailureNotificationTest {
       .failIfNotSuccessful();
   }
 
-  private void executeAnalysis(WsProjects.CreateWsResponse.Project project) {
+  private void executeAnalysis(Projects.CreateWsResponse.Project project) {
     SonarScanner sonarScanner = SonarScanner.create(projectDir("shared/xoo-sample"),
       "sonar.projectKey", project.getKey(),
       "sonar.projectName", project.getName());

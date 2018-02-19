@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -78,7 +78,7 @@ public class LinesActionTest {
     htmlSourceDecorator = mock(HtmlSourceDecorator.class);
     when(htmlSourceDecorator.getDecoratedSourceAsHtml(anyString(), anyString(), anyString())).then(new Answer<String>() {
       @Override
-      public String answer(InvocationOnMock invocationOnMock) throws Throwable {
+      public String answer(InvocationOnMock invocationOnMock) {
         return "<p>" + invocationOnMock.getArguments()[0] + "</p>";
       }
     });
@@ -334,7 +334,7 @@ public class LinesActionTest {
     userSession.logIn("login").addProjectPermission(UserRole.CODEVIEWER, project, file);
   }
 
-  private void insertFile() throws IOException {
+  private void insertFile() {
     componentDao.insert(db.getSession(), project, file);
     db.getSession().commit();
   }

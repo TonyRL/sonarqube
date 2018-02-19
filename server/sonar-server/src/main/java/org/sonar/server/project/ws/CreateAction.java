@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -30,10 +30,14 @@ import org.sonar.db.organization.OrganizationDto;
 import org.sonar.server.component.ComponentUpdater;
 import org.sonar.server.project.Visibility;
 import org.sonar.server.user.UserSession;
-import org.sonarqube.ws.WsProjects.CreateWsResponse;
-import org.sonarqube.ws.client.project.CreateRequest;
+import org.sonarqube.ws.Projects.CreateWsResponse;
+
+import javax.annotation.CheckForNull;
+import javax.annotation.Nullable;
 
 import static org.sonar.api.resources.Qualifiers.PROJECT;
+import static org.sonar.core.component.ComponentKeys.MAX_COMPONENT_KEY_LENGTH;
+import static org.sonar.db.component.ComponentValidator.MAX_COMPONENT_NAME_LENGTH;
 import static org.sonar.db.permission.OrganizationPermission.PROVISION_PROJECTS;
 import static org.sonar.server.component.NewComponent.newComponentBuilder;
 import static org.sonar.server.project.ws.ProjectsWsSupport.PARAM_ORGANIZATION;
@@ -79,11 +83,13 @@ public class CreateAction implements ProjectsWsAction {
       .setDescription("Key of the project")
       .setDeprecatedKey(DEPRECATED_PARAM_KEY, "6.3")
       .setRequired(true)
+      .setMaximumLength(MAX_COMPONENT_KEY_LENGTH)
       .setExampleValue(KEY_PROJECT_EXAMPLE_001);
 
     action.createParam(PARAM_NAME)
       .setDescription("Name of the project")
       .setRequired(true)
+      .setMaximumLength(MAX_COMPONENT_NAME_LENGTH)
       .setExampleValue("SonarQube");
 
     action.createParam(PARAM_BRANCH)
@@ -148,4 +154,91 @@ public class CreateAction implements ProjectsWsAction {
       .build();
   }
 
+  static class CreateRequest {
+
+    private final String organization;
+    private final String key;
+    private final String name;
+    private final String branch;
+    @CheckForNull
+    private final String visibility;
+
+    private CreateRequest(Builder builder) {
+      this.organization = builder.organization;
+      this.key = builder.key;
+      this.name = builder.name;
+      this.branch = builder.branch;
+      this.visibility = builder.visibility;
+    }
+
+    @CheckForNull
+    public String getOrganization() {
+      return organization;
+    }
+
+    @CheckForNull
+    public String getKey() {
+      return key;
+    }
+
+    @CheckForNull
+    public String getName() {
+      return name;
+    }
+
+    @CheckForNull
+    public String getBranch() {
+      return branch;
+    }
+
+    @CheckForNull
+    public String getVisibility() {
+      return visibility;
+    }
+
+    public static Builder builder() {
+      return new Builder();
+    }
+  }
+
+  static class Builder {
+    private String organization;
+    private String key;
+    private String name;
+    private String branch;
+    @CheckForNull
+    private String visibility;
+
+    private Builder() {
+    }
+
+    public Builder setOrganization(@Nullable String organization) {
+      this.organization = organization;
+      return this;
+    }
+
+    public Builder setKey(@Nullable String key) {
+      this.key = key;
+      return this;
+    }
+
+    public Builder setName(@Nullable String name) {
+      this.name = name;
+      return this;
+    }
+
+    public Builder setBranch(@Nullable String branch) {
+      this.branch = branch;
+      return this;
+    }
+
+    public Builder setVisibility(@Nullable String visibility) {
+      this.visibility = visibility;
+      return this;
+    }
+
+    public CreateRequest build() {
+      return new CreateRequest(this);
+    }
+  }
 }

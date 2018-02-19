@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -19,12 +19,12 @@
  */
 // @flow
 import React from 'react';
-import Modal from 'react-modal';
 import classNames from 'classnames';
 import LinksHelp from './LinksHelp';
 import LinksHelpSonarCloud from './LinksHelpSonarCloud';
 import ShortcutsHelp from './ShortcutsHelp';
 import TutorialsHelp from './TutorialsHelp';
+import Modal from '../../../components/controls/Modal';
 import { translate } from '../../../helpers/l10n';
 
 /*::
@@ -32,7 +32,7 @@ type Props = {
   currentUser: { isLoggedIn: boolean },
   onClose: () => void,
   onTutorialSelect: () => void,
-  sonarCloud?: boolean
+  onSonarCloud?: boolean
 };
 */
 
@@ -62,7 +62,7 @@ export default class GlobalHelp extends React.PureComponent {
       case 'shortcuts':
         return <ShortcutsHelp />;
       case 'links':
-        return this.props.sonarCloud ? (
+        return this.props.onSonarCloud ? (
           <LinksHelpSonarCloud onClose={this.props.onClose} />
         ) : (
           <LinksHelp onClose={this.props.onClose} />
@@ -88,20 +88,16 @@ export default class GlobalHelp extends React.PureComponent {
 
   renderMenu = () => (
     <ul className="side-tabs-menu">
-      {(this.props.currentUser.isLoggedIn
+      {(this.props.currentUser.isLoggedIn && !this.props.onSonarCloud
         ? ['shortcuts', 'tutorials', 'links']
-        : ['shortcuts', 'links']).map(this.renderMenuItem)}
+        : ['shortcuts', 'links']
+      ).map(this.renderMenuItem)}
     </ul>
   );
 
   render() {
     return (
-      <Modal
-        isOpen={true}
-        contentLabel={translate('help')}
-        className="modal modal-medium"
-        overlayClassName="modal-overlay"
-        onRequestClose={this.props.onClose}>
+      <Modal contentLabel={translate('help')} medium={true} onRequestClose={this.props.onClose}>
         <div className="modal-head">
           <h2>{translate('help')}</h2>
         </div>

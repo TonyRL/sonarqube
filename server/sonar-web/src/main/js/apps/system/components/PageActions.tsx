@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -20,7 +20,8 @@
 import * as React from 'react';
 import ChangeLogLevelForm from './ChangeLogLevelForm';
 import RestartForm from '../../../components/common/RestartForm';
-import EditIcon from '../../../components/icons-components/EditIcon';
+import { getFileNameSuffix } from '../utils';
+import { EditButton } from '../../../components/ui/buttons';
 import { getBaseUrl } from '../../../helpers/urls';
 import { translate } from '../../../helpers/l10n';
 
@@ -30,6 +31,7 @@ interface Props {
   cluster: boolean;
   logLevel: string;
   onLogLevelChange: () => void;
+  serverId?: string;
 }
 
 interface State {
@@ -54,8 +56,7 @@ export default class PageActions extends React.PureComponent<Props, State> {
     }
   }
 
-  handleLogsLevelOpen = (event: React.SyntheticEvent<HTMLAnchorElement>) => {
-    event.preventDefault();
+  handleLogsLevelOpen = () => {
     this.setState({ openLogsLevelForm: true });
   };
 
@@ -78,16 +79,16 @@ export default class PageActions extends React.PureComponent<Props, State> {
     return (
       <div className="page-actions">
         <span>
-          {translate('system.logs_level')}
-          {':'}
-          <strong className="little-spacer-left">{this.state.logLevel}</strong>
-          <a
+          <span className="text-middle">
+            {translate('system.logs_level')}
+            {':'}
+            <strong className="little-spacer-left">{this.state.logLevel}</strong>
+          </span>
+          <EditButton
             id="edit-logs-level-button"
-            className="spacer-left link-no-underline"
-            href="#"
-            onClick={this.handleLogsLevelOpen}>
-            <EditIcon className="little-spacer-top" />
-          </a>
+            className="spacer-left button-small"
+            onClick={this.handleLogsLevelOpen}
+          />
         </span>
         {this.props.canDownloadLogs && (
           <div className="display-inline-block dropdown spacer-left">
@@ -140,7 +141,7 @@ export default class PageActions extends React.PureComponent<Props, State> {
           id="download-link"
           className="button spacer-left"
           onClick={this.removeElementFocus}
-          download="sonarqube_system_info.json"
+          download={`sonarqube-support-info-${getFileNameSuffix(this.props.serverId)}.json`}
           target="_blank">
           {translate('system.download_system_info')}
         </a>

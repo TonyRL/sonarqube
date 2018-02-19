@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -22,17 +22,17 @@ package org.sonar.server.measure.ws;
 import java.util.Map;
 import org.sonar.core.util.Protobuf;
 import org.sonar.db.component.ComponentDto;
-import org.sonar.db.measure.MeasureDto;
+import org.sonar.db.measure.LiveMeasureDto;
 import org.sonar.db.metric.MetricDto;
-import org.sonarqube.ws.WsMeasures;
-import org.sonarqube.ws.WsMeasures.Component;
+import org.sonarqube.ws.Measures;
+import org.sonarqube.ws.Measures.Component;
 
 class ComponentDtoToWsComponent {
   private ComponentDtoToWsComponent() {
     // static methods only
   }
 
-  static Component.Builder componentDtoToWsComponent(ComponentDto component, Map<MetricDto, MeasureDto> measuresByMetric,
+  static Component.Builder componentDtoToWsComponent(ComponentDto component, Map<MetricDto, LiveMeasureDto> measuresByMetric,
     Map<String, ComponentDto> referenceComponentsByUuid) {
     Component.Builder wsComponent = componentDtoToWsComponent(component);
 
@@ -42,8 +42,8 @@ class ComponentDtoToWsComponent {
       wsComponent.setRefKey(referenceComponent.getDbKey());
     }
 
-    WsMeasures.Measure.Builder measureBuilder = WsMeasures.Measure.newBuilder();
-    for (Map.Entry<MetricDto, MeasureDto> entry : measuresByMetric.entrySet()) {
+    Measures.Measure.Builder measureBuilder = Measures.Measure.newBuilder();
+    for (Map.Entry<MetricDto, LiveMeasureDto> entry : measuresByMetric.entrySet()) {
       MeasureDtoToWsMeasure.updateMeasureBuilder(measureBuilder, entry.getKey(), entry.getValue());
       wsComponent.addMeasures(measureBuilder);
       measureBuilder.clear();

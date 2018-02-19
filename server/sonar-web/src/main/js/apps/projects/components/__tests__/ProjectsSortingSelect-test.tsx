@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -20,7 +20,6 @@
 import * as React from 'react';
 import { shallow } from 'enzyme';
 import ProjectsSortingSelect from '../ProjectsSortingSelect';
-import { click } from '../../../../helpers/testUtils';
 
 it('should render correctly for overall view', () => {
   expect(
@@ -85,6 +84,6 @@ it('reverses sorting', () => {
       view="overall"
     />
   );
-  click(wrapper.find('a'));
+  wrapper.find('ButtonIcon').prop<Function>('onClick')();
   expect(onChange).toBeCalledWith('size', false);
 });

@@ -24,7 +24,6 @@
     p.path as path,
     p.enabled as enabled,
     p.copy_component_uuid as copyComponentUuid,
-    p.developer_uuid as developerUuid,
     p.private as isPrivate,
     p.created_at as createdAt
   </sql>
@@ -374,6 +373,12 @@
         #{qualifier,jdbcType=VARCHAR}
       </foreach>
     </if>
+    <if test="query.scopes != null">
+      and p.scope in
+      <foreach collection="query.scopes" item="scope" open="(" close=")" separator=",">
+        #{scope,jdbcType=VARCHAR}
+      </foreach>
+    </if>
     <if test="query.nameOrKeyQuery != null">
       and (
         p.kee = #{query.nameOrKeyQuery,jdbcType=VARCHAR}
@@ -512,7 +517,6 @@
       root_uuid,
       path,
       copy_component_uuid,
-      developer_uuid,
       enabled,
       created_at,
       b_changed,
@@ -548,7 +552,6 @@
     #{rootUuid,jdbcType=VARCHAR},
     #{path,jdbcType=VARCHAR},
     #{copyComponentUuid,jdbcType=VARCHAR},
-    #{developerUuid,jdbcType=VARCHAR},
     #{enabled,jdbcType=BOOLEAN},
     #{createdAt,jdbcType=TIMESTAMP},
     ${_false},

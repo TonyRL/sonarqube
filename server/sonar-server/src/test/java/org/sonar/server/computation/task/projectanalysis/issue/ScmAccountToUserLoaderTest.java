@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -43,7 +43,7 @@ public class ScmAccountToUserLoaderTest {
   public LogTester logTester = new LogTester();
 
   @Test
-  public void load_login_for_scm_account() throws Exception {
+  public void load_login_for_scm_account() {
     UserDoc user = new UserDoc()
       .setLogin("charlie")
       .setName("Charlie")
@@ -60,7 +60,7 @@ public class ScmAccountToUserLoaderTest {
   }
 
   @Test
-  public void warn_if_multiple_users_share_the_same_scm_account() throws Exception {
+  public void warn_if_multiple_users_share_the_same_scm_account() {
     UserDoc user1 = new UserDoc()
       .setLogin("charlie")
       .setName("Charlie")
@@ -88,7 +88,7 @@ public class ScmAccountToUserLoaderTest {
     UserIndex index = new UserIndex(esTester.client(), System2.INSTANCE);
     ScmAccountToUserLoader underTest = new ScmAccountToUserLoader(index);
     try {
-      underTest.loadAll(Collections.<String>emptyList());
+      underTest.loadAll(Collections.emptyList());
       fail();
     } catch (UnsupportedOperationException ignored) {
     }

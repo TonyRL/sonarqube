@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -65,7 +65,7 @@ export default function enhance(ComposedComponent) {
           <div className="overview-title">
             <span>{label}</span>
             <Link
-              className="button button-small button-compact spacer-left text-text-bottom"
+              className="button button-small spacer-left text-text-bottom"
               to={getComponentDrilldownUrl(component.key, domain, branch)}>
               <BubblesIcon size={14} />
             </Link>
@@ -170,8 +170,7 @@ export default function enhance(ComposedComponent) {
     };
 
     renderHistoryLink = metricKey => {
-      const linkClass =
-        'button button-small button-compact spacer-left overview-domain-measure-history-link';
+      const linkClass = 'button button-small spacer-left overview-domain-measure-history-link';
       return (
         <Link
           className={linkClass}

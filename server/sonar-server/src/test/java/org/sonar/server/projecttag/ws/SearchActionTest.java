@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -17,7 +17,6 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-
 package org.sonar.server.projecttag.ws;
 
 import java.io.IOException;
@@ -44,7 +43,7 @@ import org.sonar.server.permission.index.PermissionIndexerTester;
 import org.sonar.server.tester.UserSessionRule;
 import org.sonar.server.ws.TestRequest;
 import org.sonar.server.ws.WsActionTester;
-import org.sonarqube.ws.WsProjectTags.SearchResponse;
+import org.sonarqube.ws.ProjectTags.SearchResponse;
 
 import static com.google.common.collect.Lists.newArrayList;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -71,7 +70,7 @@ public class SearchActionTest {
   private WsActionTester ws = new WsActionTester(new SearchAction(index));
 
   @Test
-  public void json_example() throws IOException {
+  public void json_example() {
     index(newDoc().setTags(newArrayList("official", "offshore", "playoff")));
 
     String result = ws.newRequest().execute().getInput();

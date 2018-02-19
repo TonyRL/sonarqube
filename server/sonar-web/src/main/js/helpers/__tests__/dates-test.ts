@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -65,6 +65,8 @@ it('differenceInDays', () => {
 
 it('differenceInSeconds', () => {
   expect(dates.differenceInSeconds(recentDate, parseDate('2017-08-16T10:00:00.000Z'))).toBe(7200);
-  expect(dates.differenceInSeconds(recentDate, parseDate('2017-08-16T12:00:00.500Z'))).toBe(0);
+  expect(dates.differenceInSeconds(recentDate, parseDate('2017-08-16T12:00:00.500Z'))).toBeCloseTo(
+    0
+  );
   expect(dates.differenceInSeconds(recentDate, oldDate)).toBe(113356800);
 });

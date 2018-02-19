@@ -1,7 +1,7 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2016 SonarSource SA
- * mailto:contact AT sonarsource DOT com
+ * Copyright (C) 2009-2018 SonarSource SA
+ * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -24,6 +24,7 @@ import ComponentNavBranchesMenu from './ComponentNavBranchesMenu';
 import SingleBranchHelperPopup from './SingleBranchHelperPopup';
 import NoBranchSupportPopup from './NoBranchSupportPopup';
 import { Branch, Component } from '../../../types';
+import * as theme from '../../../theme';
 import BranchIcon from '../../../../components/icons-components/BranchIcon';
 import { isShortLivingBranch } from '../../../../helpers/branches';
 import { translate } from '../../../../helpers/l10n';
@@ -46,16 +47,20 @@ interface State {
 
 export default class ComponentNavBranch extends React.PureComponent<Props, State> {
   mounted: boolean;
-  state: State = {
-    dropdownOpen: false,
-    noBranchSupportPopupOpen: false,
-    singleBranchPopupOpen: false
-  };
 
   static contextTypes = {
     branchesEnabled: PropTypes.bool.isRequired,
     onSonarCloud: PropTypes.bool
   };
+
+  constructor(props: Props) {
+    super(props);
+    this.state = {
+      dropdownOpen: false,
+      noBranchSupportPopupOpen: false,
+      singleBranchPopupOpen: false
+    };
+  }
 
   componentDidMount() {
     this.mounted = true;
@@ -94,7 +99,7 @@ export default class ComponentNavBranch extends React.PureComponent<Props, State
   };
 
   toggleSingleBranchPopup = (show?: boolean) => {
-    if (show != undefined) {
+    if (show !== undefined) {
       this.setState({ singleBranchPopupOpen: show });
     } else {
       this.setState(state => ({ singleBranchPopupOpen: !state.singleBranchPopupOpen }));
@@ -102,7 +107,7 @@ export default class ComponentNavBranch extends React.PureComponent<Props, State
   };
 
   toggleNoBranchSupportPopup = (show?: boolean) => {
-    if (show != undefined) {
+    if (show !== undefined) {
       this.setState({ noBranchSupportPopupOpen: show });
     } else {
       this.setState(state => ({ noBranchSupportPopupOpen: !state.noBranchSupportPopupOpen }));
@@ -156,7 +161,7 @@ export default class ComponentNavBranch extends React.PureComponent<Props, State
   renderSingleBranchPopup = () => (
     <div className="display-inline-block spacer-left">
       <a className="link-no-underline" href="#" onClick={this.handleSingleBranchClick}>
-        <HelpIcon fill="#4b9fd5" />
+        <HelpIcon fill={theme.blue} />
       </a>
       <BubblePopupHelper
         isOpen={this.state.singleBranchPopupOpen}
@@ -170,7 +175,7 @@ export default class ComponentNavBranch extends React.PureComponent<Props, State
   renderNoBranchSupportPopup = () => (
     <div className="display-inline-block spacer-left">
       <a className="link-no-underline" href="#" onClick={this.handleNoBranchSupportClick}>
-        <HelpIcon fill="#cdcdcd" />
+        <HelpIcon fill={theme.gray80} />
       </a>
       <BubblePopupHelper
         isOpen={this.state.noBranchSupportPopupOpen}
@@ -191,7 +196,7 @@ export default class ComponentNavBranch extends React.PureComponent<Props, State
     if (!this.context.branchesEnabled) {
       return (
         <div className="navbar-context-branches">
-          <BranchIcon branch={currentBranch} className="little-spacer-right" color="#cdcdcd" />
+          <BranchIcon branch={currentBranch} className="little-spacer-right" fill={theme.gray80} />
           <span className="note">{currentBranch.name}</span>
           {this.renderNoBranchSupportPopup()}
         </div>

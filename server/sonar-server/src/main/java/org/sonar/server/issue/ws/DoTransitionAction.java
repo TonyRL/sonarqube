@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -30,17 +30,14 @@ import org.sonar.api.utils.System2;
 import org.sonar.core.issue.DefaultIssue;
 import org.sonar.core.issue.IssueChangeContext;
 import org.sonar.core.util.Uuids;
-import org.sonar.core.util.stream.MoreCollectors;
 import org.sonar.db.DbClient;
 import org.sonar.db.DbSession;
 import org.sonar.db.issue.IssueDto;
 import org.sonar.server.issue.IssueFinder;
 import org.sonar.server.issue.IssueUpdater;
 import org.sonar.server.issue.TransitionService;
-import org.sonar.server.issue.webhook.IssueChangeWebhook;
 import org.sonar.server.user.UserSession;
 
-import static com.google.common.collect.ImmutableList.copyOf;
 import static org.sonarqube.ws.client.issue.IssuesWsParameters.ACTION_DO_TRANSITION;
 import static org.sonarqube.ws.client.issue.IssuesWsParameters.PARAM_ISSUE;
 import static org.sonarqube.ws.client.issue.IssuesWsParameters.PARAM_TRANSITION;
@@ -54,10 +51,9 @@ public class DoTransitionAction implements IssuesWsAction {
   private final TransitionService transitionService;
   private final OperationResponseWriter responseWriter;
   private final System2 system2;
-  private final IssueChangeWebhook issueChangeWebhook;
 
   public DoTransitionAction(DbClient dbClient, UserSession userSession, IssueFinder issueFinder, IssueUpdater issueUpdater, TransitionService transitionService,
-    OperationResponseWriter responseWriter, System2 system2, IssueChangeWebhook issueChangeWebhook) {
+    OperationResponseWriter responseWriter, System2 system2) {
     this.dbClient = dbClient;
     this.userSession = userSession;
     this.issueFinder = issueFinder;
@@ -65,7 +61,6 @@ public class DoTransitionAction implements IssuesWsAction {
     this.transitionService = transitionService;
     this.responseWriter = responseWriter;
     this.system2 = system2;
-    this.issueChangeWebhook = issueChangeWebhook;
   }
 
   @Override
@@ -107,14 +102,7 @@ public class DoTransitionAction implements IssuesWsAction {
     IssueChangeContext context = IssueChangeContext.createUser(new Date(system2.now()), userSession.getLogin());
     transitionService.checkTransitionPermission(transitionKey, defaultIssue);
     if (transitionService.doTransition(defaultIssue, context, transitionKey)) {
-      SearchResponseData searchResponseData = issueUpdater.saveIssueAndPreloadSearchResponseData(session, defaultIssue, context, null);
-      issueChangeWebhook.onChange(
-        new IssueChangeWebhook.IssueChangeData(
-          searchResponseData.getIssues().stream().map(IssueDto::toDefaultIssue).collect(MoreCollectors.toList(searchResponseData.getIssues().size())),
-          copyOf(searchResponseData.getComponents())),
-        new IssueChangeWebhook.IssueChange(transitionKey),
-        context);
-      return searchResponseData;
+      return issueUpdater.saveIssueAndPreloadSearchResponseData(session, defaultIssue, context, null, true);
     }
     return new SearchResponseData(issueDto);
   }

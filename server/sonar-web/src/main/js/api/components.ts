@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -152,12 +152,6 @@ export function getComponentData(component: string, branch?: string): Promise<an
 export function getMyProjects(data: RequestData): Promise<any> {
   const url = '/api/projects/search_my_projects';
   return getJSON(url, data);
-}
-
-export interface Paging {
-  pageIndex: number;
-  pageSize: number;
-  total: number;
 }
 
 export interface Component {

@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -21,6 +21,7 @@ import * as React from 'react';
 import { translateWithParameters } from '../../../helpers/l10n';
 import { IdentityProvider } from '../../../api/users';
 import { getBaseUrl } from '../../../helpers/urls';
+import './OAuthProviders.css';
 
 interface Props {
   formatLabel?: (name: string) => string;

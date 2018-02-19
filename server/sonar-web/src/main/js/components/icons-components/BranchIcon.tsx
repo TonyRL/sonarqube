@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -20,15 +20,13 @@
 import * as React from 'react';
 import ShortLivingBranchIcon from './ShortLivingBranchIcon';
 import LongLivingBranchIcon from './LongLivingBranchIcon';
+import { IconProps } from './types';
 // import PullRequestIcon from './PullRequestIcon';
 import { Branch } from '../../app/types';
 import { isShortLivingBranch } from '../../helpers/branches';
 
-interface Props {
+interface Props extends IconProps {
   branch: Branch;
-  className?: string;
-  color?: string;
-  size?: number;
 }
 
 export default function BranchIcon({ branch, ...props }: Props) {

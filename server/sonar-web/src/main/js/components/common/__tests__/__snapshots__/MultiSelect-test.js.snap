@@ -5,27 +5,28 @@ exports[`should render multiselect with selected elements 1`] = `
   className="multi-select"
 >
   <div
-    className="search-box menu-search"
+    className="menu-search"
   >
-    <button
-      className="search-box-submit button-clean"
-    >
-      <i
-        className="icon-search-new"
-      />
-    </button>
-    <input
-      autoComplete="off"
-      className="search-box-input"
+    <SearchBox
+      autoFocus={true}
       onChange={[Function]}
-      placeholder="search_verb"
-      type="search"
+      placeholder=""
       value=""
     />
   </div>
   <ul
     className="menu"
-  />
+  >
+    <MultiSelectOption
+      active={true}
+      custom={false}
+      element="bar"
+      key="bar"
+      onHover={[Function]}
+      onSelectChange={[Function]}
+      selected={true}
+    />
+  </ul>
 </div>
 `;
 
@@ -34,21 +35,12 @@ exports[`should render multiselect with selected elements 2`] = `
   className="multi-select"
 >
   <div
-    className="search-box menu-search"
+    className="menu-search"
   >
-    <button
-      className="search-box-submit button-clean"
-    >
-      <i
-        className="icon-search-new"
-      />
-    </button>
-    <input
-      autoComplete="off"
-      className="search-box-input"
+    <SearchBox
+      autoFocus={true}
       onChange={[Function]}
-      placeholder="search_verb"
-      type="search"
+      placeholder=""
       value=""
     />
   </div>
@@ -56,9 +48,10 @@ exports[`should render multiselect with selected elements 2`] = `
     className="menu"
   >
     <MultiSelectOption
-      active={false}
+      active={true}
       custom={false}
       element="bar"
+      key="bar"
       onHover={[Function]}
       onSelectChange={[Function]}
       selected={true}
@@ -67,6 +60,7 @@ exports[`should render multiselect with selected elements 2`] = `
       active={false}
       custom={false}
       element="foo"
+      key="foo"
       onHover={[Function]}
       onSelectChange={[Function]}
       selected={false}
@@ -75,6 +69,7 @@ exports[`should render multiselect with selected elements 2`] = `
       active={false}
       custom={false}
       element="baz"
+      key="baz"
       onHover={[Function]}
       onSelectChange={[Function]}
       selected={false}
@@ -88,21 +83,12 @@ exports[`should render multiselect with selected elements 3`] = `
   className="multi-select"
 >
   <div
-    className="search-box menu-search"
+    className="menu-search"
   >
-    <button
-      className="search-box-submit button-clean"
-    >
-      <i
-        className="icon-search-new"
-      />
-    </button>
-    <input
-      autoComplete="off"
-      className="search-box-input"
+    <SearchBox
+      autoFocus={true}
       onChange={[Function]}
-      placeholder="search_verb"
-      type="search"
+      placeholder=""
       value=""
     />
   </div>
@@ -113,6 +99,7 @@ exports[`should render multiselect with selected elements 3`] = `
       active={false}
       custom={false}
       element="bar"
+      key="bar"
       onHover={[Function]}
       onSelectChange={[Function]}
       selected={true}
@@ -121,6 +108,7 @@ exports[`should render multiselect with selected elements 3`] = `
       active={false}
       custom={false}
       element="foo"
+      key="foo"
       onHover={[Function]}
       onSelectChange={[Function]}
       selected={false}
@@ -129,6 +117,7 @@ exports[`should render multiselect with selected elements 3`] = `
       active={true}
       custom={false}
       element="baz"
+      key="baz"
       onHover={[Function]}
       onSelectChange={[Function]}
       selected={false}
@@ -142,21 +131,12 @@ exports[`should render multiselect with selected elements 4`] = `
   className="multi-select"
 >
   <div
-    className="search-box menu-search"
+    className="menu-search"
   >
-    <button
-      className="search-box-submit button-clean"
-    >
-      <i
-        className="icon-search-new"
-      />
-    </button>
-    <input
-      autoComplete="off"
-      className="search-box-input"
+    <SearchBox
+      autoFocus={true}
       onChange={[Function]}
-      placeholder="search_verb"
-      type="search"
+      placeholder=""
       value="test"
     />
   </div>
@@ -167,6 +147,7 @@ exports[`should render multiselect with selected elements 4`] = `
       active={false}
       custom={false}
       element="bar"
+      key="bar"
       onHover={[Function]}
       onSelectChange={[Function]}
       selected={true}
@@ -175,6 +156,7 @@ exports[`should render multiselect with selected elements 4`] = `
       active={false}
       custom={false}
       element="foo"
+      key="foo"
       onHover={[Function]}
       onSelectChange={[Function]}
       selected={false}
@@ -183,6 +165,7 @@ exports[`should render multiselect with selected elements 4`] = `
       active={true}
       custom={false}
       element="baz"
+      key="baz"
       onHover={[Function]}
       onSelectChange={[Function]}
       selected={false}
@@ -191,6 +174,7 @@ exports[`should render multiselect with selected elements 4`] = `
       active={false}
       custom={true}
       element="test"
+      key="test"
       onHover={[Function]}
       onSelectChange={[Function]}
       selected={false}

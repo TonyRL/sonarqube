@@ -1,7 +1,7 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2016 SonarSource SA
- * mailto:contact AT sonarsource DOT com
+ * Copyright (C) 2009-2018 SonarSource SA
+ * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -18,15 +18,15 @@
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 import * as React from 'react';
+import { FormattedMessage } from 'react-intl';
+import { Link } from 'react-router';
 import BranchRow from './BranchRow';
 import LongBranchesPattern from './LongBranchesPattern';
 import { Branch } from '../../../app/types';
 import { sortBranchesAsTree } from '../../../helpers/branches';
 import { translate } from '../../../helpers/l10n';
 import { getValues } from '../../../api/settings';
-import { FormattedMessage } from 'react-intl';
 import { formatMeasure } from '../../../helpers/measures';
-import { Link } from 'react-router';
 
 interface Props {
   branches: Branch[];
@@ -119,26 +119,30 @@ export default class App extends React.PureComponent<Props, State> {
           {this.renderBranchLifeTime()}
         </header>
 
-        <table className="data zebra zebra-hover">
-          <thead>
-            <tr>
-              <th>{translate('branch')}</th>
-              <th className="thin nowrap text-right">{translate('status')}</th>
-              <th className="thin nowrap text-right">{translate('branches.last_analysis_date')}</th>
-              <th className="thin nowrap text-right">{translate('actions')}</th>
-            </tr>
-          </thead>
-          <tbody>
-            {sortBranchesAsTree(branches).map(branch => (
-              <BranchRow
-                branch={branch}
-                component={component.key}
-                key={branch.name}
-                onChange={onBranchesChange}
-              />
-            ))}
-          </tbody>
-        </table>
+        <div className="boxed-group boxed-group-inner">
+          <table className="data zebra zebra-hover">
+            <thead>
+              <tr>
+                <th>{translate('branch')}</th>
+                <th className="thin nowrap text-right">{translate('status')}</th>
+                <th className="thin nowrap text-right">
+                  {translate('branches.last_analysis_date')}
+                </th>
+                <th className="thin nowrap text-right">{translate('actions')}</th>
+              </tr>
+            </thead>
+            <tbody>
+              {sortBranchesAsTree(branches).map(branch => (
+                <BranchRow
+                  branch={branch}
+                  component={component.key}
+                  key={branch.name}
+                  onChange={onBranchesChange}
+                />
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
     );
   }

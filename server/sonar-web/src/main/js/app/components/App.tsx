@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -23,12 +23,14 @@ import * as PropTypes from 'prop-types';
 import GlobalLoading from './GlobalLoading';
 import { fetchCurrentUser } from '../../store/users/actions';
 import { fetchLanguages, fetchAppState } from '../../store/rootActions';
+import { fetchMyOrganizations } from '../../apps/account/organizations/actions';
 
 interface Props {
   children: JSX.Element;
   fetchAppState: () => Promise<any>;
   fetchCurrentUser: () => Promise<void>;
   fetchLanguages: () => Promise<void>;
+  fetchMyOrganizations: () => Promise<void>;
 }
 
 interface State {
@@ -40,13 +42,17 @@ interface State {
 
 class App extends React.PureComponent<Props, State> {
   mounted: boolean;
-  state: State = { branchesEnabled: false, canAdmin: false, loading: true, onSonarCloud: false };
 
   static childContextTypes = {
     branchesEnabled: PropTypes.bool.isRequired,
     canAdmin: PropTypes.bool.isRequired,
     onSonarCloud: PropTypes.bool
   };
+
+  constructor(props: Props) {
+    super(props);
+    this.state = { branchesEnabled: false, canAdmin: false, loading: true, onSonarCloud: false };
+  }
 
   getChildContext() {
     return {
@@ -62,7 +68,17 @@ class App extends React.PureComponent<Props, State> {
     this.props
       .fetchCurrentUser()
       .then(() => Promise.all([this.fetchAppState(), this.props.fetchLanguages()]))
-      .then(this.finishLoading, () => {});
+      .then(
+        ([appState]) => {
+          if (this.mounted) {
+            if (appState.organizationsEnabled) {
+              this.props.fetchMyOrganizations();
+            }
+            this.setState({ loading: false });
+          }
+        },
+        () => {}
+      );
   }
 
   componentWillUnmount() {
@@ -72,22 +88,16 @@ class App extends React.PureComponent<Props, State> {
   fetchAppState = () => {
     return this.props.fetchAppState().then(appState => {
       if (this.mounted) {
-        const onSonarCloud =
-          appState.settings != undefined &&
-          appState.settings['sonar.sonarcloud.enabled'] === 'true';
         this.setState({
           branchesEnabled: appState.branchesEnabled,
           canAdmin: appState.canAdmin,
-          onSonarCloud
+          onSonarCloud: Boolean(
+            appState.settings && appState.settings['sonar.sonarcloud.enabled'] === 'true'
+          )
         });
       }
+      return appState;
     });
-  };
-
-  finishLoading = () => {
-    if (this.mounted) {
-      this.setState({ loading: false });
-    }
   };
 
   render() {
@@ -98,4 +108,9 @@ class App extends React.PureComponent<Props, State> {
   }
 }
 
-export default connect(null, { fetchAppState, fetchCurrentUser, fetchLanguages })(App as any);
+export default connect(null, {
+  fetchAppState,
+  fetchCurrentUser,
+  fetchLanguages,
+  fetchMyOrganizations
+})(App as any);

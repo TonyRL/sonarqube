@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -20,6 +20,7 @@
 import * as React from 'react';
 import { Link } from 'react-router';
 import Truncated from './Truncated';
+import * as theme from '../../../app/theme';
 import QualifierIcon from '../../../components/shared/QualifierIcon';
 import { Component } from '../types';
 
@@ -59,12 +60,12 @@ export default function ComponentName(props: Props) {
   const { branch, component, rootComponent, previous, canBrowse = false } = props;
   const areBothDirs = component.qualifier === 'DIR' && previous && previous.qualifier === 'DIR';
   const prefix =
-    areBothDirs && previous != undefined
+    areBothDirs && previous !== undefined
       ? mostCommitPrefix([component.name + '/', previous.name + '/'])
       : '';
   const name = prefix ? (
     <span>
-      <span style={{ color: '#777' }}>{prefix}</span>
+      <span style={{ color: theme.secondFontColor }}>{prefix}</span>
       <span>{component.name.substr(prefix.length)}</span>
     </span>
   ) : (

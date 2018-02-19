@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -54,8 +54,6 @@ public class QProfileFactoryImpl implements QProfileFactory {
     this.system2 = system2;
     this.activeRuleIndexer = activeRuleIndexer;
   }
-
-  // ------------- CREATION
 
   private static OrganizationDto requireNonNull(@Nullable OrganizationDto organization) {
     Objects.requireNonNull(organization, "Organization is required, when creating a quality profile.");

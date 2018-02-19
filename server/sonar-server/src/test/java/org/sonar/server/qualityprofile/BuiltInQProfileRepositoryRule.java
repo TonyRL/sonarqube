@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -34,7 +34,7 @@ public class BuiltInQProfileRepositoryRule extends ExternalResource implements B
   private List<BuiltInQProfile> profiles = new ArrayList<>();
 
   @Override
-  protected void before() throws Throwable {
+  protected void before() {
     this.initializeCalled = false;
     this.profiles.clear();
   }

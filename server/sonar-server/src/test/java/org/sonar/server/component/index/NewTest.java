@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -31,7 +31,7 @@ public class NewTest {
   public EsTester es = new EsTester(new ComponentIndexDefinition(new MapSettings().asConfig()));
 
   @Test
-  public void name() throws Exception {
+  public void name() {
     IndicesExistsResponse x = es.client().prepareIndicesExist("components").get();
     System.out.println(x.isExists());
     IndicesExistsResponse x2 = es.client().prepareIndicesExist("components").get();

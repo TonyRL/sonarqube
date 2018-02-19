@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -23,7 +23,7 @@ import { isFavorite } from '../../store/rootReducer';
 import * as actionCreators from '../../store/favorites/duck';
 import * as api from '../../api/favorites';
 import { addGlobalErrorMessage } from '../../store/globalMessages/duck';
-import { parseError } from '../../apps/code/utils';
+import { parseError } from '../../helpers/request';
 
 const addFavorite = (componentKey: string) => (dispatch: Function) => {
   // optimistic update

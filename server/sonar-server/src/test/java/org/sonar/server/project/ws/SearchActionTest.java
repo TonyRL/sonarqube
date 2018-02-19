@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -45,10 +45,9 @@ import org.sonar.server.tester.UserSessionRule;
 import org.sonar.server.ws.TestRequest;
 import org.sonar.server.ws.WsActionTester;
 import org.sonarqube.ws.MediaTypes;
-import org.sonarqube.ws.WsProjects.SearchWsResponse;
-import org.sonarqube.ws.WsProjects.SearchWsResponse.Component;
+import org.sonarqube.ws.Projects.SearchWsResponse;
+import org.sonarqube.ws.Projects.SearchWsResponse.Component;
 import org.sonarqube.ws.client.component.ComponentsWsParameters;
-import org.sonarqube.ws.client.project.SearchWsRequest;
 
 import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
@@ -97,14 +96,14 @@ public class SearchActionTest {
     new SearchAction(db.getDbClient(), userSession, new ProjectsWsSupport(db.getDbClient(), defaultOrganizationProvider, mock(BillingValidationsProxy.class))));
 
   @Test
-  public void search_by_key_query_with_partial_match_case_insensitive() throws IOException {
+  public void search_by_key_query_with_partial_match_case_insensitive() {
     userSession.addPermission(ADMINISTER, db.getDefaultOrganization());
     db.components().insertComponents(
       ComponentTesting.newPrivateProjectDto(db.getDefaultOrganization()).setDbKey("project-_%-key"),
       ComponentTesting.newPrivateProjectDto(db.getDefaultOrganization()).setDbKey("PROJECT-_%-KEY"),
       ComponentTesting.newPrivateProjectDto(db.getDefaultOrganization()).setDbKey("project-key-without-escaped-characters"));
 
-    SearchWsResponse response = call(SearchWsRequest.builder().setQuery("JeCt-_%-k").build());
+    SearchWsResponse response = call(SearchRequest.builder().setQuery("JeCt-_%-k").build());
 
     assertThat(response.getComponentsList()).extracting(Component::getKey).containsOnly("project-_%-key", "PROJECT-_%-KEY");
   }
@@ -116,7 +115,7 @@ public class SearchActionTest {
       ComponentTesting.newPrivateProjectDto(db.getDefaultOrganization()).setDbKey("private-key"),
       ComponentTesting.newPublicProjectDto(db.getDefaultOrganization()).setDbKey("public-key"));
 
-    SearchWsResponse response = call(SearchWsRequest.builder().setVisibility("private").build());
+    SearchWsResponse response = call(SearchRequest.builder().setVisibility("private").build());
 
     assertThat(response.getComponentsList()).extracting(Component::getKey).containsOnly("private-key");
   }
@@ -128,25 +127,25 @@ public class SearchActionTest {
       ComponentTesting.newPrivateProjectDto(db.getDefaultOrganization()).setDbKey("private-key"),
       ComponentTesting.newPublicProjectDto(db.getDefaultOrganization()).setDbKey("public-key"));
 
-    SearchWsResponse response = call(SearchWsRequest.builder().setVisibility("public").build());
+    SearchWsResponse response = call(SearchRequest.builder().setVisibility("public").build());
 
     assertThat(response.getComponentsList()).extracting(Component::getKey).containsOnly("public-key");
   }
 
   @Test
-  public void search_projects_when_no_qualifier_set() throws IOException {
+  public void search_projects_when_no_qualifier_set() {
     userSession.addPermission(ADMINISTER, db.getDefaultOrganization());
     db.components().insertComponents(
       ComponentTesting.newPrivateProjectDto(db.getDefaultOrganization()).setDbKey(PROJECT_KEY_1),
       newView(db.getDefaultOrganization()));
 
-    SearchWsResponse response = call(SearchWsRequest.builder().build());
+    SearchWsResponse response = call(SearchRequest.builder().build());
 
     assertThat(response.getComponentsList()).extracting(Component::getKey).containsOnly(PROJECT_KEY_1);
   }
 
   @Test
-  public void search_projects() throws IOException {
+  public void search_projects() {
     userSession.addPermission(ADMINISTER, db.getDefaultOrganization());
     ComponentDto project = ComponentTesting.newPrivateProjectDto(db.getDefaultOrganization()).setDbKey(PROJECT_KEY_1);
     ComponentDto module = newModuleDto(project);
@@ -157,37 +156,37 @@ public class SearchActionTest {
       ComponentTesting.newPrivateProjectDto(db.getDefaultOrganization()).setDbKey(PROJECT_KEY_2),
       newView(db.getDefaultOrganization()));
 
-    SearchWsResponse response = call(SearchWsRequest.builder().setQualifiers(singletonList("TRK")).build());
+    SearchWsResponse response = call(SearchRequest.builder().setQualifiers(singletonList("TRK")).build());
 
     assertThat(response.getComponentsList()).extracting(Component::getKey).containsOnly(PROJECT_KEY_1, PROJECT_KEY_2);
   }
 
   @Test
-  public void search_views() throws IOException {
+  public void search_views() {
     userSession.addPermission(ADMINISTER, db.getDefaultOrganization());
     db.components().insertComponents(
       ComponentTesting.newPrivateProjectDto(db.getDefaultOrganization()).setDbKey(PROJECT_KEY_1),
       newView(db.getDefaultOrganization()).setDbKey("view1"));
 
-    SearchWsResponse response = call(SearchWsRequest.builder().setQualifiers(singletonList("VW")).build());
+    SearchWsResponse response = call(SearchRequest.builder().setQualifiers(singletonList("VW")).build());
 
     assertThat(response.getComponentsList()).extracting(Component::getKey).containsOnly("view1");
   }
 
   @Test
-  public void search_projects_and_views() throws IOException {
+  public void search_projects_and_views() {
     userSession.addPermission(ADMINISTER, db.getDefaultOrganization());
     db.components().insertComponents(
       ComponentTesting.newPrivateProjectDto(db.getDefaultOrganization()).setDbKey(PROJECT_KEY_1),
       newView(db.getDefaultOrganization()).setDbKey("view1"));
 
-    SearchWsResponse response = call(SearchWsRequest.builder().setQualifiers(asList("TRK", "VW")).build());
+    SearchWsResponse response = call(SearchRequest.builder().setQualifiers(asList("TRK", "VW")).build());
 
     assertThat(response.getComponentsList()).extracting(Component::getKey).containsOnly(PROJECT_KEY_1, "view1");
   }
 
   @Test
-  public void search_on_default_organization_when_no_organization_set() throws IOException {
+  public void search_on_default_organization_when_no_organization_set() {
     userSession.addPermission(ADMINISTER, db.getDefaultOrganization());
     OrganizationDto otherOrganization = db.organizations().insert();
     db.components().insertComponents(
@@ -195,13 +194,13 @@ public class SearchActionTest {
       ComponentTesting.newPrivateProjectDto(db.getDefaultOrganization()).setDbKey(PROJECT_KEY_2),
       ComponentTesting.newPrivateProjectDto(otherOrganization).setDbKey(PROJECT_KEY_3));
 
-    SearchWsResponse response = call(SearchWsRequest.builder().build());
+    SearchWsResponse response = call(SearchRequest.builder().build());
 
     assertThat(response.getComponentsList()).extracting(Component::getKey).containsOnly(PROJECT_KEY_1, PROJECT_KEY_2);
   }
 
   @Test
-  public void search_for_projects_on_given_organization() throws IOException {
+  public void search_for_projects_on_given_organization() {
     OrganizationDto organization1 = db.organizations().insert();
     OrganizationDto organization2 = db.organizations().insert();
     userSession.addPermission(ADMINISTER, organization1);
@@ -210,7 +209,7 @@ public class SearchActionTest {
     ComponentDto project3 = ComponentTesting.newPrivateProjectDto(organization2);
     db.components().insertComponents(project1, project2, project3);
 
-    SearchWsResponse response = call(SearchWsRequest.builder().setOrganization(organization1.getKey()).build());
+    SearchWsResponse response = call(SearchRequest.builder().setOrganization(organization1.getKey()).build());
 
     assertThat(response.getComponentsList()).extracting(Component::getKey).containsOnly(project1.getDbKey(), project2.getDbKey());
   }
@@ -226,7 +225,7 @@ public class SearchActionTest {
     db.getDbClient().snapshotDao().insert(db.getSession(), newAnalysis(recentProject).setCreatedAt(recentTime));
     db.commit();
 
-    SearchWsResponse result = call(SearchWsRequest.builder().setAnalyzedBefore(formatDate(new Date(recentTime))).build());
+    SearchWsResponse result = call(SearchRequest.builder().setAnalyzedBefore(formatDate(new Date(recentTime))).build());
 
     assertThat(result.getComponentsList()).extracting(Component::getKey)
       .containsExactlyInAnyOrder(oldProject.getKey())
@@ -239,13 +238,13 @@ public class SearchActionTest {
     ComponentDto branch = db.components().insertProjectBranch(project);
     userSession.addPermission(ADMINISTER, db.getDefaultOrganization());
 
-    SearchWsResponse response = call(SearchWsRequest.builder().build());
+    SearchWsResponse response = call(SearchRequest.builder().build());
 
     assertThat(response.getComponentsList()).extracting(Component::getKey).containsOnly(project.getDbKey());
   }
 
   @Test
-  public void result_is_paginated() throws IOException {
+  public void result_is_paginated() {
     userSession.addPermission(ADMINISTER, db.getDefaultOrganization());
     List<ComponentDto> componentDtoList = new ArrayList<>();
     for (int i = 1; i <= 9; i++) {
@@ -253,7 +252,7 @@ public class SearchActionTest {
     }
     db.components().insertComponents(componentDtoList.toArray(new ComponentDto[] {}));
 
-    SearchWsResponse response = call(SearchWsRequest.builder().setPage(2).setPageSize(3).build());
+    SearchWsResponse response = call(SearchRequest.builder().setPage(2).setPageSize(3).build());
 
     assertThat(response.getComponentsList()).extracting(Component::getKey).containsExactly("project-key-4", "project-key-5", "project-key-6");
   }
@@ -265,7 +264,7 @@ public class SearchActionTest {
     ComponentDto analyzedProject = db.components().insertPrivateProject();
     db.components().insertSnapshot(newAnalysis(analyzedProject));
 
-    SearchWsResponse response = call(SearchWsRequest.builder().setOnProvisionedOnly(true).build());
+    SearchWsResponse response = call(SearchRequest.builder().setOnProvisionedOnly(true).build());
 
     assertThat(response.getComponentsList()).extracting(Component::getKey)
       .containsExactlyInAnyOrder(provisionedProject.getKey())
@@ -279,7 +278,7 @@ public class SearchActionTest {
     ComponentDto sonarqube = db.components().insertPrivateProject();
     ComponentDto sonarlint = db.components().insertPrivateProject();
 
-    SearchWsResponse result = call(SearchWsRequest.builder()
+    SearchWsResponse result = call(SearchRequest.builder()
       .setProjects(Arrays.asList(jdk.getKey(), sonarqube.getKey()))
       .build());
 
@@ -295,7 +294,7 @@ public class SearchActionTest {
     ComponentDto sonarqube = db.components().insertPrivateProject();
     ComponentDto sonarlint = db.components().insertPrivateProject();
 
-    SearchWsResponse result = call(SearchWsRequest.builder()
+    SearchWsResponse result = call(SearchRequest.builder()
       .setProjectIds(Arrays.asList(jdk.uuid(), sonarqube.uuid()))
       .build());
 
@@ -305,27 +304,27 @@ public class SearchActionTest {
   }
 
   @Test
-  public void fail_when_not_system_admin() throws Exception {
+  public void fail_when_not_system_admin() {
     userSession.addPermission(ADMINISTER_QUALITY_PROFILES, db.getDefaultOrganization());
     expectedException.expect(ForbiddenException.class);
 
-    call(SearchWsRequest.builder().build());
+    call(SearchRequest.builder().build());
   }
 
   @Test
-  public void fail_on_unknown_organization() throws Exception {
+  public void fail_on_unknown_organization() {
     expectedException.expect(NotFoundException.class);
 
-    call(SearchWsRequest.builder().setOrganization("unknown").build());
+    call(SearchRequest.builder().setOrganization("unknown").build());
   }
 
   @Test
-  public void fail_on_invalid_qualifier() throws Exception {
+  public void fail_on_invalid_qualifier() {
     userSession.addPermission(ADMINISTER_QUALITY_PROFILES, db.getDefaultOrganization());
     expectedException.expect(IllegalArgumentException.class);
     expectedException.expectMessage("Value of parameter 'qualifiers' (BRC) must be one of: [TRK, VW, APP]");
 
-    call(SearchWsRequest.builder().setQualifiers(singletonList("BRC")).build());
+    call(SearchRequest.builder().setQualifiers(singletonList("BRC")).build());
   }
 
   @Test
@@ -387,7 +386,7 @@ public class SearchActionTest {
   }
 
   @Test
-  public void json_example() throws URISyntaxException, IOException {
+  public void json_example() {
     OrganizationDto organization = db.organizations().insertForKey("my-org-1");
     userSession.addPermission(ADMINISTER, organization);
     ComponentDto publicProject = newPrivateProjectDto(organization, "project-uuid-1").setName("Project Name 1").setDbKey("project-key-1").setPrivate(false);
@@ -408,7 +407,7 @@ public class SearchActionTest {
     assertJson(ws.getDef().responseExampleAsString()).isSimilarTo(response);
   }
 
-  private SearchWsResponse call(SearchWsRequest wsRequest) {
+  private SearchWsResponse call(SearchRequest wsRequest) {
     TestRequest request = ws.newRequest();
     setNullable(wsRequest.getOrganization(), organization -> request.setParam(PARAM_ORGANIZATION, organization));
     List<String> qualifiers = wsRequest.getQualifiers();

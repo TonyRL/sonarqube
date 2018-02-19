@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -39,8 +39,7 @@ import org.sonar.db.organization.OrganizationDto;
 import org.sonar.db.permission.OrganizationPermission;
 import org.sonar.server.project.Visibility;
 import org.sonar.server.user.UserSession;
-import org.sonarqube.ws.WsProjects.SearchWsResponse;
-import org.sonarqube.ws.client.project.SearchWsRequest;
+import org.sonarqube.ws.Projects.SearchWsResponse;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static org.sonar.api.resources.Qualifiers.APP;
@@ -56,8 +55,8 @@ import static org.sonar.server.project.Visibility.PUBLIC;
 import static org.sonar.server.ws.KeyExamples.KEY_PROJECT_EXAMPLE_001;
 import static org.sonar.server.ws.KeyExamples.KEY_PROJECT_EXAMPLE_002;
 import static org.sonar.server.ws.WsUtils.writeProtobuf;
-import static org.sonarqube.ws.WsProjects.SearchWsResponse.Component;
-import static org.sonarqube.ws.WsProjects.SearchWsResponse.newBuilder;
+import static org.sonarqube.ws.Projects.SearchWsResponse.Component;
+import static org.sonarqube.ws.Projects.SearchWsResponse.newBuilder;
 import static org.sonarqube.ws.client.project.ProjectsWsParameters.ACTION_SEARCH;
 import static org.sonarqube.ws.client.project.ProjectsWsParameters.MAX_PAGE_SIZE;
 import static org.sonarqube.ws.client.project.ProjectsWsParameters.PARAM_ANALYZED_BEFORE;
@@ -147,8 +146,8 @@ public class SearchAction implements ProjectsWsAction {
     writeProtobuf(searchWsResponse, wsRequest, wsResponse);
   }
 
-  private static SearchWsRequest toSearchWsRequest(Request request) {
-    return SearchWsRequest.builder()
+  private static SearchRequest toSearchWsRequest(Request request) {
+    return SearchRequest.builder()
       .setOrganization(request.param(PARAM_ORGANIZATION))
       .setQualifiers(request.mandatoryParamAsStrings(PARAM_QUALIFIERS))
       .setQuery(request.param(Param.TEXT_QUERY))
@@ -162,7 +161,7 @@ public class SearchAction implements ProjectsWsAction {
       .build();
   }
 
-  private SearchWsResponse doHandle(SearchWsRequest request) {
+  private SearchWsResponse doHandle(SearchRequest request) {
     try (DbSession dbSession = dbClient.openSession(false)) {
       OrganizationDto organization = support.getOrganization(dbSession, request.getOrganization());
       userSession.checkPermission(OrganizationPermission.ADMINISTER, organization);
@@ -177,7 +176,7 @@ public class SearchAction implements ProjectsWsAction {
     }
   }
 
-  static ComponentQuery buildDbQuery(SearchWsRequest request) {
+  static ComponentQuery buildDbQuery(SearchRequest request) {
     List<String> qualifiers = request.getQualifiers();
     ComponentQuery.Builder query = ComponentQuery.builder()
       .setQualifiers(qualifiers.toArray(new String[qualifiers.size()]));
@@ -196,7 +195,7 @@ public class SearchAction implements ProjectsWsAction {
     return query.build();
   }
 
-  private Paging buildPaging(DbSession dbSession, SearchWsRequest request, OrganizationDto organization, ComponentQuery query) {
+  private Paging buildPaging(DbSession dbSession, SearchRequest request, OrganizationDto organization, ComponentQuery query) {
     int total = dbClient.componentDao().countByQuery(dbSession, organization.getUuid(), query);
     return Paging.forPageIndex(request.getPage())
       .withPageSize(request.getPageSize())

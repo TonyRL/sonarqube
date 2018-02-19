@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -54,7 +54,7 @@ export function ignoreInfoFields(sysInfoObject: SysValueObject): SysValueObject 
     'Name',
     PLUGINS_FIELD,
     SETTINGS_FIELD
-  ]);
+  ]) as SysValueObject;
 }
 
 export function getHealth(sysInfoObject: SysValueObject): HealthType {
@@ -94,8 +94,12 @@ export function getSearchNodes(sysInfoData: ClusterSysInfo): NodeInfo[] {
 
 export function isCluster(sysInfoData?: SysInfo): boolean {
   return (
-    sysInfoData != undefined && sysInfoData['System'] && sysInfoData['System'][HA_FIELD] === true
+    sysInfoData !== undefined && sysInfoData['System'] && sysInfoData['System'][HA_FIELD] === true
   );
+}
+
+export function getServerId(sysInfoData?: SysInfo): string | undefined {
+  return sysInfoData && sysInfoData['System']['Server ID'];
 }
 
 export function getSystemLogsLevel(sysInfoData?: SysInfo): string {
@@ -130,21 +134,21 @@ function getSystemData(sysInfoData: SysInfo): SysValueObject {
 export function getClusterMainCardSection(sysInfoData: ClusterSysInfo): SysValueObject {
   return {
     ...getSystemData(sysInfoData),
-    ...omit(sysInfoData, [
+    ...(omit(sysInfoData, [
       'Application Nodes',
       PLUGINS_FIELD,
       'Search Nodes',
       SETTINGS_FIELD,
       'Statistics',
       'System'
-    ])
+    ]) as SysValueObject)
   };
 }
 
 export function getStandaloneMainSections(sysInfoData: SysInfo): SysValueObject {
   return {
     ...getSystemData(sysInfoData),
-    ...omitBy(
+    ...(omitBy(
       sysInfoData,
       (value, key) =>
         value == null ||
@@ -152,21 +156,32 @@ export function getStandaloneMainSections(sysInfoData: SysInfo): SysValueObject 
         key.startsWith('Compute Engine') ||
         key.startsWith('Search') ||
         key.startsWith('Web')
-    )
+    ) as SysValueObject)
   };
 }
 
 export function getStandaloneSecondarySections(sysInfoData: SysInfo): SysInfoSection {
   return {
-    Web: pickBy(sysInfoData, (_, key) => key.startsWith('Web')),
-    'Compute Engine': pickBy(sysInfoData, (_, key) => key.startsWith('Compute Engine')),
-    'Search Engine': pickBy(sysInfoData, (_, key) => key.startsWith('Search'))
+    Web: pickBy(sysInfoData, (_, key) => key.startsWith('Web')) as SysValueObject,
+    'Compute Engine': pickBy(sysInfoData, (_, key) =>
+      key.startsWith('Compute Engine')
+    ) as SysValueObject,
+    'Search Engine': pickBy(sysInfoData, (_, key) => key.startsWith('Search')) as SysValueObject
   };
 }
 
+export function getFileNameSuffix(suffix?: string) {
+  const now = new Date();
+  return (
+    `${suffix ? suffix + '-' : ''}` +
+    `${now.getFullYear()}-${now.getMonth() + 1}-` +
+    `${now.getDate()}-${now.getHours()}-${now.getMinutes()}`
+  );
+}
+
 export function groupSections(sysInfoData: SysValueObject) {
-  let mainSection: SysValueObject = {};
-  let sections: SysInfoSection = {};
+  const mainSection: SysValueObject = {};
+  const sections: SysInfoSection = {};
   each(sysInfoData, (item, key) => {
     if (typeof item !== 'object' || item instanceof Array) {
       mainSection[key] = item;

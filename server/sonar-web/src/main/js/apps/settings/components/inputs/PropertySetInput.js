@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -21,6 +21,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import PrimitiveInput from './PrimitiveInput';
 import { getEmptyValue, getUniqueName } from '../../utils';
+import { DeleteButton } from '../../../../components/ui/buttons';
 
 export default class PropertySetInput extends React.PureComponent {
   static propTypes = {
@@ -37,10 +38,7 @@ export default class PropertySetInput extends React.PureComponent {
     return getUniqueName(this.props.setting.definition, field.key);
   }
 
-  handleDeleteValue(e, index) {
-    e.preventDefault();
-    e.target.blur();
-
+  handleDeleteValue(index) {
     const newValue = [...this.ensureValue()];
     newValue.splice(index, 1);
     this.props.onChange(newValue);
@@ -69,13 +67,12 @@ export default class PropertySetInput extends React.PureComponent {
             />
           </td>
         ))}
-        <td className="thin nowrap">
+        <td className="thin nowrap text-middle">
           {!isLast && (
-            <button
-              className="js-remove-value button-link"
-              onClick={e => this.handleDeleteValue(e, index)}>
-              <i className="icon-delete" />
-            </button>
+            <DeleteButton
+              className="js-remove-value"
+              onClick={this.handleDeleteValue.bind(this, index)}
+            />
           )}
         </td>
       </tr>

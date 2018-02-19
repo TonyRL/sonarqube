@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -21,15 +21,15 @@ package org.sonarqube.tests.user;
 
 import com.sonar.orchestrator.Orchestrator;
 import com.sonar.orchestrator.build.SonarScanner;
-import org.sonarqube.tests.Category4Suite;
 import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
-import org.sonarqube.tests.Tester;
-import org.sonarqube.ws.WsUsers.CreateWsResponse.User;
+import org.sonarqube.qa.util.pageobjects.Navigation;
+import org.sonarqube.tests.Category4Suite;
+import org.sonarqube.qa.util.Tester;
+import org.sonarqube.ws.Users.CreateWsResponse.User;
 import org.sonarqube.ws.client.PostRequest;
-import org.sonarqube.pageobjects.Navigation;
 
 import static com.codeborne.selenide.Condition.text;
 import static com.codeborne.selenide.Condition.visible;
@@ -54,7 +54,7 @@ public class MyAccountPageTest {
   }
 
   @Test
-  public void should_display_user_details() throws Exception {
+  public void should_display_user_details() {
     Navigation nav = tester.openBrowser();
     nav.openLogin().submitCredentials("account-user", "password").shouldBeLoggedIn();
     nav.open("/account");
@@ -67,7 +67,7 @@ public class MyAccountPageTest {
   }
 
   @Test
-  public void should_change_password() throws Exception {
+  public void should_change_password() {
     Navigation nav = tester.openBrowser();
     nav.openLogin().submitCredentials("account-user", "password").shouldBeLoggedIn();
     nav.open("/account/security");
@@ -80,7 +80,7 @@ public class MyAccountPageTest {
   }
 
   @Test
-  public void should_display_projects() throws Exception {
+  public void should_display_projects() {
     // first, try on empty instance
     runSelenese(orchestrator, "/user/MyAccountPageTest/should_display_no_projects.html");
 

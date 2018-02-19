@@ -78,3 +78,12 @@ exports[`should display correctly 1`] = `
   </DeferredSpinner>
 </div>
 `;
+
+exports[`should display the get license link with parameters 1`] = `
+<a
+  href="license_url?serverId=foo&ncloc=1000"
+  target="_blank"
+>
+  marketplace.i_need_a_license
+</a>
+`;

@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -20,9 +20,9 @@
 // @flow
 import React from 'react';
 import Helmet from 'react-helmet';
-import Modal from 'react-modal';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router';
+import Modal from '../../../components/controls/Modal';
 import { translate } from '../../../helpers/l10n';
 import { getOrganizationByKey } from '../../../store/rootReducer';
 import { deleteOrganization } from '../actions';
@@ -63,12 +63,7 @@ class OrganizationDelete extends React.PureComponent {
 
   renderModal() {
     return (
-      <Modal
-        isOpen={true}
-        contentLabel="modal form"
-        className="modal"
-        overlayClassName="modal-overlay"
-        onRequestClose={this.handleCloseModal}>
+      <Modal contentLabel="modal form" onRequestClose={this.handleCloseModal}>
         <header className="modal-head">
           <h2>{translate('organization.delete')}</h2>
         </header>
@@ -120,12 +115,8 @@ class OrganizationDelete extends React.PureComponent {
   }
 }
 
-const mapStateToProps = (state, ownProps) => ({
-  organization: getOrganizationByKey(state, ownProps.params.organizationKey)
-});
-
 const mapDispatchToProps = { deleteOrganization };
 
-export default connect(mapStateToProps, mapDispatchToProps)(withRouter(OrganizationDelete));
+export default connect(null, mapDispatchToProps)(withRouter(OrganizationDelete));
 
 export const UnconnectedOrganizationDelete = OrganizationDelete;

@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -43,11 +43,9 @@ export default function EditionBoxBadge({ editionKey, status }: Props) {
     if (isProgressing) {
       return (
         <span className="marketplace-edition-badge badge badge-normal-size">
-          {status.installationStatus === 'AUTOMATIC_IN_PROGRESS' ? (
-            translate('marketplace.installing')
-          ) : (
-            translate('marketplace.pending')
-          )}
+          {status.installationStatus === 'AUTOMATIC_IN_PROGRESS'
+            ? translate('marketplace.installing')
+            : translate('marketplace.pending')}
         </span>
       );
     }

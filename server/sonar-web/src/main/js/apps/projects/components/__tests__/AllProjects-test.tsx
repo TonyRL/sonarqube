@@ -1,7 +1,7 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2016 SonarSource SA
- * mailto:contact AT sonarsource DOT com
+ * Copyright (C) 2009-2018 SonarSource SA
+ * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -17,19 +17,28 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
+/* eslint-disable import/order */
+import * as React from 'react';
+import { mount, shallow } from 'enzyme';
+import AllProjects, { Props } from '../AllProjects';
+import { getView, saveSort, saveView, saveVisualization } from '../../../../helpers/storage';
+
 jest.mock('../ProjectsList', () => ({
+  // eslint-disable-next-line
   default: function ProjectsList() {
     return null;
   }
 }));
 
 jest.mock('../PageHeader', () => ({
+  // eslint-disable-next-line
   default: function PageHeader() {
     return null;
   }
 }));
 
 jest.mock('../PageSidebar', () => ({
+  // eslint-disable-next-line
   default: function PageSidebar() {
     return null;
   }
@@ -49,11 +58,6 @@ jest.mock('../../../../helpers/storage', () => ({
   saveView: jest.fn(),
   saveVisualization: jest.fn()
 }));
-
-import * as React from 'react';
-import { mount, shallow } from 'enzyme';
-import AllProjects from '../AllProjects';
-import { getView, saveSort, saveView, saveVisualization } from '../../../../helpers/storage';
 
 const fetchProjects = require('../../utils').fetchProjects as jest.Mock<any>;
 
@@ -164,19 +168,31 @@ it('changes perspective to risk visualization', () => {
 function mountRender(props: any = {}, push: Function = jest.fn(), replace: Function = jest.fn()) {
   return mount(
     <AllProjects
+      currentUser={{ isLoggedIn: true }}
       fetchProjects={jest.fn()}
       isFavorite={false}
       location={{ pathname: '/projects', query: {} }}
       {...props}
     />,
-    { context: { currentUser: { isLoggedIn: true }, router: { push, replace } } }
+    { context: { router: { push, replace } } }
   );
 }
 
-function shallowRender(props: any = {}, push: Function = jest.fn(), replace: Function = jest.fn()) {
+function shallowRender(
+  props: Partial<Props> = {},
+  push: Function = jest.fn(),
+  replace: Function = jest.fn()
+) {
   const wrapper = shallow(
-    <AllProjects isFavorite={false} location={{ pathname: '/projects', query: {} }} {...props} />,
-    { context: { currentUser: { isLoggedIn: true }, router: { push, replace } } }
+    <AllProjects
+      currentUser={{ isLoggedIn: true }}
+      isFavorite={false}
+      location={{ pathname: '/projects', query: {} }}
+      onSonarCloud={false}
+      organizationsEnabled={false}
+      {...props}
+    />,
+    { context: { router: { push, replace } } }
   );
   wrapper.setState({
     loading: false,

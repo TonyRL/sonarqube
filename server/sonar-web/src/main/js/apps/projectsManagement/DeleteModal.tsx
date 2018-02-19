@@ -1,7 +1,7 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2016 SonarSource SA
- * mailto:contact AT sonarsource DOT com
+ * Copyright (C) 2009-2018 SonarSource SA
+ * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -18,10 +18,10 @@
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 import * as React from 'react';
-import Modal from 'react-modal';
 import { bulkDeleteProjects } from '../../api/components';
 import { translate, translateWithParameters } from '../../helpers/l10n';
 import AlertWarnIcon from '../../components/icons-components/AlertWarnIcon';
+import Modal from '../../components/controls/Modal';
 
 export interface Props {
   analyzedBefore?: string;
@@ -87,14 +87,12 @@ export default class DeleteModal extends React.PureComponent<Props, State> {
   renderWarning = () => (
     <div className="alert alert-warning modal-alert">
       <AlertWarnIcon className="spacer-right" />
-      {this.props.selection.length ? (
-        translateWithParameters(
-          'projects_management.delete_selected_warning',
-          this.props.selection.length
-        )
-      ) : (
-        translateWithParameters('projects_management.delete_all_warning', this.props.total)
-      )}
+      {this.props.selection.length
+        ? translateWithParameters(
+            'projects_management.delete_selected_warning',
+            this.props.selection.length
+          )
+        : translateWithParameters('projects_management.delete_all_warning', this.props.total)}
     </div>
   );
 
@@ -102,12 +100,7 @@ export default class DeleteModal extends React.PureComponent<Props, State> {
     const header = translate('qualifiers.delete', this.props.qualifier);
 
     return (
-      <Modal
-        isOpen={true}
-        contentLabel={header}
-        className="modal"
-        overlayClassName="modal-overlay"
-        onRequestClose={this.props.onClose}>
+      <Modal contentLabel={header} onRequestClose={this.props.onClose}>
         <header className="modal-head">
           <h2>{header}</h2>
         </header>

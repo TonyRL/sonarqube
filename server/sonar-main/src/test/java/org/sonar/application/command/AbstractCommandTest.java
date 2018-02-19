@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -57,7 +57,7 @@ public class AbstractCommandTest {
   }
 
   @Test
-  public void constructor_throws_NPE_of_workDir_is_null() throws IOException {
+  public void constructor_throws_NPE_of_workDir_is_null() {
     expectedException.expect(NullPointerException.class);
     expectedException.expectMessage("workDir can't be null");
 

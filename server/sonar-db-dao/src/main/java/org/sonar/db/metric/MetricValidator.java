@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -17,7 +17,6 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-
 package org.sonar.db.metric;
 
 import javax.annotation.CheckForNull;
@@ -27,10 +26,10 @@ import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Strings.isNullOrEmpty;
 
 public class MetricValidator {
-  private static final int MAX_KEY_LENGTH = 64;
-  private static final int MAX_NAME_LENGTH = 64;
-  private static final int MAX_DOMAIN_LENGTH = 64;
-  private static final int MAX_DESCRIPTION_LENGTH = 255;
+  public static final int MAX_KEY_LENGTH = 64;
+  public static final int MAX_NAME_LENGTH = 64;
+  public static final int MAX_DOMAIN_LENGTH = 64;
+  public static final int MAX_DESCRIPTION_LENGTH = 255;
 
   private MetricValidator() {
     // static utility methods only

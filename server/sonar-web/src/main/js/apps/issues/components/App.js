@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -22,6 +22,7 @@ import React from 'react';
 import Helmet from 'react-helmet';
 import key from 'keymaster';
 import { keyBy, without } from 'lodash';
+import PropTypes from 'prop-types';
 import PageActions from './PageActions';
 import FiltersHeader from './FiltersHeader';
 import MyIssuesFilter from './MyIssuesFilter';
@@ -30,6 +31,7 @@ import IssuesList from './IssuesList';
 import ComponentBreadcrumbs from './ComponentBreadcrumbs';
 import IssuesSourceViewer from './IssuesSourceViewer';
 import BulkChangeModal from './BulkChangeModal';
+import NoMyIssues from './NoMyIssues';
 import ConciseIssuesList from '../conciseIssuesList/ConciseIssuesList';
 import ConciseIssuesListHeader from '../conciseIssuesList/ConciseIssuesListHeader';
 import * as actions from '../actions';
@@ -54,6 +56,7 @@ import {
   CurrentUser
 } from '../utils'; */
 import handleRequiredAuthentication from '../../../app/utils/handleRequiredAuthentication';
+import { isLoggedIn } from '../../../app/types';
 import ListFooter from '../../../components/controls/ListFooter';
 import EmptySearch from '../../../components/common/EmptySearch';
 import ScreenPositionHelper from '../../../components/common/ScreenPositionHelper';
@@ -71,12 +74,10 @@ export type Props = {
   currentUser: CurrentUser,
   fetchIssues: (query: RawQuery, requestOrganizations?: boolean) => Promise<*>,
   location: { pathname: string, query: RawQuery },
+  myIssues?: bool;
   onBranchesChange: () => void,
+  onSonarCloud: bool,
   organization?: { key: string },
-  router: {
-    push: ({ pathname: string, query?: RawQuery }) => void,
-    replace: ({ pathname: string, query?: RawQuery }) => void
-  }
 };
 */
 
@@ -114,6 +115,10 @@ export default class App extends React.PureComponent {
   /*:: props: Props; */
   /*:: state: State; */
 
+  static contextTypes = {
+    router: PropTypes.object.isRequired
+  };
+
   constructor(props /*: Props */) {
     super(props);
     this.state = {
@@ -123,7 +128,7 @@ export default class App extends React.PureComponent {
       issues: [],
       loading: true,
       locationsNavigator: false,
-      myIssues: areMyIssuesSelected(props.location.query),
+      myIssues: props.myIssues || areMyIssuesSelected(props.location.query),
       openFacets: { severities: true, types: true },
       openIssue: null,
       openPopup: null,
@@ -145,6 +150,9 @@ export default class App extends React.PureComponent {
       handleRequiredAuthentication();
       return;
     }
+
+    // $FlowFixMe
+    document.body.classList.add('white-page');
 
     const footer = document.getElementById('footer');
     if (footer) {
@@ -172,7 +180,7 @@ export default class App extends React.PureComponent {
     }
 
     this.setState({
-      myIssues: areMyIssuesSelected(nextProps.location.query),
+      myIssues: nextProps.myIssues || areMyIssuesSelected(nextProps.location.query),
       openIssue,
       query: parseQuery(nextProps.location.query)
     });
@@ -200,6 +208,9 @@ export default class App extends React.PureComponent {
 
   componentWillUnmount() {
     this.detachShortcuts();
+
+    // $FlowFixMe
+    document.body.classList.remove('white-page');
 
     const footer = document.getElementById('footer');
     if (footer) {
@@ -329,15 +340,15 @@ export default class App extends React.PureComponent {
       }
     };
     if (this.state.openIssue) {
-      this.props.router.replace(path);
+      this.context.router.replace(path);
     } else {
-      this.props.router.push(path);
+      this.context.router.push(path);
     }
   };
 
   closeIssue = () => {
     if (this.state.query) {
-      this.props.router.push({
+      this.context.router.push({
         pathname: this.props.location.pathname,
         query: {
           ...serializeQuery(this.state.query),
@@ -575,7 +586,7 @@ export default class App extends React.PureComponent {
   };
 
   handleFilterChange = (changes /*: {} */) => {
-    this.props.router.push({
+    this.context.router.push({
       pathname: this.props.location.pathname,
       query: {
         ...serializeQuery({ ...this.state.query, ...changes }),
@@ -591,7 +602,7 @@ export default class App extends React.PureComponent {
     if (!this.props.component) {
       saveMyIssues(myIssues);
     }
-    this.props.router.push({
+    this.context.router.push({
       pathname: this.props.location.pathname,
       query: {
         ...serializeQuery({ ...this.state.query, assigned: true, assignees: [] }),
@@ -618,7 +629,7 @@ export default class App extends React.PureComponent {
   };
 
   handleReset = () => {
-    this.props.router.push({
+    this.context.router.push({
       pathname: this.props.location.pathname,
       query: {
         ...DEFAULT_QUERY,
@@ -754,17 +765,18 @@ export default class App extends React.PureComponent {
   }
 
   renderFacets() {
-    const { component, currentUser } = this.props;
+    const { component, currentUser, onSonarCloud } = this.props;
     const { query } = this.state;
 
     return (
       <div className="layout-page-filters">
-        {currentUser.isLoggedIn && (
-          <MyIssuesFilter
-            myIssues={this.state.myIssues}
-            onMyIssuesChange={this.handleMyIssuesChange}
-          />
-        )}
+        {currentUser.isLoggedIn &&
+          !onSonarCloud && (
+            <MyIssuesFilter
+              myIssues={this.state.myIssues}
+              onMyIssuesChange={this.handleMyIssuesChange}
+            />
+          )}
         <FiltersHeader displayReset={this.isFiltered()} onReset={this.handleReset} />
         <Sidebar
           component={component}
@@ -806,9 +818,13 @@ export default class App extends React.PureComponent {
           selectedLocationIndex={this.state.selectedLocationIndex}
         />
         {paging != null &&
-        paging.total > 0 && (
-          <ListFooter total={paging.total} count={issues.length} loadMore={this.fetchMoreIssues} />
-        )}
+          paging.total > 0 && (
+            <ListFooter
+              total={paging.total}
+              count={issues.length}
+              loadMore={this.fetchMoreIssues}
+            />
+          )}
       </div>
     );
   }
@@ -860,7 +876,8 @@ export default class App extends React.PureComponent {
           <ListFooter total={paging.total} count={issues.length} loadMore={this.fetchMoreIssues} />
         )}
 
-        {paging.total === 0 && <EmptySearch />}
+        {paging.total === 0 &&
+          (this.state.myIssues && !this.isFiltered() ? <NoMyIssues /> : <EmptySearch />)}
       </div>
     );
   }
@@ -913,6 +930,13 @@ export default class App extends React.PureComponent {
                   </div>
                 ) : (
                   <PageActions
+                    canSetHome={
+                      this.props.onSonarCloud &&
+                      isLoggedIn(this.props.currentUser) &&
+                      this.props.myIssues &&
+                      !this.props.organization &&
+                      !this.props.component
+                    }
                     loading={this.state.loading}
                     onReload={this.handleReload}
                     paging={paging}

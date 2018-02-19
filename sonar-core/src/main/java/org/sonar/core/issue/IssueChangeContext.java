@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -25,11 +25,6 @@ import java.util.Objects;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
 
-/**
- * PLUGINS MUST NOT BE USED THIS CLASS, EXCEPT FOR UNIT TESTING.
- *
- * @since 3.6
- */
 public class IssueChangeContext implements Serializable {
 
   private final String login;

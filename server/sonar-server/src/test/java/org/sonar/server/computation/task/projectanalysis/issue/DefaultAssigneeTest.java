@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -38,6 +38,7 @@ public class DefaultAssigneeTest {
 
   public static final String PROJECT_KEY = "PROJECT_KEY";
   public static final String ORGANIZATION_UUID = "ORGANIZATION_UUID";
+  public static final String QUALITY_GATE_UUID = "QUALITY_GATE_UUID";
 
   @Rule
   public DbTester db = DbTester.create();
@@ -52,7 +53,8 @@ public class DefaultAssigneeTest {
   @Before
   public void setUp() throws Exception {
     organizationDto = db.organizations().insertForUuid(ORGANIZATION_UUID);
-    analysisMetadataHolder.setOrganization(Organization.from(new OrganizationDto().setUuid(ORGANIZATION_UUID).setKey("Organization key").setName("Organization name")));
+    analysisMetadataHolder.setOrganization(Organization.from(
+      new OrganizationDto().setUuid(ORGANIZATION_UUID).setKey("Organization key").setName("Organization name").setDefaultQualityGateUuid(QUALITY_GATE_UUID)));
   }
 
   @Test

@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -35,7 +35,7 @@ public class ComponentQueryTest {
   public ExpectedException expectedException = ExpectedException.none();
 
   @Test
-  public void build_query() throws Exception {
+  public void build_query() {
     ComponentQuery underTest = ComponentQuery.builder()
       .setNameOrKeyQuery("key")
       .setLanguage("java")
@@ -53,7 +53,7 @@ public class ComponentQueryTest {
   }
 
   @Test
-  public void build_query_minimal_properties() throws Exception {
+  public void build_query_minimal_properties() {
     ComponentQuery underTest = ComponentQuery.builder()
       .setQualifiers(PROJECT)
       .build();
@@ -64,7 +64,7 @@ public class ComponentQueryTest {
   }
 
   @Test
-  public void test_getNameOrKeyUpperLikeQuery() throws Exception {
+  public void test_getNameOrKeyUpperLikeQuery() {
     ComponentQuery underTest = ComponentQuery.builder()
       .setNameOrKeyQuery("NAME/key")
       .setQualifiers(PROJECT)

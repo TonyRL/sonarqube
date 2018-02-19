@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -92,13 +92,11 @@ export default class OrganizationMembers extends React.PureComponent {
         <MembersPageHeader loading={status.loading} total={status.total}>
           {organization.canAdmin && (
             <div className="page-actions">
-              <div className="button-group">
-                <AddMemberForm
-                  addMember={this.addMember}
-                  organization={organization}
-                  memberLogins={this.props.memberLogins}
-                />
-              </div>
+              <AddMemberForm
+                addMember={this.addMember}
+                organization={organization}
+                memberLogins={this.props.memberLogins}
+              />
             </div>
           )}
         </MembersPageHeader>

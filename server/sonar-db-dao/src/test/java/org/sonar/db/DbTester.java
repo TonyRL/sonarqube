@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -42,6 +42,7 @@ import org.sonar.db.permission.template.PermissionTemplateDbTester;
 import org.sonar.db.plugin.PluginDbTester;
 import org.sonar.db.property.PropertyDbTester;
 import org.sonar.db.qualitygate.QualityGateDbTester;
+import org.sonar.db.qualitygate.QualityGateDto;
 import org.sonar.db.qualityprofile.QualityProfileDbTester;
 import org.sonar.db.rule.RuleDbTester;
 import org.sonar.db.source.FileSourceTester;
@@ -64,6 +65,7 @@ public class DbTester extends AbstractDbTester<TestDb> {
   private boolean started = false;
   private String defaultOrganizationUuid = randomAlphanumeric(40);
   private OrganizationDto defaultOrganization;
+  private QualityGateDto builtInQualityGate;
 
   private final UserDbTester userTester;
   private final ComponentDbTester componentTester;
@@ -149,7 +151,7 @@ public class DbTester extends AbstractDbTester<TestDb> {
   }
 
   @Override
-  protected void before() throws Throwable {
+  protected void before() {
     db.start();
     db.truncateTables();
     initDbClient();
@@ -317,7 +319,7 @@ public class DbTester extends AbstractDbTester<TestDb> {
     }
 
     @Override
-    public Connection get() throws SQLException {
+    public Connection get() {
       return dbSession.getConnection();
     }
 

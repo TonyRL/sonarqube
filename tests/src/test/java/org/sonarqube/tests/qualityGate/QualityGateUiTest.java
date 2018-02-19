@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -31,14 +31,13 @@ import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.openqa.selenium.By;
-import org.sonarqube.pageobjects.Navigation;
-import org.sonarqube.pageobjects.ProjectActivityPage;
-import org.sonarqube.tests.Category1Suite;
-import org.sonarqube.tests.Tester;
-import org.sonarqube.ws.WsProjects.CreateWsResponse.Project;
-import org.sonarqube.ws.WsQualityGates;
-import org.sonarqube.ws.client.qualitygate.CreateConditionRequest;
-import org.sonarqube.ws.client.qualitygate.UpdateConditionRequest;
+import org.sonarqube.qa.util.Tester;
+import org.sonarqube.qa.util.pageobjects.Navigation;
+import org.sonarqube.qa.util.pageobjects.ProjectActivityPage;
+import org.sonarqube.ws.Projects.CreateWsResponse.Project;
+import org.sonarqube.ws.Qualitygates;
+import org.sonarqube.ws.client.qualitygates.CreateConditionRequest;
+import org.sonarqube.ws.client.qualitygates.UpdateConditionRequest;
 
 import static com.codeborne.selenide.Selenide.$;
 import static org.apache.commons.lang.time.DateUtils.addDays;
@@ -49,13 +48,15 @@ import static util.selenium.Selenese.runSelenese;
 public class QualityGateUiTest {
 
   @ClassRule
-  public static Orchestrator orchestrator = Category1Suite.ORCHESTRATOR;
+  public static Orchestrator orchestrator = QualityGateSuite.ORCHESTRATOR;
 
   @Rule
-  public Tester tester = new Tester(orchestrator).disableOrganizations();
+  public Tester tester = new Tester(orchestrator)
+    // all the tests of QualityGateSuite must disable organizations
+    .disableOrganizations();
 
   @Before
-  public void initPeriod() throws Exception {
+  public void initPeriod() {
     tester.settings().setGlobalSettings("sonar.leak.period", "previous_version");
   }
 
@@ -64,19 +65,19 @@ public class QualityGateUiTest {
    */
   @Test
   public void display_alerts_correctly_in_history_page() {
-    Project project = tester.projects().generate(null);
-    WsQualityGates.CreateWsResponse qGate = tester.qGates().generate();
+    Project project = tester.projects().provision();
+    Qualitygates.CreateResponse qGate = tester.qGates().generate();
     tester.qGates().associateProject(qGate, project);
 
     String firstAnalysisDate = DateFormatUtils.ISO_DATE_FORMAT.format(addDays(new Date(), -2));
     String secondAnalysisDate = DateFormatUtils.ISO_DATE_FORMAT.format(addDays(new Date(), -1));
 
     // with this configuration, project should have an Orange alert
-    WsQualityGates.CreateConditionWsResponse lowThresholds = tester.qGates().service()
-      .createCondition(CreateConditionRequest.builder().setQualityGateId(qGate.getId()).setMetricKey("lines").setOperator("GT").setWarning("5").setError("50").build());
+    Qualitygates.CreateConditionResponse lowThresholds = tester.qGates().service()
+      .createCondition(new CreateConditionRequest().setGateId(String.valueOf(qGate.getId())).setMetric("lines").setOp("GT").setWarning("5").setError("50"));
     scanSampleWithDate(project, firstAnalysisDate);
     // with this configuration, project should have a Green alert
-    tester.qGates().service().updateCondition(UpdateConditionRequest.builder().setConditionId(lowThresholds.getId()).setMetricKey("lines").setOperator("GT").setWarning("5000").setError("5000").build());
+    tester.qGates().service().updateCondition(new UpdateConditionRequest().setId(String.valueOf(lowThresholds.getId())).setMetric("lines").setOp("GT").setWarning("5000").setError("5000"));
     scanSampleWithDate(project, secondAnalysisDate);
 
     Navigation nav = Navigation.create(orchestrator);
@@ -112,7 +113,7 @@ public class QualityGateUiTest {
       .logIn().submitCredentials(login)
       .openQualityGates()
       .canNotCreateQG()
-      .displayQualityGateDetail("SonarQube way");
+      .displayQualityGateDetail("Sonar way");
     tester.openBrowser()
       .logIn().submitCredentials(admin)
       .openQualityGates()

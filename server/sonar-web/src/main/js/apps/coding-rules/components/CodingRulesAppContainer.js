@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -25,6 +25,7 @@ import { withRouter } from 'react-router';
 import { getAppState } from '../../../store/rootReducer';
 import { translate } from '../../../helpers/l10n';
 import init from '../init';
+import '../styles.css';
 
 class CodingRulesAppContainer extends React.PureComponent {
   /*:: stop: ?() => void; */
@@ -43,6 +44,9 @@ class CodingRulesAppContainer extends React.PureComponent {
 */
 
   componentDidMount() {
+    // $FlowFixMe
+    document.body.classList.add('white-page');
+
     if (this.props.appState.organizationsEnabled && !this.props.params.organizationKey) {
       // redirect to organization-level rules page
       this.props.router.replace(
@@ -61,6 +65,9 @@ class CodingRulesAppContainer extends React.PureComponent {
   }
 
   componentWillUnmount() {
+    // $FlowFixMe
+    document.body.classList.remove('white-page');
+
     if (this.stop) {
       this.stop();
     }

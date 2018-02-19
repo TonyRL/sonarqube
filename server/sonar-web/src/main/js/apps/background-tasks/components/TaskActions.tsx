@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -23,6 +23,7 @@ import Stacktrace from './Stacktrace';
 import { STATUSES } from './../constants';
 import { translate, translateWithParameters } from '../../../helpers/l10n';
 import { Task } from '../types';
+import ActionsDropdown, { ActionsDropdownItem } from '../../../components/controls/ActionsDropdown';
 
 interface Props {
   component?: {};
@@ -42,25 +43,21 @@ export default class TaskActions extends React.PureComponent<Props, State> {
     stacktraceOpen: false
   };
 
-  handleFilterClick = (event: React.SyntheticEvent<HTMLAnchorElement>) => {
-    event.preventDefault();
+  handleFilterClick = () => {
     this.props.onFilterTask(this.props.task);
   };
 
-  handleCancelClick = (event: React.SyntheticEvent<HTMLAnchorElement>) => {
-    event.preventDefault();
+  handleCancelClick = () => {
     this.props.onCancelTask(this.props.task);
   };
 
-  handleShowScannerContextClick = (event: React.SyntheticEvent<HTMLAnchorElement>) => {
-    event.preventDefault();
+  handleShowScannerContextClick = () => {
     this.setState({ scannerContextOpen: true });
   };
 
   closeScannerContext = () => this.setState({ scannerContextOpen: false });
 
-  handleShowStacktraceClick = (event: React.SyntheticEvent<HTMLAnchorElement>) => {
-    event.preventDefault();
+  handleShowStacktraceClick = () => {
     this.setState({ stacktraceOpen: true });
   };
 
@@ -69,9 +66,9 @@ export default class TaskActions extends React.PureComponent<Props, State> {
   render() {
     const { component, task } = this.props;
 
-    const canFilter = component == undefined;
+    const canFilter = component === undefined;
     const canCancel = task.status === STATUSES.PENDING;
-    const canShowStacktrace = task.errorMessage != undefined;
+    const canShowStacktrace = task.errorMessage !== undefined;
     const hasActions = canFilter || canCancel || task.hasScannerContext || canShowStacktrace;
 
     if (!hasActions) {
@@ -80,55 +77,39 @@ export default class TaskActions extends React.PureComponent<Props, State> {
 
     return (
       <td className="thin nowrap">
-        <div className="dropdown js-task-action">
-          <button className="dropdown-toggle" data-toggle="dropdown">
-            <i className="icon-dropdown" />
-          </button>
-          <ul className="dropdown-menu dropdown-menu-right">
-            {canFilter &&
+        <ActionsDropdown className="js-task-action">
+          {canFilter &&
             task.componentName && (
-              <li>
-                <a className="js-task-filter" href="#" onClick={this.handleFilterClick}>
-                  <i className="spacer-right icon-filter icon-gray" />
-                  {translateWithParameters(
-                    'background_tasks.filter_by_component_x',
-                    task.componentName
-                  )}
-                </a>
-              </li>
+              <ActionsDropdownItem className="js-task-filter" onClick={this.handleFilterClick}>
+                {translateWithParameters(
+                  'background_tasks.filter_by_component_x',
+                  task.componentName
+                )}
+              </ActionsDropdownItem>
             )}
-            {canCancel && (
-              <li>
-                <a className="js-task-cancel" href="#" onClick={this.handleCancelClick}>
-                  <i className="spacer-right icon-delete" />
-                  {translate('background_tasks.cancel_task')}
-                </a>
-              </li>
-            )}
-            {task.hasScannerContext && (
-              <li>
-                <a
-                  className="js-task-show-scanner-context"
-                  href="#"
-                  onClick={this.handleShowScannerContextClick}>
-                  <i className="spacer-right icon-list icon-gray" />
-                  {translate('background_tasks.show_scanner_context')}
-                </a>
-              </li>
-            )}
-            {canShowStacktrace && (
-              <li>
-                <a
-                  className="js-task-show-stacktrace"
-                  href="#"
-                  onClick={this.handleShowStacktraceClick}>
-                  <i className="spacer-right icon-list icon-red" />
-                  {translate('background_tasks.show_stacktrace')}
-                </a>
-              </li>
-            )}
-          </ul>
-        </div>
+          {canCancel && (
+            <ActionsDropdownItem
+              className="js-task-cancel"
+              destructive={true}
+              onClick={this.handleCancelClick}>
+              {translate('background_tasks.cancel_task')}
+            </ActionsDropdownItem>
+          )}
+          {task.hasScannerContext && (
+            <ActionsDropdownItem
+              className="js-task-show-scanner-context"
+              onClick={this.handleShowScannerContextClick}>
+              {translate('background_tasks.show_scanner_context')}
+            </ActionsDropdownItem>
+          )}
+          {canShowStacktrace && (
+            <ActionsDropdownItem
+              className="js-task-show-stacktrace"
+              onClick={this.handleShowStacktraceClick}>
+              {translate('background_tasks.show_stacktrace')}
+            </ActionsDropdownItem>
+          )}
+        </ActionsDropdown>
 
         {this.state.scannerContextOpen && (
           <ScannerContext onClose={this.closeScannerContext} task={task} />

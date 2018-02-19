@@ -12,7 +12,7 @@ exports[`should render maximum 10 languages in the searchbox results 1`] = `
   }
   footer={
     <SearchableFilterFooter
-      isFavorite={true}
+      onQueryChange={[MockFunction]}
       options={
         Array [
           Object {
@@ -57,6 +57,7 @@ exports[`should render maximum 10 languages in the searchbox results 1`] = `
           },
         ]
       }
+      organization={undefined}
       property="languages"
       query={
         Object {
@@ -74,7 +75,7 @@ exports[`should render maximum 10 languages in the searchbox results 1`] = `
       name="projects.facets.languages"
     />
   }
-  isFavorite={true}
+  onQueryChange={[MockFunction]}
   options={
     Array [
       "java",
@@ -113,7 +114,7 @@ exports[`should render the languages facet with the selected languages 1`] = `
   }
   footer={
     <SearchableFilterFooter
-      isFavorite={true}
+      onQueryChange={[MockFunction]}
       options={
         Array [
           Object {
@@ -130,6 +131,7 @@ exports[`should render the languages facet with the selected languages 1`] = `
           },
         ]
       }
+      organization={undefined}
       property="languages"
       query={
         Object {
@@ -147,7 +149,7 @@ exports[`should render the languages facet with the selected languages 1`] = `
       name="projects.facets.languages"
     />
   }
-  isFavorite={true}
+  onQueryChange={[MockFunction]}
   options={
     Array [
       "java",
@@ -185,20 +187,12 @@ exports[`should render the languages facet with the selected languages 2`] = `
   <div
     className="search-navigator-facet-list projects-facet-list"
   >
-    <Link
+    <a
       className="facet search-navigator-facet projects-facet active"
       data-key="java"
+      href="#"
+      key="java"
       onClick={[Function]}
-      onlyActiveOnIndex={false}
-      style={Object {}}
-      to={
-        Object {
-          "pathname": "/projects/favorite",
-          "query": Object {
-            "languages": "cs",
-          },
-        }
-      }
     >
       <span
         className="facet-name"
@@ -218,21 +212,13 @@ exports[`should render the languages facet with the selected languages 2`] = `
       >
         39
       </span>
-    </Link>
-    <Link
+    </a>
+    <a
       className="facet search-navigator-facet projects-facet active"
       data-key="cs"
+      href="#"
+      key="cs"
       onClick={[Function]}
-      onlyActiveOnIndex={false}
-      style={Object {}}
-      to={
-        Object {
-          "pathname": "/projects/favorite",
-          "query": Object {
-            "languages": "java",
-          },
-        }
-      }
     >
       <span
         className="facet-name"
@@ -252,21 +238,13 @@ exports[`should render the languages facet with the selected languages 2`] = `
       >
         4
       </span>
-    </Link>
-    <Link
+    </a>
+    <a
       className="facet search-navigator-facet projects-facet"
       data-key="js"
+      href="#"
+      key="js"
       onClick={[Function]}
-      onlyActiveOnIndex={false}
-      style={Object {}}
-      to={
-        Object {
-          "pathname": "/projects/favorite",
-          "query": Object {
-            "languages": "java,cs,js",
-          },
-        }
-      }
     >
       <span
         className="facet-name"
@@ -286,10 +264,10 @@ exports[`should render the languages facet with the selected languages 2`] = `
       >
         1
       </span>
-    </Link>
+    </a>
   </div>
   <SearchableFilterFooter
-    isFavorite={true}
+    onQueryChange={[MockFunction]}
     options={
       Array [
         Object {
@@ -330,6 +308,7 @@ exports[`should render the languages without the ones in the facet 1`] = `
   }
   footer={
     <SearchableFilterFooter
+      onQueryChange={[MockFunction]}
       options={
         Array [
           Object {
@@ -346,6 +325,7 @@ exports[`should render the languages without the ones in the facet 1`] = `
           },
         ]
       }
+      organization={undefined}
       property="languages"
       query={
         Object {
@@ -360,6 +340,7 @@ exports[`should render the languages without the ones in the facet 1`] = `
       name="projects.facets.languages"
     />
   }
+  onQueryChange={[MockFunction]}
   options={
     Array [
       "java",

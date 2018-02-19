@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -23,7 +23,7 @@ import Changelog from '../Changelog';
 import ChangesList from '../ChangesList';
 import { ProfileChangelogEvent } from '../../types';
 
-function createEvent(overrides?: { [p: string]: any }): ProfileChangelogEvent {
+function createEvent(overrides?: Partial<ProfileChangelogEvent>): ProfileChangelogEvent {
   return {
     date: '2016-01-01',
     authorName: 'John',
@@ -31,7 +31,6 @@ function createEvent(overrides?: { [p: string]: any }): ProfileChangelogEvent {
     ruleKey: 'squid1234',
     ruleName: 'Do not do this',
     params: {},
-    organization: null,
     ...overrides
   };
 }

@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -23,10 +23,7 @@ import Helmet from 'react-helmet';
 import ListHeader from './ListHeader';
 import List from './List';
 import ScreenPositionHelper from '../../../components/common/ScreenPositionHelper';
-import {
-  fetchQualityGatesAppDetails,
-  fetchQualityGates as fetchQualityGatesAPI
-} from '../../../api/quality-gates';
+import { fetchQualityGates } from '../../../api/quality-gates';
 import { translate } from '../../../helpers/l10n';
 import { getQualityGateUrl } from '../../../helpers/urls';
 import '../styles.css';
@@ -40,33 +37,41 @@ export default class QualityGatesApp extends Component {
 
   componentDidMount() {
     this.fetchQualityGates();
+    // $FlowFixMe
+    document.body.classList.add('white-page');
+    const footer = document.getElementById('footer');
+    if (footer) {
+      footer.classList.add('page-footer-with-sidebar');
+    }
   }
 
-  fetchQualityGates() {
-    Promise.all([
-      fetchQualityGatesAppDetails(),
-      fetchQualityGatesAPI()
-    ]).then(([details, qualityGates]) => {
-      const { organization, updateStore } = this.props;
-      updateStore({ ...details, qualityGates });
-      if (qualityGates && qualityGates.length === 1 && !details.edit) {
-        this.context.router.replace(
-          getQualityGateUrl(qualityGates[0].id, organization && organization.key)
-        );
-      }
-    });
+  componentWillUnmount() {
+    // $FlowFixMe
+    document.body.classList.remove('white-page');
+    const footer = document.getElementById('footer');
+    if (footer) {
+      footer.classList.remove('page-footer-with-sidebar');
+    }
   }
 
-  handleAdd(qualityGate) {
-    const { addQualityGate, organization } = this.props;
-    const { router } = this.context;
-
-    addQualityGate(qualityGate);
-    router.push(getQualityGateUrl(qualityGate.id, organization && organization.key));
-  }
+  fetchQualityGates = () =>
+    fetchQualityGates({
+      organization: this.props.organization && this.props.organization.key
+    }).then(
+      ({ actions, qualitygates: qualityGates }) => {
+        const { organization, updateStore } = this.props;
+        updateStore({ actions, qualityGates });
+        if (qualityGates && qualityGates.length === 1 && !actions.create) {
+          this.context.router.replace(
+            getQualityGateUrl(String(qualityGates[0].id), organization && organization.key)
+          );
+        }
+      },
+      () => {}
+    );
 
   render() {
-    const { children, qualityGates, edit, organization } = this.props;
+    const { children, qualityGates, actions, organization } = this.props;
     const defaultTitle = translate('quality_gates.page');
     return (
       <div id="quality-gates-page" className="layout-page">
@@ -77,7 +82,11 @@ export default class QualityGatesApp extends Component {
             <div className="layout-page-side" style={{ top }}>
               <div className="layout-page-side-inner">
                 <div className="layout-page-filters">
-                  <ListHeader canEdit={edit} onAdd={this.handleAdd.bind(this)} />
+                  <ListHeader
+                    canCreate={actions && actions.create}
+                    onAdd={this.props.addQualityGate}
+                    organization={organization}
+                  />
                   {qualityGates && <List organization={organization} qualityGates={qualityGates} />}
                 </div>
               </div>

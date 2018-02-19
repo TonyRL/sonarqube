@@ -23,7 +23,7 @@ package sonarqube.ws.ce;
 import "ws-commons.proto";
 
 option java_package = "org.sonarqube.ws";
-option java_outer_classname = "WsCe";
+option java_outer_classname = "Ce";
 option optimize_for = SPEED;
 
 // POST api/ce/submit
@@ -52,7 +52,7 @@ message ActivityStatusWsResponse {
 }
 
 // GET api/ce/component
-message ProjectResponse {
+message ComponentResponse {
   repeated Task queue = 1;
   optional Task current = 2;
 }

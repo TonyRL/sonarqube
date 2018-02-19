@@ -23,7 +23,7 @@ package sonarqube.ws.measures;
 import "ws-commons.proto";
 
 option java_package = "org.sonarqube.ws";
-option java_outer_classname = "WsMeasures";
+option java_outer_classname = "Measures";
 option optimize_for = SPEED;
 
 // WS api/measures/component_tree

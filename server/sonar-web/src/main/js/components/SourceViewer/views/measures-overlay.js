@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -25,8 +25,9 @@ import ModalView from '../../common/modals';
 import Template from './templates/source-viewer-measures.hbs';
 import { searchIssues } from '../../../api/issues';
 import { getMeasures } from '../../../api/measures';
-import { getMetrics } from '../../../api/metrics';
+import { getAllMetrics } from '../../../api/metrics';
 import { getTests, getCoveredFiles } from '../../../api/tests';
+import * as theme from '../../../app/theme';
 import { getLocalizedMetricName, getLocalizedMetricDomain } from '../../../helpers/l10n';
 import { formatMeasure } from '../../../helpers/measures';
 
@@ -68,7 +69,7 @@ export default ModalView.extend({
       size: 40,
       thickness: 8,
       color: '#1f77b4',
-      baseColor: '#e6e6e6'
+      baseColor: theme.barBorderColor
     };
 
     this.$('.js-pie-chart').each(function() {
@@ -107,20 +108,6 @@ export default ModalView.extend({
     this.$('.js-test-list').scrollTop(this.testsScroll);
   },
 
-  getMetrics() {
-    let metrics = '';
-    const url = window.baseUrl + '/api/metrics/search';
-    $.ajax({
-      url,
-      async: false,
-      data: { ps: 9999 }
-    }).done(data => {
-      metrics = data.metrics.filter(metric => metric.type !== 'DATA' && !metric.hidden);
-      metrics = sortBy(metrics, 'name');
-    });
-    return metrics;
-  },
-
   calcAdditionalMeasures(measures) {
     measures.issuesRemediationEffort =
       (Number(measures.sqale_index_raw) || 0) +
@@ -152,7 +139,7 @@ export default ModalView.extend({
   },
 
   requestMeasures() {
-    return getMetrics().then(metrics => {
+    return getAllMetrics().then(metrics => {
       const metricsToRequest = metrics
         .filter(metric => metric.type !== 'DATA' && !metric.hidden)
         .map(metric => metric.key);

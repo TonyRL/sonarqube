@@ -1,7 +1,7 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2016 SonarSource SA
- * mailto:contact AT sonarsource DOT com
+ * Copyright (C) 2009-2018 SonarSource SA
+ * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -18,8 +18,6 @@
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 import * as React from 'react';
-import Modal from 'react-modal';
-import * as Select from 'react-select';
 import {
   getPermissionTemplates,
   bulkApplyTemplate,
@@ -27,6 +25,8 @@ import {
 } from '../../api/permissions';
 import { translate, translateWithParameters } from '../../helpers/l10n';
 import AlertWarnIcon from '../../components/icons-components/AlertWarnIcon';
+import Modal from '../../components/controls/Modal';
+import Select from '../../components/controls/Select';
 
 export interface Props {
   analyzedBefore?: string;
@@ -69,7 +69,7 @@ export default class BulkApplyTemplateModal extends React.PureComponent<Props, S
             loading: false,
             permissionTemplate:
               permissionTemplates.length > 0 ? permissionTemplates[0].id : undefined,
-            permissionTemplates: permissionTemplates
+            permissionTemplates
           });
         }
       },
@@ -126,17 +126,15 @@ export default class BulkApplyTemplateModal extends React.PureComponent<Props, S
   renderWarning = () => (
     <div className="alert alert-warning modal-alert">
       <AlertWarnIcon className="spacer-right" />
-      {this.props.selection.length ? (
-        translateWithParameters(
-          'permission_templates.bulk_apply_permission_template.apply_to_selected',
-          this.props.selection.length
-        )
-      ) : (
-        translateWithParameters(
-          'permission_templates.bulk_apply_permission_template.apply_to_all',
-          this.props.total
-        )
-      )}
+      {this.props.selection.length
+        ? translateWithParameters(
+            'permission_templates.bulk_apply_permission_template.apply_to_selected',
+            this.props.selection.length
+          )
+        : translateWithParameters(
+            'permission_templates.bulk_apply_permission_template.apply_to_all',
+            this.props.total
+          )}
     </div>
   );
 
@@ -162,12 +160,7 @@ export default class BulkApplyTemplateModal extends React.PureComponent<Props, S
     const header = translate('permission_templates.bulk_apply_permission_template');
 
     return (
-      <Modal
-        isOpen={true}
-        contentLabel={header}
-        className="modal"
-        overlayClassName="modal-overlay"
-        onRequestClose={this.props.onClose}>
+      <Modal contentLabel={header} onRequestClose={this.props.onClose}>
         <header className="modal-head">
           <h2>{header}</h2>
         </header>
@@ -188,12 +181,12 @@ export default class BulkApplyTemplateModal extends React.PureComponent<Props, S
         <footer className="modal-foot">
           {submitting && <i className="spinner spacer-right" />}
           {!loading &&
-          !done &&
-          permissionTemplates && (
-            <button disabled={submitting} onClick={this.handleConfirmClick}>
-              {translate('apply')}
-            </button>
-          )}
+            !done &&
+            permissionTemplates && (
+              <button disabled={submitting} onClick={this.handleConfirmClick}>
+                {translate('apply')}
+              </button>
+            )}
           <a className="js-modal-close" href="#" onClick={this.handleCancelClick}>
             {done ? translate('close') : translate('cancel')}
           </a>

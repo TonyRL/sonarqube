@@ -1,7 +1,7 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2016 SonarSource SA
- * mailto:contact AT sonarsource DOT com
+ * Copyright (C) 2009-2018 SonarSource SA
+ * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -30,7 +30,7 @@ interface Props {
 export default function HistoryButtonLink({ component, metric }: Props) {
   return (
     <Link
-      className="button button-small button-compact spacer-left text-text-bottom"
+      className="button button-small spacer-left text-text-bottom"
       to={getMeasureHistoryUrl(component, metric)}>
       <HistoryIcon size={14} />
     </Link>

@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -17,7 +17,6 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-
 package org.sonar.server.rule.ws;
 
 import org.junit.Before;
@@ -99,7 +98,7 @@ public class TagsActionTest {
   }
 
   @Test
-  public void system_tag() throws Exception {
+  public void system_tag() {
     RuleDefinitionDto r = db.rules().insert(setSystemTags("tag"));
     ruleIndexer.commitAndIndex(db.getSession(), r.getKey());
 
@@ -108,7 +107,7 @@ public class TagsActionTest {
   }
 
   @Test
-  public void tag() throws Exception {
+  public void tag() {
     RuleDefinitionDto r = db.rules().insert(setSystemTags());
     ruleIndexer.commitAndIndex(db.getSession(), r.getKey());
     db.rules().insertOrUpdateMetadata(r, organization, setTags("tag"));

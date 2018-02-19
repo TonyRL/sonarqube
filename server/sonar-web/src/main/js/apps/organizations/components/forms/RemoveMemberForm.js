@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -19,7 +19,8 @@
  */
 // @flow
 import React from 'react';
-import Modal from 'react-modal';
+import Modal from '../../../../components/controls/Modal';
+import { ActionsDropdownItem } from '../../../../components/controls/ActionsDropdown';
 import { translate, translateWithParameters } from '../../../../helpers/l10n';
 /*:: import type { Member } from '../../../../store/organizationsMembers/actions'; */
 /*:: import type { Organization } from '../../../../store/organizations/duck'; */
@@ -45,8 +46,7 @@ export default class RemoveMemberForm extends React.PureComponent {
     open: false
   };
 
-  openForm = (evt /*: MouseEvent */) => {
-    evt.preventDefault();
+  openForm = () => {
     this.setState({ open: true });
   };
 
@@ -61,15 +61,11 @@ export default class RemoveMemberForm extends React.PureComponent {
   };
 
   renderModal() {
+    const header = translate('users.remove');
     return (
-      <Modal
-        isOpen={true}
-        contentLabel="modal form"
-        className="modal"
-        overlayClassName="modal-overlay"
-        onRequestClose={this.closeForm}>
+      <Modal key="remove-member-modal" contentLabel={header} onRequestClose={this.closeForm}>
         <header className="modal-head">
-          <h2>{translate('users.remove')}</h2>
+          <h2>{header}</h2>
         </header>
         <form onSubmit={this.handleSubmit}>
           <div className="modal-body markdown">
@@ -97,11 +93,14 @@ export default class RemoveMemberForm extends React.PureComponent {
   }
 
   render() {
-    return (
-      <a onClick={this.openForm} href="#">
+    const buttonComponent = (
+      <ActionsDropdownItem destructive={true} onClick={this.openForm}>
         {translate('organization.members.remove')}
-        {this.state.open && this.renderModal()}
-      </a>
+      </ActionsDropdownItem>
     );
+    if (this.state.open) {
+      return [buttonComponent, this.renderModal()];
+    }
+    return buttonComponent;
   }
 }

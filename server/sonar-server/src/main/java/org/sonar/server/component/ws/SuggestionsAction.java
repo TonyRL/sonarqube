@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -51,15 +51,15 @@ import org.sonar.db.organization.OrganizationDto;
 import org.sonar.server.component.index.ComponentHit;
 import org.sonar.server.component.index.ComponentHitsPerQualifier;
 import org.sonar.server.component.index.ComponentIndex;
-import org.sonar.server.component.index.SuggestionQuery;
 import org.sonar.server.component.index.ComponentIndexResults;
+import org.sonar.server.component.index.SuggestionQuery;
 import org.sonar.server.es.DefaultIndexSettings;
 import org.sonar.server.favorite.FavoriteFinder;
 import org.sonar.server.user.UserSession;
-import org.sonarqube.ws.WsComponents.SuggestionsWsResponse;
-import org.sonarqube.ws.WsComponents.SuggestionsWsResponse.Category;
-import org.sonarqube.ws.WsComponents.SuggestionsWsResponse.Project;
-import org.sonarqube.ws.WsComponents.SuggestionsWsResponse.Suggestion;
+import org.sonarqube.ws.Components.SuggestionsWsResponse;
+import org.sonarqube.ws.Components.SuggestionsWsResponse.Category;
+import org.sonarqube.ws.Components.SuggestionsWsResponse.Project;
+import org.sonarqube.ws.Components.SuggestionsWsResponse.Suggestion;
 
 import static com.google.common.base.Preconditions.checkState;
 import static java.util.Arrays.stream;
@@ -72,8 +72,8 @@ import static org.sonar.core.util.stream.MoreCollectors.toSet;
 import static org.sonar.server.component.index.SuggestionQuery.DEFAULT_LIMIT;
 import static org.sonar.server.es.DefaultIndexSettings.MINIMUM_NGRAM_LENGTH;
 import static org.sonar.server.ws.WsUtils.writeProtobuf;
-import static org.sonarqube.ws.WsComponents.SuggestionsWsResponse.Organization;
-import static org.sonarqube.ws.WsComponents.SuggestionsWsResponse.newBuilder;
+import static org.sonarqube.ws.Components.SuggestionsWsResponse.Organization;
+import static org.sonarqube.ws.Components.SuggestionsWsResponse.newBuilder;
 import static org.sonarqube.ws.client.component.ComponentsWsParameters.ACTION_SUGGESTIONS;
 
 public class SuggestionsAction implements ComponentsWsAction {
@@ -122,8 +122,8 @@ public class SuggestionsAction implements ComponentsWsAction {
 
     action.createParam(PARAM_QUERY)
       .setRequired(false)
-      .setDescription("Search query with a minimum of two characters. Can contain several search tokens, separated by spaces. " +
-        "Search tokens with only one character will be ignored.")
+      .setMinimumLength(2)
+      .setDescription("Search query: can contain several search tokens separated by spaces.")
       .setExampleValue("sonar");
 
     action.createParam(PARAM_MORE)

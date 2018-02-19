@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -31,6 +31,7 @@ import org.sonar.server.exceptions.BadRequestException;
 import org.sonar.server.exceptions.ForbiddenException;
 import org.sonar.server.exceptions.NotFoundException;
 import org.sonar.server.exceptions.UnauthorizedException;
+import org.sonar.server.issue.ws.AvatarResolverImpl;
 
 import static java.lang.String.format;
 import static org.apache.commons.lang.StringUtils.countMatches;
@@ -58,11 +59,11 @@ public class UsersActionTest extends BasePermissionWsTest<UsersAction> {
 
   @Override
   protected UsersAction buildWsAction() {
-    return new UsersAction(db.getDbClient(), userSession, newPermissionWsSupport());
+    return new UsersAction(db.getDbClient(), userSession, newPermissionWsSupport(), new AvatarResolverImpl());
   }
 
   @Test
-  public void search_for_users_with_response_example() throws Exception {
+  public void search_for_users_with_response_example() {
     UserDto user1 = db.users().insertUser(newUserDto().setLogin("admin").setName("Administrator").setEmail("admin@admin.com"));
     db.organizations().addMember(db.getDefaultOrganization(), user1);
     UserDto user2 = db.users().insertUser(newUserDto().setLogin("george.orwell").setName("George Orwell").setEmail("george.orwell@1984.net"));
@@ -79,7 +80,7 @@ public class UsersActionTest extends BasePermissionWsTest<UsersAction> {
   }
 
   @Test
-  public void search_for_users_with_one_permission() throws Exception {
+  public void search_for_users_with_one_permission() {
     insertUsersHavingGlobalPermissions();
 
     loginAsAdmin(db.getDefaultOrganization());
@@ -89,7 +90,7 @@ public class UsersActionTest extends BasePermissionWsTest<UsersAction> {
   }
 
   @Test
-  public void search_for_users_with_permission_on_project() throws Exception {
+  public void search_for_users_with_permission_on_project() {
     // User has permission on project
     ComponentDto project = db.components().insertComponent(ComponentTesting.newPrivateProjectDto(db.getDefaultOrganization()));
     UserDto user = db.users().insertUser(newUserDto());
@@ -119,7 +120,7 @@ public class UsersActionTest extends BasePermissionWsTest<UsersAction> {
   }
 
   @Test
-  public void search_only_for_users_with_permission_when_no_search_query() throws Exception {
+  public void search_only_for_users_with_permission_when_no_search_query() {
     // User have permission on project
     ComponentDto project = db.components().insertPrivateProject();
     UserDto user = db.users().insertUser();
@@ -142,7 +143,7 @@ public class UsersActionTest extends BasePermissionWsTest<UsersAction> {
   }
 
   @Test
-  public void search_also_for_users_without_permission_when_filtering_name() throws Exception {
+  public void search_also_for_users_without_permission_when_filtering_name() {
     // User with permission on project
     ComponentDto project = db.components().insertComponent(ComponentTesting.newPrivateProjectDto(db.organizations().insert()));
     UserDto user = db.users().insertUser(newUserDto("with-permission-login", "with-permission-name", "with-permission-email"));
@@ -166,7 +167,7 @@ public class UsersActionTest extends BasePermissionWsTest<UsersAction> {
   }
 
   @Test
-  public void search_also_for_users_without_permission_when_filtering_email() throws Exception {
+  public void search_also_for_users_without_permission_when_filtering_email() {
     // User with permission on project
     ComponentDto project = db.components().insertComponent(ComponentTesting.newPrivateProjectDto(db.organizations().insert()));
     UserDto user = db.users().insertUser(newUserDto("with-permission-login", "with-permission-name", "with-permission-email"));
@@ -186,7 +187,7 @@ public class UsersActionTest extends BasePermissionWsTest<UsersAction> {
   }
 
   @Test
-  public void search_also_for_users_without_permission_when_filtering_login() throws Exception {
+  public void search_also_for_users_without_permission_when_filtering_login() {
     // User with permission on project
     ComponentDto project = db.components().insertComponent(ComponentTesting.newPrivateProjectDto(db.organizations().insert()));
     UserDto user = db.users().insertUser(newUserDto("with-permission-login", "with-permission-name", "with-permission-email"));
@@ -206,7 +207,7 @@ public class UsersActionTest extends BasePermissionWsTest<UsersAction> {
   }
 
   @Test
-  public void search_for_users_with_query_as_a_parameter() throws Exception {
+  public void search_for_users_with_query_as_a_parameter() {
     insertUsersHavingGlobalPermissions();
 
     loginAsAdmin(db.getDefaultOrganization());
@@ -222,7 +223,7 @@ public class UsersActionTest extends BasePermissionWsTest<UsersAction> {
   }
 
   @Test
-  public void search_for_users_with_select_as_a_parameter() throws Exception {
+  public void search_for_users_with_select_as_a_parameter() {
     insertUsersHavingGlobalPermissions();
 
     loginAsAdmin(db.getDefaultOrganization());
@@ -234,7 +235,7 @@ public class UsersActionTest extends BasePermissionWsTest<UsersAction> {
   }
 
   @Test
-  public void search_for_users_is_paginated() throws Exception {
+  public void search_for_users_is_paginated() {
     for (int i = 9; i >= 0; i--) {
       UserDto user = db.users().insertUser(newUserDto().setName("user-" + i));
       db.organizations().addMember(db.getDefaultOrganization(), user);
@@ -294,7 +295,7 @@ public class UsersActionTest extends BasePermissionWsTest<UsersAction> {
   }
 
   @Test
-  public void fail_if_project_permission_without_project() throws Exception {
+  public void fail_if_project_permission_without_project() {
     loginAsAdmin(db.getDefaultOrganization());
 
     expectedException.expect(BadRequestException.class);
@@ -306,7 +307,7 @@ public class UsersActionTest extends BasePermissionWsTest<UsersAction> {
   }
 
   @Test
-  public void fail_if_insufficient_privileges() throws Exception {
+  public void fail_if_insufficient_privileges() {
     userSession.logIn("login");
 
     expectedException.expect(ForbiddenException.class);
@@ -317,7 +318,7 @@ public class UsersActionTest extends BasePermissionWsTest<UsersAction> {
   }
 
   @Test
-  public void fail_if_not_logged_in() throws Exception {
+  public void fail_if_not_logged_in() {
     userSession.anonymous();
 
     expectedException.expect(UnauthorizedException.class);
@@ -328,7 +329,7 @@ public class UsersActionTest extends BasePermissionWsTest<UsersAction> {
   }
 
   @Test
-  public void fail_if_project_uuid_and_project_key_are_provided() throws Exception {
+  public void fail_if_project_uuid_and_project_key_are_provided() {
     db.components().insertComponent(newPrivateProjectDto(db.organizations().insert(), "project-uuid").setDbKey("project-key"));
     loginAsAdmin(db.getDefaultOrganization());
 
@@ -343,11 +344,11 @@ public class UsersActionTest extends BasePermissionWsTest<UsersAction> {
   }
 
   @Test
-  public void fail_if_search_query_is_too_short() throws Exception {
+  public void fail_if_search_query_is_too_short() {
     loginAsAdmin(db.getDefaultOrganization());
 
-    expectedException.expect(BadRequestException.class);
-    expectedException.expectMessage("The 'q' parameter must have at least 3 characters");
+    expectedException.expect(IllegalArgumentException.class);
+    expectedException.expectMessage("'q' length (2) is shorter than the minimum authorized (3)");
 
     newRequest().setParam(TEXT_QUERY, "ab").execute();
   }
@@ -373,7 +374,7 @@ public class UsersActionTest extends BasePermissionWsTest<UsersAction> {
   }
 
   @Test
-  public void fail_when_using_branch_uuid() throws Exception {
+  public void fail_when_using_branch_uuid() {
     OrganizationDto organization = db.organizations().insert();
     UserDto user = db.users().insertUser(newUserDto());
     ComponentDto project = db.components().insertMainBranch(organization);

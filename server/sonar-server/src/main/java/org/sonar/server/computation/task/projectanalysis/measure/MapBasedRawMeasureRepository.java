@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -24,7 +24,6 @@ import com.google.common.base.Optional;
 import com.google.common.base.Predicate;
 import com.google.common.collect.ImmutableSetMultimap;
 import com.google.common.collect.SetMultimap;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -57,11 +56,6 @@ public final class MapBasedRawMeasureRepository<T> implements MeasureRepository 
    */
   @Override
   public Optional<Measure> getBaseMeasure(Component component, Metric metric) {
-    throw new UnsupportedOperationException("This implementation of MeasureRepository supports only raw measures");
-  }
-
-  @Override
-  public int loadAsRawMeasures(Collection<Component> components, Collection<Metric> metrics) {
     throw new UnsupportedOperationException("This implementation of MeasureRepository supports only raw measures");
   }
 

@@ -1,7 +1,7 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2016 SonarSource SA
- * mailto:contact AT sonarsource DOT com
+ * Copyright (C) 2009-2018 SonarSource SA
+ * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -17,6 +17,7 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
+/* eslint-disable import/first, import/order */
 jest.mock('../../../../api/quality-profiles', () => ({
   removeGroup: jest.fn(() => Promise.resolve())
 }));
@@ -24,7 +25,6 @@ jest.mock('../../../../api/quality-profiles', () => ({
 import * as React from 'react';
 import { shallow } from 'enzyme';
 import ProfilePermissionsGroup from '../ProfilePermissionsGroup';
-import { click } from '../../../../helpers/testUtils';
 
 const removeGroup = require('../../../../api/quality-profiles').removeGroup as jest.Mock<any>;
 
@@ -54,7 +54,8 @@ it('removes user', async () => {
   (wrapper.instance() as ProfilePermissionsGroup).mounted = true;
   expect(wrapper.find('SimpleModal').exists()).toBeFalsy();
 
-  click(wrapper.find('a'));
+  wrapper.find('DeleteButton').prop<Function>('onClick')();
+  wrapper.update();
   expect(wrapper.find('SimpleModal').exists()).toBeTruthy();
 
   wrapper.find('SimpleModal').prop<Function>('onSubmit')();

@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -47,21 +47,18 @@ import org.sonar.db.component.ResourceTypesRule;
 import org.sonar.db.component.SnapshotDto;
 import org.sonar.db.organization.OrganizationDto;
 import org.sonar.server.component.ComponentFinder;
-import org.sonar.server.exceptions.BadRequestException;
 import org.sonar.server.exceptions.ForbiddenException;
 import org.sonar.server.exceptions.NotFoundException;
 import org.sonar.server.tester.UserSessionRule;
 import org.sonar.server.ws.WsActionTester;
 import org.sonar.test.JsonAssert;
-import org.sonarqube.ws.WsComponents;
-import org.sonarqube.ws.WsComponents.TreeWsResponse;
+import org.sonarqube.ws.Components;
+import org.sonarqube.ws.Components.TreeWsResponse;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.tuple;
-import static org.sonar.api.resources.Qualifiers.DIRECTORY;
 import static org.sonar.api.resources.Qualifiers.FILE;
-import static org.sonar.api.resources.Qualifiers.MODULE;
 import static org.sonar.api.resources.Qualifiers.PROJECT;
 import static org.sonar.api.resources.Qualifiers.UNIT_TEST_FILE;
 import static org.sonar.db.component.ComponentTesting.newChildComponent;
@@ -87,7 +84,6 @@ public class TreeActionTest {
 
   private ResourceTypesRule resourceTypes = new ResourceTypesRule()
     .setRootQualifiers(PROJECT)
-    .setChildrenQualifiers(MODULE, FILE, DIRECTORY)
     .setLeavesQualifiers(FILE, UNIT_TEST_FILE);
   private ComponentDbTester componentDb = new ComponentDbTester(db);
   private DbClient dbClient = db.getDbClient();
@@ -95,7 +91,7 @@ public class TreeActionTest {
   private WsActionTester ws = new WsActionTester(new TreeAction(dbClient, new ComponentFinder(dbClient, resourceTypes), resourceTypes, userSession, Mockito.mock(I18n.class)));
 
   @Test
-  public void verify_definition() throws Exception {
+  public void verify_definition() {
     WebService.Action action = ws.getDef();
 
     assertThat(action.since()).isEqualTo("5.4");
@@ -142,7 +138,7 @@ public class TreeActionTest {
   }
 
   @Test
-  public void return_children() throws IOException {
+  public void return_children() {
     ComponentDto project = newPrivateProjectDto(db.organizations().insert(), "project-uuid");
     componentDb.insertProjectAndSnapshot(project);
     ComponentDto module = newModuleDto("module-uuid-1", project);
@@ -172,7 +168,7 @@ public class TreeActionTest {
   }
 
   @Test
-  public void return_descendants() throws IOException {
+  public void return_descendants() {
     ComponentDto project = newPrivateProjectDto(db.getDefaultOrganization(), "project-uuid");
     SnapshotDto projectSnapshot = componentDb.insertProjectAndSnapshot(project);
     ComponentDto module = newModuleDto("module-uuid-1", project);
@@ -202,7 +198,7 @@ public class TreeActionTest {
   }
 
   @Test
-  public void filter_descendants_by_qualifier() throws IOException {
+  public void filter_descendants_by_qualifier() {
     ComponentDto project = newPrivateProjectDto(db.organizations().insert(), "project-uuid");
     componentDb.insertProjectAndSnapshot(project);
     componentDb.insertComponent(newFileDto(project, 1));
@@ -220,7 +216,7 @@ public class TreeActionTest {
   }
 
   @Test
-  public void return_leaves() throws IOException {
+  public void return_leaves() {
     ComponentDto project = newPrivateProjectDto(db.getDefaultOrganization(), "project-uuid");
     componentDb.insertProjectAndSnapshot(project);
     ComponentDto module = newModuleDto("module-uuid-1", project);
@@ -244,7 +240,7 @@ public class TreeActionTest {
   }
 
   @Test
-  public void sort_descendants_by_qualifier() throws IOException {
+  public void sort_descendants_by_qualifier() {
     ComponentDto project = newPrivateProjectDto(db.organizations().insert(), "project-uuid");
     componentDb.insertProjectAndSnapshot(project);
     componentDb.insertComponent(newFileDto(project, 1));
@@ -334,9 +330,9 @@ public class TreeActionTest {
       .setParam(PARAM_BRANCH, branchKey)
       .executeProtobuf(TreeWsResponse.class);
 
-    assertThat(response.getBaseComponent()).extracting(WsComponents.Component::getKey, WsComponents.Component::getBranch)
+    assertThat(response.getBaseComponent()).extracting(Components.Component::getKey, Components.Component::getBranch)
       .containsExactlyInAnyOrder(module.getKey(), branchKey);
-    assertThat(response.getComponentsList()).extracting(WsComponents.Component::getKey, WsComponents.Component::getBranch)
+    assertThat(response.getComponentsList()).extracting(Components.Component::getKey, Components.Component::getBranch)
       .containsExactlyInAnyOrder(
         tuple(directory.getKey(), branchKey),
         tuple(file.getKey(), branchKey));
@@ -353,7 +349,7 @@ public class TreeActionTest {
 
     ws.newRequest()
       .setParam(PARAM_COMPONENT, branch.getDbKey())
-      .executeProtobuf(WsComponents.ShowWsResponse.class);
+      .executeProtobuf(Components.ShowWsResponse.class);
   }
 
   @Test
@@ -367,7 +363,7 @@ public class TreeActionTest {
 
     ws.newRequest()
       .setParam(PARAM_COMPONENT_ID, branch.uuid())
-      .executeProtobuf(WsComponents.ShowWsResponse.class);
+      .executeProtobuf(Components.ShowWsResponse.class);
   }
 
   @Test
@@ -386,8 +382,8 @@ public class TreeActionTest {
 
   @Test
   public void fail_when_page_size_above_500() {
-    expectedException.expect(BadRequestException.class);
-    expectedException.expectMessage("The 'ps' parameter must be less than 500");
+    expectedException.expect(IllegalArgumentException.class);
+    expectedException.expectMessage("'ps' value (501) must be less than 500");
     componentDb.insertComponent(newPrivateProjectDto(db.getDefaultOrganization(), "project-uuid"));
     db.commit();
 
@@ -399,8 +395,8 @@ public class TreeActionTest {
 
   @Test
   public void fail_when_search_query_has_less_than_3_characters() {
-    expectedException.expect(BadRequestException.class);
-    expectedException.expectMessage("The 'q' parameter must have at least 3 characters");
+    expectedException.expect(IllegalArgumentException.class);
+    expectedException.expectMessage("'q' length (2) is shorter than the minimum authorized (3)");
     componentDb.insertComponent(newPrivateProjectDto(db.organizations().insert(), "project-uuid"));
     db.commit();
 

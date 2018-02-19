@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -22,7 +22,7 @@ import React from 'react';
 import { Link } from 'react-router';
 import QualifierIcon from '../shared/QualifierIcon';
 import FavoriteContainer from '../controls/FavoriteContainer';
-import { getProjectUrl, getComponentIssuesUrl } from '../../helpers/urls';
+import { getPathUrlAsString, getProjectUrl, getComponentIssuesUrl } from '../../helpers/urls';
 import { collapsedDirFromPath, fileFromPath } from '../../helpers/path';
 import { translate } from '../../helpers/l10n';
 import { formatMeasure } from '../../helpers/measures';
@@ -77,7 +77,6 @@ export default class SourceViewerHeader extends React.PureComponent {
       uuid
     } = this.props.component;
     const isUnitTest = q === 'UTS';
-    // TODO check if source viewer is displayed inside workspace
     const workspace = false;
     let rawSourcesLink =
       window.baseUrl + `/api/sources/raw?key=${encodeURIComponent(this.props.component.key)}`;
@@ -91,16 +90,20 @@ export default class SourceViewerHeader extends React.PureComponent {
         <div className="source-viewer-header-component">
           <div className="component-name">
             <div className="component-name-parent">
-              <Link to={getProjectUrl(project, this.props.branch)} className="link-with-icon">
+              <a
+                href={getPathUrlAsString(getProjectUrl(project, this.props.branch))}
+                className="link-with-icon">
                 <QualifierIcon qualifier="TRK" /> <span>{projectName}</span>
-              </Link>
+              </a>
             </div>
 
             {subProject != null && (
               <div className="component-name-parent">
-                <Link to={getProjectUrl(subProject, this.props.branch)} className="link-with-icon">
+                <a
+                  href={getPathUrlAsString(getProjectUrl(subProject, this.props.branch))}
+                  className="link-with-icon">
                   <QualifierIcon qualifier="BRC" /> <span>{subProjectName}</span>
-                </Link>
+                </a>
               </div>
             )}
 
@@ -127,15 +130,15 @@ export default class SourceViewerHeader extends React.PureComponent {
               </a>
             </li>
             <li>
-              <Link
+              <a
                 className="js-new-window"
                 target="_blank"
-                to={{
+                href={getPathUrlAsString({
                   pathname: '/component',
                   query: { branch: this.props.branch, id: this.props.component.key }
-                }}>
+                })}>
                 {translate('component_viewer.new_window')}
-              </Link>
+              </a>
             </li>
             {!workspace && (
               <li>
@@ -182,11 +185,8 @@ export default class SourceViewerHeader extends React.PureComponent {
                   resolved: 'false',
                   fileUuids: uuid,
                   branch: this.props.branch
-                })}
-                className="source-viewer-header-external-link"
-                target="_blank">
-                {measures.issues != null ? formatMeasure(measures.issues, 'SHORT_INT') : 0}{' '}
-                <i className="icon-detach" />
+                })}>
+                {measures.issues != null ? formatMeasure(measures.issues, 'SHORT_INT') : 0}
               </Link>
             </span>
             <span className="source-viewer-header-measure-label">

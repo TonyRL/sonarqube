@@ -33,74 +33,81 @@ exports[`renders sorted list of branches 1`] = `
               onlyActiveOnIndex={false}
               style={Object {}}
               to="/admin/settings"
-          >
+            >
               settings.page
-          </Link>,
+            </Link>,
           }
         }
       />
     </p>
   </header>
-  <table
-    className="data zebra zebra-hover"
+  <div
+    className="boxed-group boxed-group-inner"
   >
-    <thead>
-      <tr>
-        <th>
-          branch
-        </th>
-        <th
-          className="thin nowrap text-right"
-        >
-          status
-        </th>
-        <th
-          className="thin nowrap text-right"
-        >
-          branches.last_analysis_date
-        </th>
-        <th
-          className="thin nowrap text-right"
-        >
-          actions
-        </th>
-      </tr>
-    </thead>
-    <tbody>
-      <BranchRow
-        branch={
-          Object {
-            "isMain": true,
-            "name": "master",
+    <table
+      className="data zebra zebra-hover"
+    >
+      <thead>
+        <tr>
+          <th>
+            branch
+          </th>
+          <th
+            className="thin nowrap text-right"
+          >
+            status
+          </th>
+          <th
+            className="thin nowrap text-right"
+          >
+            branches.last_analysis_date
+          </th>
+          <th
+            className="thin nowrap text-right"
+          >
+            actions
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        <BranchRow
+          branch={
+            Object {
+              "isMain": true,
+              "name": "master",
+            }
           }
-        }
-        component="foo"
-        onChange={[Function]}
-      />
-      <BranchRow
-        branch={
-          Object {
-            "isMain": false,
-            "mergeBranch": "master",
-            "name": "branch-1.0",
-            "type": "SHORT",
+          component="foo"
+          key="master"
+          onChange={[MockFunction]}
+        />
+        <BranchRow
+          branch={
+            Object {
+              "isMain": false,
+              "mergeBranch": "master",
+              "name": "branch-1.0",
+              "type": "SHORT",
+            }
           }
-        }
-        component="foo"
-        onChange={[Function]}
-      />
-      <BranchRow
-        branch={
-          Object {
-            "isMain": false,
-            "name": "branch-1.0",
-            "type": "LONG",
+          component="foo"
+          key="branch-1.0"
+          onChange={[MockFunction]}
+        />
+        <BranchRow
+          branch={
+            Object {
+              "isMain": false,
+              "name": "branch-1.0",
+              "type": "LONG",
+            }
           }
-        }
-        component="foo"
-        onChange={[Function]}
-      />
-    </tbody>
-  </table>
+          component="foo"
+          key="branch-1.0"
+          onChange={[MockFunction]}
+        />
+      </tbody>
+    </table>
+  </div>
 </div>
 `;

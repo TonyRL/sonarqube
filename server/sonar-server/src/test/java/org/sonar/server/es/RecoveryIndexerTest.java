@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -218,7 +218,7 @@ public class RecoveryIndexerTest {
   }
 
   @Test
-  public void unsupported_types_are_kept_in_queue_for_manual_fix_operation() throws Exception {
+  public void unsupported_types_are_kept_in_queue_for_manual_fix_operation() {
     insertItem(FOO_TYPE, "f1");
 
     ResilientIndexer indexer = new SuccessfulFakeIndexer(new IndexType("bars", "bar"));

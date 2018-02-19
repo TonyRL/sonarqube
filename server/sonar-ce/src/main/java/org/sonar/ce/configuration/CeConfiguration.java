@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -51,5 +51,10 @@ public interface CeConfiguration {
    * Delay between the end of a run and the start of the next one of the job that cleans CE tasks (in minutes).
    */
   long getCleanCeTasksDelay();
+
+  /**
+   * Delay before stopping workers during a graceful timeout using milliseconds unit.
+   */
+  int getGracefulStopTimeoutInMs();
 
 }

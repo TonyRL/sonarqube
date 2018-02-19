@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -50,7 +50,7 @@ public class IndexerStartupTaskTest {
   }
 
   @Test
-  public void index_if_not_initialized() throws Exception {
+  public void index_if_not_initialized() {
     doReturn(false).when(metadataIndex).getInitialized(INDEX_TYPE_FAKE);
 
     underTest.execute();
@@ -60,7 +60,7 @@ public class IndexerStartupTaskTest {
   }
 
   @Test
-  public void set_initialized_after_indexation() throws Exception {
+  public void set_initialized_after_indexation() {
     doReturn(false).when(metadataIndex).getInitialized(INDEX_TYPE_FAKE);
 
     underTest.execute();
@@ -69,7 +69,7 @@ public class IndexerStartupTaskTest {
   }
 
   @Test
-  public void do_not_index_if_already_initialized() throws Exception {
+  public void do_not_index_if_already_initialized() {
     doReturn(true).when(metadataIndex).getInitialized(INDEX_TYPE_FAKE);
 
     underTest.execute();
@@ -79,7 +79,7 @@ public class IndexerStartupTaskTest {
   }
 
   @Test
-  public void do_not_index_if_indexes_are_disabled() throws Exception {
+  public void do_not_index_if_indexes_are_disabled() {
     settings.setProperty("sonar.internal.es.disableIndexes", "true");
     es.putDocuments(INDEX_TYPE_FAKE, new FakeDoc());
 

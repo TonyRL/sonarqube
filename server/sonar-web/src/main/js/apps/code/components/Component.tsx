@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -21,7 +21,7 @@ import * as classNames from 'classnames';
 import * as React from 'react';
 import ComponentName from './ComponentName';
 import ComponentMeasure from './ComponentMeasure';
-import ComponentDetach from './ComponentDetach';
+import ComponentLink from './ComponentLink';
 import ComponentPin from './ComponentPin';
 import { Component as IComponent } from '../types';
 
@@ -90,7 +90,7 @@ export default class Component extends React.PureComponent<Props> {
           componentAction = <ComponentPin branch={branch} component={component} />;
           break;
         default:
-          componentAction = <ComponentDetach branch={branch} component={component} />;
+          componentAction = <ComponentLink branch={branch} component={component} />;
       }
     }
 
@@ -102,7 +102,7 @@ export default class Component extends React.PureComponent<Props> {
           { metric: 'sqale_rating', type: 'RATING' },
           { metric: 'ncloc', type: 'SHORT_INT' }
         ]
-      : [
+      : ([
           isApplication && { metric: 'alert_status', type: 'LEVEL' },
           { metric: 'ncloc', type: 'SHORT_INT' },
           { metric: 'bugs', type: 'SHORT_INT' },
@@ -110,7 +110,7 @@ export default class Component extends React.PureComponent<Props> {
           { metric: 'code_smells', type: 'SHORT_INT' },
           { metric: 'coverage', type: 'PERCENT' },
           { metric: 'duplicated_lines_density', type: 'PERCENT' }
-        ].filter(Boolean) as Array<{ metric: string; type: string }>;
+        ].filter(Boolean) as Array<{ metric: string; type: string }>);
 
     return (
       <tr className={classNames({ selected })} ref={node => (this.node = node as HTMLElement)}>

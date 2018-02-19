@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -248,7 +248,7 @@ public class AppLoggingTest {
   }
 
   @Test
-  public void no_info_log_from_hazelcast() throws IOException {
+  public void no_info_log_from_hazelcast() {
     settings.getProps().set(CLUSTER_ENABLED, "true");
     underTest.configure();
 

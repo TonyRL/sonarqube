@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -35,6 +35,8 @@ import static java.util.Objects.requireNonNull;
 
 public class AnalysisMetadataHolderRule extends ExternalResource implements MutableAnalysisMetadataHolder {
 
+  private final InitializedProperty<Boolean> organizationsEnabled = new InitializedProperty<>();
+
   private final InitializedProperty<Organization> organization = new InitializedProperty<>();
 
   private final InitializedProperty<String> uuid = new InitializedProperty<>();
@@ -56,15 +58,27 @@ public class AnalysisMetadataHolderRule extends ExternalResource implements Muta
   private final InitializedProperty<Map<String, ScannerPlugin>> pluginsByKey = new InitializedProperty<>();
 
   @Override
+  public AnalysisMetadataHolderRule setOrganizationsEnabled(boolean isOrganizationsEnabled) {
+    this.organizationsEnabled.setProperty(isOrganizationsEnabled);
+    return this;
+  }
+
+  @Override
+  public boolean isOrganizationsEnabled() {
+    checkState(organizationsEnabled.isInitialized(), "Organizations enabled flag has not been set");
+    return organizationsEnabled.getProperty();
+  }
+
+  @Override
   public AnalysisMetadataHolderRule setOrganization(Organization organization) {
     requireNonNull(organization, "organization can't be null");
     this.organization.setProperty(organization);
     return this;
   }
 
-  public AnalysisMetadataHolderRule setOrganizationUuid(String uuid) {
+  public AnalysisMetadataHolderRule setOrganizationUuid(String uuid, String defaultQualityGateUuid) {
     requireNonNull(uuid, "organization uuid can't be null");
-    this.organization.setProperty(Organization.from(new OrganizationDto().setUuid(uuid).setKey("key_" + uuid).setName("name_" + uuid)));
+    this.organization.setProperty(Organization.from(new OrganizationDto().setUuid(uuid).setKey("key_" + uuid).setName("name_" + uuid).setDefaultQualityGateUuid(defaultQualityGateUuid)));
     return this;
   }
 

@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -17,7 +17,6 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-
 package org.sonarqube.tests.startup;
 
 import com.sonar.orchestrator.Orchestrator;
@@ -33,10 +32,10 @@ import org.junit.rules.DisableOnDebug;
 import org.junit.rules.TemporaryFolder;
 import org.junit.rules.TestRule;
 import org.junit.rules.Timeout;
-import org.sonarqube.tests.LogsTailer;
-import org.sonarqube.tests.Tester;
-import org.sonarqube.ws.WsUsers;
-import org.sonarqube.ws.client.user.SearchRequest;
+import org.sonarqube.qa.util.LogsTailer;
+import org.sonarqube.qa.util.Tester;
+import org.sonarqube.ws.Users;
+import org.sonarqube.ws.client.users.SearchRequest;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static util.ItUtils.pluginArtifact;
@@ -64,8 +63,8 @@ public class StartupIndexationTest {
          LogsTailer.Watch sonarQubeIsUpWatcher = sonarQube.logsTailer.watch("SonarQube is up")) {
       sonarQube.resume();
       sonarQubeIsUpWatcher.waitForLog(20, TimeUnit.SECONDS);
-      SearchRequest searchRequest = SearchRequest.builder().setQuery("admin").build();
-      WsUsers.SearchWsResponse searchWsResponse = sonarQube.tester.wsClient().users().search(searchRequest);
+      SearchRequest searchRequest = new SearchRequest().setQ("admin");
+      Users.SearchWsResponse searchWsResponse = sonarQube.tester.wsClient().users().search(searchRequest);
       assertThat(searchWsResponse.getUsersCount()).isEqualTo(1);
       assertThat(searchWsResponse.getUsers(0).getName()).isEqualTo("Administrator");
     }
@@ -119,7 +118,7 @@ public class StartupIndexationTest {
     }
 
     @Override
-    public void close() throws Exception {
+    public void close() {
       if (tester != null) {
         try {
           tester.after();

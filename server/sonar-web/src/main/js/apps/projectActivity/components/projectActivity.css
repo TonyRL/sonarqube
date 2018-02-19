@@ -1,3 +1,22 @@
+/*
+ * SonarQube
+ * Copyright (C) 2009-2018 SonarSource SA
+ * mailto:info AT sonarsource DOT com
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 3 of the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software Foundation,
+ * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+ */
 .project-activity-page {
   min-height: 600px;
   height: calc(100vh - 250px);
@@ -71,14 +90,15 @@
 }
 
 .project-activity-graph-legend-actionable {
-  padding: 4px 12px;
+  display: inline-block;
+  padding: 4px 8px 4px 12px;
   border-width: 1px;
   border-style: solid;
   border-radius: 12px;
 }
 
 .project-activity-graph-legend-actionable:not(.alert-warning) {
-  border-color: #e6e6e6;
+  border-color: var(--barBorderColor);
 }
 
 .project-activity-graph-tooltip {
@@ -142,8 +162,8 @@
   position: relative;
   min-height: 20px;
   padding: 4px;
-  border-top: 1px solid #e6e6e6;
-  border-bottom: 1px solid #e6e6e6;
+  border-top: 1px solid var(--barBorderColor);
+  border-bottom: 1px solid var(--barBorderColor);
   cursor: pointer;
 }
 
@@ -164,7 +184,7 @@
 }
 
 .project-activity-analysis-actions {
-  float: right;
+  float: left;
 }
 
 .project-activity-time {
@@ -172,7 +192,7 @@
   width: 54px;
   line-height: 20px;
   box-sizing: border-box;
-  font-size: 12px;
+  font-size: var(--smallFontSize);
   font-weight: bold;
   text-align: right;
 }
@@ -182,7 +202,7 @@
   width: 10px;
   height: 10px;
   margin-top: 5px;
-  border: 2px solid #4b9fd5;
+  border: 2px solid var(--blue);
   border-radius: 10px;
   box-sizing: border-box;
   content: '';
@@ -193,7 +213,7 @@
 }
 
 .project-activity-event {
-  line-height: 20px;
+  line-height: 18px;
   display: flex;
 }
 
@@ -223,24 +243,16 @@
   display: inline-block;
 }
 
-.project-activity-event-actions button {
-  height: 20px;
-}
-
-.project-activity-event-actions button + button {
-  margin-left: 4px;
-}
-
 .project-activity-event-inner-icon .project-activity-event-icon {
   margin-top: 3px;
 }
 
 .project-activity-event-icon.VERSION {
-  color: #4b9fd5;
+  color: var(--blue);
 }
 
 .project-activity-event-icon.QUALITY_GATE {
-  color: #9139d4;
+  color: var(--purple);
 }
 
 .project-activity-event-icon.QUALITY_PROFILE {
@@ -265,7 +277,7 @@
   left: 12px;
   right: 16px;
   padding-top: 24px;
-  z-index: 1;
+  z-index: var(--belowNormalZIndex);
 }
 
 .project-activity-version-badge.sticky + .project-activity-days-list {
@@ -279,7 +291,7 @@
   box-sizing: border-box;
   border-radius: 0 2px 2px 0;
   font-weight: bold;
-  font-size: 12px;
+  font-size: var(--smallFontSize);
   letter-spacing: 0;
   overflow: hidden;
   text-overflow: ellipsis;

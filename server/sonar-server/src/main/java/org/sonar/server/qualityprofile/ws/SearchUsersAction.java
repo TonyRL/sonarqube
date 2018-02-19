@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -38,8 +38,7 @@ import org.sonar.db.qualityprofile.UserMembershipDto;
 import org.sonar.db.user.UserDto;
 import org.sonar.server.issue.ws.AvatarResolver;
 import org.sonarqube.ws.Common;
-import org.sonarqube.ws.QualityProfiles.SearchUsersResponse;
-import org.sonarqube.ws.client.qualityprofile.SearchUsersRequest;
+import org.sonarqube.ws.Qualityprofiles.SearchUsersResponse;
 
 import static com.google.common.base.Strings.emptyToNull;
 import static org.sonar.api.server.ws.WebService.Param.PAGE;

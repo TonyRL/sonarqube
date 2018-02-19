@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -34,7 +34,7 @@ import static org.sonar.process.cluster.hz.HazelcastMember.Attribute.PROCESS_KEY
 public class HazelcastMemberSelectorsTest {
 
   @Test
-  public void selecting_ce_nodes() throws Exception {
+  public void selecting_ce_nodes() {
     Member member = mock(Member.class);
     MemberSelector underTest = HazelcastMemberSelectors.selectorForProcessIds(COMPUTE_ENGINE);
 
@@ -49,7 +49,7 @@ public class HazelcastMemberSelectorsTest {
   }
 
   @Test
-  public void selecting_web_and_app_nodes() throws Exception {
+  public void selecting_web_and_app_nodes() {
     Member member = mock(Member.class);
     MemberSelector underTest = HazelcastMemberSelectors.selectorForProcessIds(WEB_SERVER, APP);
 

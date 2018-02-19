@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -26,9 +26,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Consumer;
-import java.util.function.Function;
 import java.util.function.Predicate;
-import java.util.stream.Stream;
 import javax.annotation.Nullable;
 import org.sonar.api.resources.Qualifiers;
 import org.sonar.api.resources.ResourceType;
@@ -45,8 +43,7 @@ import org.sonar.db.DbClient;
 import org.sonar.db.DbSession;
 import org.sonar.db.component.ComponentDto;
 import org.sonar.db.component.SnapshotDto;
-import org.sonar.db.measure.MeasureDto;
-import org.sonar.db.measure.MeasureQuery;
+import org.sonar.db.measure.LiveMeasureDto;
 import org.sonar.db.organization.OrganizationDto;
 import org.sonar.db.permission.OrganizationPermission;
 import org.sonar.db.property.PropertyDto;
@@ -147,7 +144,7 @@ public class ComponentAction implements NavigationWsAction {
       json.beginObject();
       writeComponent(json, session, component, org, analysis.orElse(null));
       writeProfiles(json, session, component);
-      writeQualityGate(json, session, component);
+      writeQualityGate(json, session, org, component);
       if (userSession.hasComponentPermission(ADMIN, component) ||
         userSession.hasPermission(ADMINISTER_QUALITY_PROFILES, org) ||
         userSession.hasPermission(ADMINISTER_QUALITY_GATES, org)) {
@@ -164,10 +161,6 @@ public class ComponentAction implements NavigationWsAction {
       .prop("name", profile.getQpName())
       .prop("language", profile.getLanguageKey())
       .endObject();
-  }
-
-  private static Function<MeasureDto, Stream<QualityProfile>> toQualityProfiles() {
-    return dbMeasure -> QPMeasureData.fromJson(dbMeasure.getData()).getProfiles().stream();
   }
 
   private static void writePage(JsonWriter json, Page page) {
@@ -205,25 +198,21 @@ public class ComponentAction implements NavigationWsAction {
     return componentFavourites.size() == 1;
   }
 
-  private void writeProfiles(JsonWriter json, DbSession session, ComponentDto component) {
+  private void writeProfiles(JsonWriter json, DbSession dbSession, ComponentDto component) {
     json.name("qualityProfiles").beginArray();
-    dbClient.measureDao().selectSingle(session, MeasureQuery.builder().setComponentUuid(component.projectUuid()).setMetricKey(QUALITY_PROFILES_KEY).build())
-      .ifPresent(dbMeasure -> Stream.of(dbMeasure)
-        .flatMap(toQualityProfiles())
-        .forEach(writeToJson(json)));
+    dbClient.liveMeasureDao().selectMeasure(dbSession, component.projectUuid(), QUALITY_PROFILES_KEY)
+      .map(LiveMeasureDto::getDataAsString)
+      .ifPresent(data -> QPMeasureData.fromJson(data).getProfiles().forEach(writeToJson(json)));
     json.endArray();
   }
 
-  private void writeQualityGate(JsonWriter json, DbSession session, ComponentDto component) {
-    Optional<QualityGateFinder.QualityGateData> qualityGateData = qualityGateFinder.getQualityGate(session, component.getId());
-    if (!qualityGateData.isPresent()) {
-      return;
-    }
-    QualityGateDto qualityGateDto = qualityGateData.get().getQualityGate();
+  private void writeQualityGate(JsonWriter json, DbSession session, OrganizationDto organization, ComponentDto component) {
+    QualityGateFinder.QualityGateData qualityGateData = qualityGateFinder.getQualityGate(session, organization, component);
+    QualityGateDto qualityGateDto = qualityGateData.getQualityGate();
     json.name("qualityGate").beginObject()
       .prop("key", qualityGateDto.getId())
       .prop("name", qualityGateDto.getName())
-      .prop("isDefault", qualityGateData.get().isDefault())
+      .prop("isDefault", qualityGateData.isDefault())
       .endObject();
   }
 

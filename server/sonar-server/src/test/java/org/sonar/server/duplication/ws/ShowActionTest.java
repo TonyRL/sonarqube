@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -29,7 +29,6 @@ import org.sonar.api.server.ws.WebService;
 import org.sonar.api.web.UserRole;
 import org.sonar.db.DbTester;
 import org.sonar.db.component.ComponentDto;
-import org.sonar.db.component.SnapshotDto;
 import org.sonar.db.metric.MetricDto;
 import org.sonar.db.organization.OrganizationDto;
 import org.sonar.server.component.TestComponentFinder;
@@ -93,7 +92,7 @@ public class ShowActionTest {
   }
 
   @Test
-  public void return_file_with_missing_duplication_data() throws Exception {
+  public void return_file_with_missing_duplication_data() {
     ComponentDto project = db.components().insertPrivateProject();
     ComponentDto file = db.components().insertComponent(newFileDto(project).setDbKey("foo.js"));
     db.components().insertSnapshot(newAnalysis(project));
@@ -109,13 +108,12 @@ public class ShowActionTest {
   }
 
   @Test
-  public void duplications_by_file_key_and_branch() throws Exception {
+  public void duplications_by_file_key_and_branch() {
     ComponentDto project = db.components().insertMainBranch();
     userSessionRule.addProjectPermission(UserRole.CODEVIEWER, project);
     ComponentDto branch = db.components().insertProjectBranch(project);
-    SnapshotDto analysis = db.components().insertSnapshot(newAnalysis(branch));
     ComponentDto file = db.components().insertComponent(newFileDto(branch));
-    db.measures().insertMeasure(file, analysis, dataMetric, m -> m.setData(format("<duplications>\n" +
+    db.measures().insertLiveMeasure(file, dataMetric, m -> m.setData(format("<duplications>\n" +
       "  <g>\n" +
       "    <b s=\"31\" l=\"5\" r=\"%s\"/>\n" +
       "    <b s=\"20\" l=\"5\" r=\"%s\"/>\n" +
@@ -162,14 +160,14 @@ public class ShowActionTest {
   }
 
   @Test
-  public void fail_if_file_does_not_exist() throws Exception {
+  public void fail_if_file_does_not_exist() {
     expectedException.expect(NotFoundException.class);
 
     newBaseRequest().setParam("key", "missing").execute();
   }
 
   @Test
-  public void fail_if_user_is_not_allowed_to_access_project() throws Exception {
+  public void fail_if_user_is_not_allowed_to_access_project() {
     ComponentDto project = db.components().insertPrivateProject();
     ComponentDto file = db.components().insertComponent(newFileDto(project));
 
@@ -202,7 +200,7 @@ public class ShowActionTest {
   }
 
   @Test
-  public void fail_when_using_branch_uuid() throws Exception {
+  public void fail_when_using_branch_uuid() {
     OrganizationDto organization = db.organizations().insert();
     ComponentDto project = db.components().insertMainBranch(organization);
     userSessionRule.addProjectPermission(UserRole.CODEVIEWER, project);
@@ -220,18 +218,17 @@ public class ShowActionTest {
     return ws.newRequest();
   }
 
-  private void verifyCallToFileWithDuplications(Function<ComponentDto, TestRequest> requestFactory) throws Exception {
+  private void verifyCallToFileWithDuplications(Function<ComponentDto, TestRequest> requestFactory) {
     ComponentDto project = db.components().insertPrivateProject();
     userSessionRule.addProjectPermission(UserRole.CODEVIEWER, project);
     ComponentDto file = db.components().insertComponent(newFileDto(project).setDbKey("foo.js"));
-    SnapshotDto snapshot = db.components().insertSnapshot(newAnalysis(project));
     String xml = "<duplications>\n" +
       "  <g>\n" +
       "    <b s=\"31\" l=\"5\" r=\"foo.js\"/>\n" +
       "    <b s=\"20\" l=\"5\" r=\"foo.js\"/>\n" +
       "  </g>\n" +
       "</duplications>\n";
-    db.measures().insertMeasure(file, snapshot, dataMetric, m -> m.setData(xml));
+    db.measures().insertLiveMeasure(file, dataMetric, m -> m.setData(xml));
 
     TestRequest request = requestFactory.apply(file);
     TestResponse result = request.execute();

@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -137,21 +137,6 @@ public class RenameActionTest {
   }
 
   @Test
-  public void allow_100_characters_as_name_and_not_more() throws Exception {
-    logInAsQProfileAdministrator();
-    String qualityProfileKey = createNewValidQualityProfileKey();
-
-    String a100charName = "1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890";
-    call(qualityProfileKey, a100charName);
-
-    expectedException.expect(BadRequestException.class);
-    expectedException.expectMessage("Name is too long (>100 characters)");
-
-    String a101charName = "12345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901";
-    call(qualityProfileKey, a101charName);
-  }
-
-  @Test
   public void as_qprofile_editor() {
     QProfileDto qualityProfile = db.qualityProfiles().insert(organization);
     UserDto user = db.users().insertUser();
@@ -165,7 +150,7 @@ public class RenameActionTest {
   }
 
   @Test
-  public void fail_if_parameter_profile_is_missing() throws Exception {
+  public void fail_if_parameter_profile_is_missing() {
     logInAsQProfileAdministrator();
 
     expectedException.expect(IllegalArgumentException.class);
@@ -175,7 +160,7 @@ public class RenameActionTest {
   }
 
   @Test
-  public void fail_if_parameter_name_is_missing() throws Exception {
+  public void fail_if_parameter_name_is_missing() {
     logInAsQProfileAdministrator();
 
     expectedException.expect(IllegalArgumentException.class);
@@ -185,7 +170,7 @@ public class RenameActionTest {
   }
 
   @Test
-  public void fail_if_not_profile_administrator() throws Exception {
+  public void fail_if_not_profile_administrator() {
     OrganizationDto organizationX = db.organizations().insert();
     OrganizationDto organizationY = db.organizations().insert();
     userSession.logIn(db.users().insertUser())
@@ -203,7 +188,7 @@ public class RenameActionTest {
   }
 
   @Test
-  public void fail_if_not_logged_in() throws Exception {
+  public void fail_if_not_logged_in() {
     expectedException.expect(UnauthorizedException.class);
     expectedException.expectMessage("Authentication is required");
 
@@ -211,7 +196,7 @@ public class RenameActionTest {
   }
 
   @Test
-  public void fail_if_profile_does_not_exist() throws Exception {
+  public void fail_if_profile_does_not_exist() {
     logInAsQProfileAdministrator();
 
     expectedException.expect(NotFoundException.class);

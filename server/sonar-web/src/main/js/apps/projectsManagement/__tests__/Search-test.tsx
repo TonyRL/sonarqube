@@ -1,7 +1,7 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2016 SonarSource SA
- * mailto:contact AT sonarsource DOT com
+ * Copyright (C) 2009-2018 SonarSource SA
+ * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -20,9 +20,10 @@
 import * as React from 'react';
 import { shallow } from 'enzyme';
 import Search, { Props } from '../Search';
-import { change, click } from '../../../helpers/testUtils';
+import { click } from '../../../helpers/testUtils';
+import { Visibility } from '../../../app/types';
 
-const organization = { key: 'org', name: 'org', projectVisibility: 'public' };
+const organization = { key: 'org', name: 'org', projectVisibility: Visibility.Public };
 
 it('renders', () => {
   expect(shallowRender()).toMatchSnapshot();
@@ -67,7 +68,7 @@ it('updates analysis date', () => {
 it('searches', () => {
   const onSearch = jest.fn();
   const wrapper = shallowRender({ onSearch });
-  change(wrapper.find('input[type="search"]'), 'foo');
+  wrapper.find('SearchBox').prop<Function>('onChange')('foo');
   expect(onSearch).toBeCalledWith('foo');
 });
 
@@ -97,6 +98,7 @@ it('bulk applies permission template', () => {
   click(wrapper.find('.js-bulk-apply-permission-template'));
   expect(wrapper.find('BulkApplyTemplateModal')).toMatchSnapshot();
   wrapper.find('BulkApplyTemplateModal').prop<Function>('onClose')();
+  wrapper.update();
   expect(wrapper.find('BulkApplyTemplateModal').exists()).toBeFalsy();
 });
 

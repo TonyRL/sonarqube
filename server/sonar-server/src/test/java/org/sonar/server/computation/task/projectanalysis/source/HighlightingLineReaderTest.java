@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -79,7 +79,7 @@ public class HighlightingLineReaderTest {
 
   @Test
   public void nothing_to_read() {
-    HighlightingLineReader highlightingLineReader = newReader(Collections.<TextRange, HighlightingType>emptyMap());
+    HighlightingLineReader highlightingLineReader = newReader(Collections.emptyMap());
 
     DbFileSources.Line.Builder lineBuilder = newBuilder().addLinesBuilder().setLine(1);
     highlightingLineReader.read(lineBuilder);

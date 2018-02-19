@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -20,8 +20,8 @@
 // @flow
 import React from 'react';
 import classNames from 'classnames';
-import Modal from 'react-modal';
-import Select from 'react-select';
+import Modal from '../../../../components/controls/Modal';
+import Select from '../../../../components/controls/Select';
 import Tooltip from '../../../../components/controls/Tooltip';
 import { isDiffMetric } from '../../../../helpers/measures';
 import {
@@ -102,15 +102,11 @@ export default class AddGraphMetric extends React.PureComponent {
 
   renderModal() {
     const { metricsTypeFilter } = this.props;
+    const header = translate('project_activity.graphs.custom.add_metric');
     return (
-      <Modal
-        isOpen={true}
-        contentLabel="graph metric add"
-        className="modal"
-        overlayClassName="modal-overlay"
-        onRequestClose={this.closeForm}>
+      <Modal key="add-metric-modal" contentLabel={header} onRequestClose={this.closeForm}>
         <header className="modal-head">
-          <h2>{translate('project_activity.graphs.custom.add_metric')}</h2>
+          <h2>{header}</h2>
         </header>
         <form onSubmit={this.handleSubmit}>
           <div className="modal-body">
@@ -128,17 +124,15 @@ export default class AddGraphMetric extends React.PureComponent {
                 value={this.state.selectedMetric}
               />
               <span className="alert alert-info">
-                {metricsTypeFilter != null && metricsTypeFilter.length > 0 ? (
-                  translateWithParameters(
-                    'project_activity.graphs.custom.type_x_message',
-                    metricsTypeFilter
-                      .map(type => translate('metric.type', type))
-                      .sort()
-                      .join(', ')
-                  )
-                ) : (
-                  translate('project_activity.graphs.custom.add_metric_info')
-                )}
+                {metricsTypeFilter != null && metricsTypeFilter.length > 0
+                  ? translateWithParameters(
+                      'project_activity.graphs.custom.type_x_message',
+                      metricsTypeFilter
+                        .map(type => translate('metric.type', type))
+                        .sort()
+                        .join(', ')
+                    )
+                  : translate('project_activity.graphs.custom.add_metric_info')}
               </span>
             </div>
           </div>
@@ -172,11 +166,16 @@ export default class AddGraphMetric extends React.PureComponent {
       );
     }
 
-    return (
-      <button className={this.props.className} onClick={this.openForm}>
+    const buttonComponent = (
+      <button key="add-metric-button" className={this.props.className} onClick={this.openForm}>
         {translate('project_activity.graphs.custom.add')}
-        {this.state.open && this.renderModal()}
       </button>
     );
+
+    if (this.state.open) {
+      return [buttonComponent, this.renderModal()];
+    }
+
+    return buttonComponent;
   }
 }

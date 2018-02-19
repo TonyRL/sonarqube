@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -24,8 +24,8 @@ import org.junit.After;
 import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
-import org.sonarqube.pageobjects.MarketplacePage;
-import org.sonarqube.pageobjects.Navigation;
+import org.sonarqube.qa.util.pageobjects.MarketplacePage;
+import org.sonarqube.qa.util.pageobjects.Navigation;
 import util.user.UserRule;
 
 import static util.ItUtils.pluginArtifact;
@@ -47,7 +47,7 @@ public class UpdateCenterTest {
   private Navigation nav = Navigation.create(orchestrator);
 
   @After
-  public void tearDown() throws Exception {
+  public void tearDown() {
     userRule.resetUsers();
   }
 

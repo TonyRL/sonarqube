@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -126,21 +126,21 @@ export default class ComparisonContainer extends React.PureComponent<Props, Stat
         </header>
 
         {left != null &&
-        inLeft != null &&
-        right != null &&
-        inRight != null &&
-        modified != null && (
-          <div className="spacer-top">
-            <ComparisonResults
-              left={left}
-              right={right}
-              inLeft={inLeft}
-              inRight={inRight}
-              modified={modified}
-              organization={this.props.organization}
-            />
-          </div>
-        )}
+          inLeft != null &&
+          right != null &&
+          inRight != null &&
+          modified != null && (
+            <div className="spacer-top">
+              <ComparisonResults
+                left={left}
+                right={right}
+                inLeft={inLeft}
+                inRight={inRight}
+                modified={modified}
+                organization={this.props.organization}
+              />
+            </div>
+          )}
       </div>
     );
   }

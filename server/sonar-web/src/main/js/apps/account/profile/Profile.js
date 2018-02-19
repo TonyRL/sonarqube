@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -45,29 +45,31 @@ function Profile(props /*: Props */) {
 
   return (
     <div className="account-body account-container">
-      <div className="spacer-bottom">
-        {translate('login')}: <strong id="login">{user.login}</strong>
-      </div>
-
-      {!user.local &&
-      user.externalProvider !== 'sonarqube' && (
-        <div id="identity-provider" className="spacer-bottom">
-          <UserExternalIdentity user={user} />
-        </div>
-      )}
-
-      {!!user.email && (
+      <div className="boxed-group boxed-group-inner">
         <div className="spacer-bottom">
-          {translate('my_profile.email')}: <strong id="email">{user.email}</strong>
+          {translate('login')}: <strong id="login">{user.login}</strong>
         </div>
-      )}
 
-      {!customOrganizations && <hr className="account-separator" />}
-      {!customOrganizations && <UserGroups groups={user.groups} />}
+        {!user.local &&
+          user.externalProvider !== 'sonarqube' && (
+            <div id="identity-provider" className="spacer-bottom">
+              <UserExternalIdentity user={user} />
+            </div>
+          )}
 
-      <hr className="account-separator" />
+        {!!user.email && (
+          <div className="spacer-bottom">
+            {translate('my_profile.email')}: <strong id="email">{user.email}</strong>
+          </div>
+        )}
 
-      <UserScmAccounts user={user} scmAccounts={user.scmAccounts} />
+        {!customOrganizations && <hr className="account-separator" />}
+        {!customOrganizations && <UserGroups groups={user.groups} />}
+
+        <hr />
+
+        <UserScmAccounts user={user} scmAccounts={user.scmAccounts} />
+      </div>
     </div>
   );
 }

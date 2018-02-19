@@ -1,7 +1,7 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2016 SonarSource SA
- * mailto:contact AT sonarsource DOT com
+ * Copyright (C) 2009-2018 SonarSource SA
+ * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -50,7 +50,7 @@ it('renders with no permissions', () => {
   ).toMatchSnapshot();
 });
 
-it('renders with permission to edit', () => {
+it('renders with permission to edit only', () => {
   expect(
     shallow(
       <ProfileActions
@@ -69,7 +69,16 @@ it('renders with all permissions', () => {
       <ProfileActions
         onRequestFail={jest.fn()}
         organization="org"
-        profile={{ ...PROFILE, actions: { copy: true, edit: true, setAsDefault: true } }}
+        profile={{
+          ...PROFILE,
+          actions: {
+            copy: true,
+            edit: true,
+            delete: true,
+            setAsDefault: true,
+            associateProjects: true
+          }
+        }}
         updateProfiles={jest.fn()}
       />
     )

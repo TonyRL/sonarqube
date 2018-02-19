@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -22,8 +22,7 @@ import React from 'react';
 import EventInner from './EventInner';
 import ChangeEventForm from './forms/ChangeEventForm';
 import RemoveEventForm from './forms/RemoveEventForm';
-import DeleteIcon from '../../../components/icons-components/DeleteIcon';
-import ChangeIcon from '../../../components/icons-components/ChangeIcon';
+import { DeleteButton, EditButton } from '../../../components/ui/buttons';
 /*:: import type { Event as EventType } from '../types'; */
 
 /*::
@@ -60,8 +59,7 @@ export default class Event extends React.PureComponent {
     this.mounted = false;
   }
 
-  startChanging = (e /*: MouseEvent */) => {
-    e.stopPropagation();
+  startChanging = () => {
     this.setState({ changing: true });
   };
 
@@ -71,8 +69,7 @@ export default class Event extends React.PureComponent {
     }
   };
 
-  startDeleting = (e /*: MouseEvent */) => {
-    e.stopPropagation();
+  startDeleting = () => {
     this.setState({ deleting: true });
   };
 
@@ -97,14 +94,10 @@ export default class Event extends React.PureComponent {
         {showActions && (
           <div className="project-activity-event-actions spacer-left">
             {canChange && (
-              <button className="js-change-event button-clean" onClick={this.startChanging}>
-                <ChangeIcon />
-              </button>
+              <EditButton className="js-change-event button-small" onClick={this.startChanging} />
             )}
             {canDelete && (
-              <button className="js-delete-event button-clean" onClick={this.startDeleting}>
-                <DeleteIcon />
-              </button>
+              <DeleteButton className="js-delete-event button-small" onClick={this.startDeleting} />
             )}
           </div>
         )}
@@ -129,9 +122,9 @@ export default class Event extends React.PureComponent {
             removeEventButtonText={
               'project_activity.' + (isVersion ? 'remove_version' : 'remove_custom_event')
             }
-            removeEventQuestion={`project_activity.${isVersion
-              ? 'remove_version'
-              : 'remove_custom_event'}.question`}
+            removeEventQuestion={`project_activity.${
+              isVersion ? 'remove_version' : 'remove_custom_event'
+            }.question`}
           />
         )}
       </div>

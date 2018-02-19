@@ -4,7 +4,7 @@
   <parent>
     <groupId>org.sonarsource.sonarqube</groupId>
     <artifactId>server</artifactId>
-    <version>6.7.1-SNAPSHOT</version>
+    <version>7.0-SNAPSHOT</version>
     <relativePath>..</relativePath>
   </parent>
   <artifactId>sonar-web</artifactId>
@@ -13,7 +13,7 @@
 
   <properties>
     <!-- self-analysis -->
-    <sonar.sources>src/main/js,src/main/less</sonar.sources>
+    <sonar.sources>src/main/js</sonar.sources>
     <sonar.tests>src/main/js</sonar.tests>
     <sonar.test.inclusions>src/main/js/**/__tests__/**</sonar.test.inclusions>
     <sonar.exclusions>src/main/js/libs/third-party/**/*,src/main/js/libs/require.js,src/main/js/**/__tests__/**</sonar.exclusions>
@@ -122,7 +122,7 @@
         <configuration>
           <packagingExcludes>
             **/*.log,*.iml,WEB-INF/script/,WEB-INF/test/,javascripts/*-min.js,stylesheets/*-min.css,javascripts/tests/**/*,
-            build/**,less/**,templates/**
+            build/**,templates/**
           </packagingExcludes>
           <warSourceExcludes>
             js/**,css/**
@@ -135,6 +135,15 @@
               <Build-Time>${timestamp}</Build-Time>
             </manifestEntries>
           </archive>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>com.mycila</groupId>
+        <artifactId>license-maven-plugin</artifactId>
+        <configuration>
+          <excludes>
+            <exclude>src/main/webapp/**/*</exclude>
+          </excludes>
         </configuration>
       </plugin>
     </plugins>

@@ -1,15 +1,13 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`renders status of long-living branches 1`] = `null`;
-
-exports[`renders status of long-living branches 2`] = `
+exports[`renders status of long-living branches 1`] = `
 <Level
   level="OK"
   small={true}
 />
 `;
 
-exports[`renders status of long-living branches 3`] = `
+exports[`renders status of long-living branches 2`] = `
 <Level
   level="ERROR"
   small={true}
@@ -18,7 +16,7 @@ exports[`renders status of long-living branches 3`] = `
 
 exports[`renders status of short-living branches 1`] = `
 <ul
-  className="list-inline branch-status"
+  className="branch-status"
 >
   <li
     className="spacer-right"
@@ -28,15 +26,21 @@ exports[`renders status of short-living branches 1`] = `
       size="small"
     />
   </li>
-  <li>
+  <li
+    className="spacer-left"
+  >
     0
     <BugIcon />
   </li>
-  <li>
+  <li
+    className="spacer-left"
+  >
     0
     <VulnerabilityIcon />
   </li>
-  <li>
+  <li
+    className="spacer-left"
+  >
     0
     <CodeSmellIcon />
   </li>
@@ -45,7 +49,7 @@ exports[`renders status of short-living branches 1`] = `
 
 exports[`renders status of short-living branches 2`] = `
 <ul
-  className="list-inline branch-status"
+  className="branch-status"
 >
   <li
     className="spacer-right"
@@ -55,15 +59,21 @@ exports[`renders status of short-living branches 2`] = `
       size="small"
     />
   </li>
-  <li>
+  <li
+    className="spacer-left"
+  >
     0
     <BugIcon />
   </li>
-  <li>
+  <li
+    className="spacer-left"
+  >
     0
     <VulnerabilityIcon />
   </li>
-  <li>
+  <li
+    className="spacer-left"
+  >
     1
     <CodeSmellIcon />
   </li>
@@ -72,7 +82,7 @@ exports[`renders status of short-living branches 2`] = `
 
 exports[`renders status of short-living branches 3`] = `
 <ul
-  className="list-inline branch-status"
+  className="branch-status"
 >
   <li
     className="spacer-right"
@@ -82,15 +92,21 @@ exports[`renders status of short-living branches 3`] = `
       size="small"
     />
   </li>
-  <li>
+  <li
+    className="spacer-left"
+  >
     7
     <BugIcon />
   </li>
-  <li>
+  <li
+    className="spacer-left"
+  >
     6
     <VulnerabilityIcon />
   </li>
-  <li>
+  <li
+    className="spacer-left"
+  >
     3
     <CodeSmellIcon />
   </li>

@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -26,7 +26,14 @@ import StandaloneSysInfos from './StandaloneSysInfos';
 import SystemUpgradeNotif from './system-upgrade/SystemUpgradeNotif';
 import { translate } from '../../../helpers/l10n';
 import { ClusterSysInfo, getSystemInfo, SysInfo } from '../../../api/system';
-import { getSystemLogsLevel, isCluster, parseQuery, Query, serializeQuery } from '../utils';
+import {
+  getServerId,
+  getSystemLogsLevel,
+  isCluster,
+  parseQuery,
+  Query,
+  serializeQuery
+} from '../utils';
 import { RawQuery } from '../../../helpers/query';
 import '../styles.css';
 
@@ -41,11 +48,15 @@ interface State {
 
 export default class App extends React.PureComponent<Props, State> {
   mounted: boolean;
-  state: State = { loading: true };
 
   static contextTypes = {
     router: PropTypes.object
   };
+
+  constructor(props: Props) {
+    super(props);
+    this.state = { loading: true };
+  }
 
   componentDidMount() {
     this.mounted = true;
@@ -120,11 +131,12 @@ export default class App extends React.PureComponent<Props, State> {
         <Helmet title={translate('system_info.page')} />
         <SystemUpgradeNotif />
         <PageHeader
-          loading={loading}
           isCluster={isCluster(sysInfoData)}
+          loading={loading}
           logLevel={getSystemLogsLevel(sysInfoData)}
-          showActions={sysInfoData !== undefined}
           onLogLevelChange={this.fetchSysInfo}
+          serverId={getServerId(sysInfoData)}
+          showActions={sysInfoData !== undefined}
         />
         {this.renderSysInfo()}
       </div>

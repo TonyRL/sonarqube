@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -17,37 +17,32 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-import { getJSON, postJSON, post, RequestData } from '../helpers/request';
+import { getJSON, postJSON, post } from '../helpers/request';
 import throwGlobalError from '../app/utils/throwGlobalError';
 
-/**
- * List tokens for given user login
- */
-export function getTokens(login: string): Promise<any> {
-  return getJSON('/api/user_tokens/search', { login }).then(r => r.userTokens);
+export interface UserToken {
+  name: string;
+  createdAt: string;
 }
 
-/**
- * Generate a user token
- */
-export function generateToken(
-  tokenName: string,
-  userLogin?: string
-): Promise<{ name: string; token: string }> {
-  const data: RequestData = { name: tokenName };
-  if (userLogin) {
-    data.login = userLogin;
-  }
+/** List tokens for given user login */
+export function getTokens(login: string): Promise<UserToken[]> {
+  return getJSON('/api/user_tokens/search', { login }).then(r => r.userTokens, throwGlobalError);
+}
+
+export interface NewToken {
+  createdAt: string;
+  login: string;
+  name: string;
+  token: string;
+}
+
+/** Generate a user token */
+export function generateToken(data: { name: string; login?: string }): Promise<NewToken> {
   return postJSON('/api/user_tokens/generate', data).catch(throwGlobalError);
 }
 
-/**
- * Revoke a user token
- */
-export function revokeToken(tokenName: string, userLogin?: string): Promise<void | Response> {
-  const data: RequestData = { name: tokenName };
-  if (userLogin) {
-    data.login = userLogin;
-  }
+/** Revoke a user token */
+export function revokeToken(data: { name: string; login?: string }): Promise<void | Response> {
   return post('/api/user_tokens/revoke', data).catch(throwGlobalError);
 }

@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -45,7 +45,6 @@ import org.sonar.server.permission.index.PermissionIndexerDao.Dto;
 import static java.util.Collections.emptyList;
 import static org.sonar.core.util.stream.MoreCollectors.toArrayList;
 import static org.sonar.core.util.stream.MoreCollectors.toSet;
-import static org.sonar.server.es.DefaultIndexSettings.REFRESH_IMMEDIATE;
 
 /**
  * Populates the types "authorization" of each index requiring project
@@ -100,9 +99,10 @@ public class PermissionIndexer implements ProjectIndexer {
   @Override
   public Collection<EsQueueDto> prepareForRecovery(DbSession dbSession, Collection<String> projectUuids, ProjectIndexer.Cause cause) {
     switch (cause) {
+      case MEASURE_CHANGE:
       case PROJECT_KEY_UPDATE:
       case PROJECT_TAGS_UPDATE:
-        // nothing to change, project key and tags are not part of this index
+        // nothing to change. Measures, project key and tags are not part of this index
         return emptyList();
 
       case PROJECT_CREATION:

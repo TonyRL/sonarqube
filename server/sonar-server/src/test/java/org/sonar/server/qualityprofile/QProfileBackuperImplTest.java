@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -182,7 +182,7 @@ public class QProfileBackuperImplTest {
   }
 
   @Test
-  public void fail_to_restore_if_not_xml_backup() throws Exception {
+  public void fail_to_restore_if_not_xml_backup() {
     OrganizationDto organization = db.organizations().insert();
     try {
       underTest.restore(db.getSession(), new StringReader("foo"), organization, null);
@@ -195,7 +195,7 @@ public class QProfileBackuperImplTest {
   }
 
   @Test
-  public void fail_to_restore_if_bad_xml_format() throws Exception {
+  public void fail_to_restore_if_bad_xml_format() {
     OrganizationDto organization = db.organizations().insert();
     try {
       underTest.restore(db.getSession(), new StringReader("<rules><rule></rules>"), organization, null);

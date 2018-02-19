@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -74,7 +74,7 @@ export default class MetaLink extends React.PureComponent {
           className="link-with-icon"
           href={link.url}
           target="_blank"
-          onClick={!isClickable(link) && this.handleClick}>
+          onClick={!isClickable(link) ? this.handleClick : undefined}>
           {this.renderLinkIcon(link)}
           &nbsp;
           {link.name}

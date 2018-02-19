@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -121,18 +121,16 @@ export default class EvolutionRules extends React.PureComponent<Props, State> {
                   {rule.name}
                 </Link>
                 <div className="note">
-                  {rule.activations ? (
-                    translateWithParameters(
-                      'quality_profiles.latest_new_rules.activated',
-                      rule.langName,
-                      rule.activations
-                    )
-                  ) : (
-                    translateWithParameters(
-                      'quality_profiles.latest_new_rules.not_activated',
-                      rule.langName
-                    )
-                  )}
+                  {rule.activations
+                    ? translateWithParameters(
+                        'quality_profiles.latest_new_rules.activated',
+                        rule.langName,
+                        rule.activations
+                      )
+                    : translateWithParameters(
+                        'quality_profiles.latest_new_rules.not_activated',
+                        rule.langName
+                      )}
                 </div>
               </div>
             </li>

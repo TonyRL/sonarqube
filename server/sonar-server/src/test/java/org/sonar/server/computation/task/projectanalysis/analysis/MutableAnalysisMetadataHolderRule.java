@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -32,6 +32,17 @@ public class MutableAnalysisMetadataHolderRule extends ExternalResource implemen
   @Override
   protected void after() {
     delegate = new AnalysisMetadataHolderImpl();
+  }
+
+  @Override
+  public boolean isOrganizationsEnabled() {
+    return delegate.isOrganizationsEnabled();
+  }
+
+  @Override
+  public MutableAnalysisMetadataHolderRule setOrganizationsEnabled(boolean isOrganizationsEnabled) {
+    delegate.setOrganizationsEnabled(isOrganizationsEnabled);
+    return this;
   }
 
   @Override

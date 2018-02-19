@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -93,8 +93,10 @@ class Extension extends React.PureComponent {
   }
 
   stopExtension() {
-    this.stop && this.stop();
-    this.stop = null;
+    if (this.stop) {
+      this.stop();
+      this.stop = null;
+    }
   }
 
   render() {
@@ -107,10 +109,4 @@ class Extension extends React.PureComponent {
   }
 }
 
-const mapStateToProps = state => ({
-  currentUser: getCurrentUser(state)
-});
-
-const mapDispatchToProps = { onFail: addGlobalErrorMessage };
-
-export default connect(mapStateToProps, mapDispatchToProps)(injectIntl(withRouter(Extension)));
+export default injectIntl(withRouter(Extension));

@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -43,13 +43,6 @@ export default class App extends React.PureComponent<Props, State> {
   mounted: boolean;
   state: State = { loading: true };
 
-  componentWillMount() {
-    const html = document.querySelector('html');
-    if (html) {
-      html.classList.add('dashboard-page');
-    }
-  }
-
   componentDidMount() {
     this.mounted = true;
     this.loadData();
@@ -57,10 +50,6 @@ export default class App extends React.PureComponent<Props, State> {
 
   componentWillUnmount() {
     this.mounted = false;
-    const html = document.querySelector('html');
-    if (html) {
-      html.classList.remove('dashboard-page');
-    }
   }
 
   fetchProfiles() {
@@ -71,17 +60,24 @@ export default class App extends React.PureComponent<Props, State> {
 
   loadData() {
     this.setState({ loading: true });
-    Promise.all([getExporters(), this.fetchProfiles()]).then(responses => {
-      if (this.mounted) {
-        const [exporters, profilesResponse] = responses;
-        this.setState({
-          actions: profilesResponse.actions,
-          exporters,
-          profiles: sortProfiles(profilesResponse.profiles),
-          loading: false
-        });
+    Promise.all([getExporters(), this.fetchProfiles()]).then(
+      responses => {
+        if (this.mounted) {
+          const [exporters, profilesResponse] = responses;
+          this.setState({
+            actions: profilesResponse.actions,
+            exporters,
+            profiles: sortProfiles(profilesResponse.profiles),
+            loading: false
+          });
+        }
+      },
+      () => {
+        if (this.mounted) {
+          this.setState({ loading: false });
+        }
       }
-    });
+    );
   }
 
   updateProfiles = () => {

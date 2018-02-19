@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -48,19 +48,19 @@ describe('Search', () => {
 
   it('should render search form', () => {
     const component = shallow(<Search {...defaultProps} />);
-    expect(component.find('.js-search').length).toBe(1);
+    expect(component.find('SearchBox').exists()).toBeTruthy();
   });
 
   it('should not render search form', () => {
     const component = shallow(<Search {...defaultProps} component={{ id: 'ABCD' }} />);
-    expect(component.find('.js-search').length).toBe(0);
+    expect(component.find('SearchBox').exists()).toBeFalsy();
   });
 
   it('should search', done => {
     const searchSpy = jest.fn();
     const component = shallow(<Search {...defaultProps} onFilterUpdate={searchSpy} />);
-    const searchInput = component.find('.js-search');
-    change(searchInput, 'some search query');
+    const searchInput = component.find('SearchBox');
+    searchInput.prop('onChange')('some search query');
     setTimeout(() => {
       expect(searchSpy).toBeCalledWith({ query: 'some search query' });
       done();

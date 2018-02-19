@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -23,7 +23,7 @@ import PropTypes from 'prop-types';
 import ProjectActivityApp from './ProjectActivityApp';
 import throwGlobalError from '../../../app/utils/throwGlobalError';
 import { getAllTimeMachineData } from '../../../api/time-machine';
-import { getMetrics } from '../../../api/metrics';
+import { getAllMetrics } from '../../../api/metrics';
 import * as api from '../../../api/projectActivity';
 import * as actions from '../actions';
 import { getBranchName } from '../../../helpers/branches';
@@ -94,8 +94,6 @@ export default class ProjectActivityAppContainer extends React.PureComponent {
 
   componentDidMount() {
     this.mounted = true;
-    const elem = document.querySelector('html');
-    elem && elem.classList.add('dashboard-page');
     if (this.shouldRedirect()) {
       const newQuery = { ...this.state.query, graph: getGraph() };
       if (isCustomGraph(newQuery.graph)) {
@@ -129,8 +127,6 @@ export default class ProjectActivityAppContainer extends React.PureComponent {
 
   componentWillUnmount() {
     this.mounted = false;
-    const elem = document.querySelector('html');
-    elem && elem.classList.remove('dashboard-page');
   }
 
   addCustomEvent = (analysis /*: string */, name /*: string */, category /*: ?string */) =>
@@ -206,8 +202,6 @@ export default class ProjectActivityAppContainer extends React.PureComponent {
     );
   };
 
-  fetchMetrics = () => getMetrics().catch(throwGlobalError);
-
   loadAllActivities = (
     project /*: string */,
     prevResult /*: ?{ analyses: Array<Analysis>, paging: Paging } */
@@ -246,7 +240,7 @@ export default class ProjectActivityAppContainer extends React.PureComponent {
     const topLevelComponent = this.getTopLevelComponent(component);
     Promise.all([
       this.fetchActivity(topLevelComponent, 1, 100, serializeQuery(query)),
-      this.fetchMetrics(),
+      getAllMetrics(),
       this.fetchMeasuresHistory(graphMetrics)
     ]).then(
       response => {

@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -88,7 +88,7 @@ public class BaseContextFactoryTest {
   }
 
   @Test
-  public void create_context() throws Exception {
+  public void create_context() {
     BaseIdentityProvider.Context context = underTest.newContext(request, response, identityProvider);
 
     assertThat(context.getRequest()).isEqualTo(request);
@@ -97,7 +97,7 @@ public class BaseContextFactoryTest {
   }
 
   @Test
-  public void authenticate() throws Exception {
+  public void authenticate() {
     BaseIdentityProvider.Context context = underTest.newContext(request, response, identityProvider);
     HttpSession session = mock(HttpSession.class);
     when(request.getSession()).thenReturn(session);

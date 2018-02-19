@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -18,40 +18,31 @@
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 import * as React from 'react';
-import * as PropTypes from 'prop-types';
-import { debounce } from 'lodash';
-import { getFilterUrl } from './utils';
-import SearchFilter from './SearchFilter';
+import SearchBox from '../../../components/controls/SearchBox';
+import { translate } from '../../../helpers/l10n';
+import { RawQuery } from '../../../helpers/query';
 
 interface Props {
   className?: string;
   query: { search?: string };
-  isFavorite?: boolean;
+  onQueryChange: (change: RawQuery) => void;
   organization?: { key: string };
 }
 
 export default class SearchFilterContainer extends React.PureComponent<Props> {
-  static contextTypes = {
-    router: PropTypes.object.isRequired
-  };
-
-  constructor(props: Props) {
-    super(props);
-    this.handleSearch = debounce(this.handleSearch, 250);
-  }
-
   handleSearch = (userQuery?: string) => {
-    const path = getFilterUrl(this.props, { search: userQuery });
-    this.context.router.push(path);
+    this.props.onQueryChange({ search: userQuery });
   };
 
   render() {
     return (
-      <SearchFilter
-        className={this.props.className}
-        query={this.props.query}
-        handleSearch={this.handleSearch}
-      />
+      <div className="projects-topbar-item projects-topbar-item-search">
+        <SearchBox
+          minLength={2}
+          onChange={this.handleSearch}
+          placeholder={translate('projects.search')}
+        />
+      </div>
     );
   }
 }

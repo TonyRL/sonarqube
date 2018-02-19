@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -17,7 +17,6 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-
 package org.sonar.db.component;
 
 import java.util.Arrays;
@@ -157,7 +156,7 @@ public class AnalysisPropertiesDaoTest {
     assertThat(dbTester.countRowsOfTable(dbSession, "ANALYSIS_PROPERTIES")).isEqualTo(propertyDtos.size());
 
     List<AnalysisPropertyDto> result = underTest.selectBySnapshotUuid(dbSession, snapshotUuid);
-    assertThat(result).containsExactlyInAnyOrder((AnalysisPropertyDto[]) propertyDtos.toArray());
+    assertThat(result).containsExactlyInAnyOrder(propertyDtos.toArray(new AnalysisPropertyDto[0]));
   }
 
   private AnalysisPropertyDto insertAnalysisPropertyDto(int valueLength) {

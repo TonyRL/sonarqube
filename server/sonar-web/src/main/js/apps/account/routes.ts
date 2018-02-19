@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -52,15 +52,7 @@ const routes = [
         path: 'organizations',
         getComponent(_: RouterState, callback: (err: any, component: RouteComponent) => any) {
           import('./organizations/UserOrganizations').then(i => callback(null, i.default));
-        },
-        childRoutes: [
-          {
-            path: 'create',
-            getComponent(_: RouterState, callback: (err: any, component: RouteComponent) => any) {
-              import('./organizations/CreateOrganizationForm').then(i => callback(null, i.default));
-            }
-          }
-        ]
+        }
       }
     ]
   }

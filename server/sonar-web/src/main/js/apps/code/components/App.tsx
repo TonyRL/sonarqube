@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -26,12 +26,8 @@ import { Component as CodeComponent } from '../types';
 import SourceViewer from './../../../components/SourceViewer/SourceViewer';
 import Search from './Search';
 import ListFooter from '../../../components/controls/ListFooter';
-import {
-  retrieveComponentChildren,
-  retrieveComponent,
-  loadMoreChildren,
-  parseError
-} from '../utils';
+import { retrieveComponentChildren, retrieveComponent, loadMoreChildren } from '../utils';
+import { parseError } from '../../../helpers/request';
 import { addComponent, addComponentBreadcrumbs, clearBucket } from '../bucket';
 import { getBranchName } from '../../../helpers/branches';
 import { translate } from '../../../helpers/l10n';
@@ -94,7 +90,9 @@ export default class App extends React.PureComponent<Props, State> {
     retrieveComponentChildren(component.key, isPortfolio, branch && getBranchName(branch))
       .then(() => {
         addComponent(component);
-        this.handleUpdate();
+        if (this.mounted) {
+          this.handleUpdate();
+        }
       })
       .catch(e => {
         if (this.mounted) {
@@ -202,7 +200,9 @@ export default class App extends React.PureComponent<Props, State> {
 
     const shouldShowBreadcrumbs = breadcrumbs.length > 1;
 
-    const componentsClassName = classNames('spacer-top', { 'new-loading': loading });
+    const componentsClassName = classNames('boxed-group', 'boxed-group-inner', 'spacer-top', {
+      'new-loading': loading
+    });
 
     return (
       <div className="page page-limited">
@@ -222,24 +222,24 @@ export default class App extends React.PureComponent<Props, State> {
             <Breadcrumbs branch={branchName} breadcrumbs={breadcrumbs} rootComponent={component} />
           )}
 
-          {sourceViewer == undefined &&
-          components != undefined && (
-            <div className={componentsClassName}>
-              <Components
-                baseComponent={baseComponent}
-                branch={branchName}
-                components={components}
-                rootComponent={component}
-              />
-            </div>
-          )}
+          {sourceViewer === undefined &&
+            components !== undefined && (
+              <div className={componentsClassName}>
+                <Components
+                  baseComponent={baseComponent}
+                  branch={branchName}
+                  components={components}
+                  rootComponent={component}
+                />
+              </div>
+            )}
 
-          {sourceViewer == undefined &&
-          components != undefined && (
-            <ListFooter count={components.length} total={total} loadMore={this.handleLoadMore} />
-          )}
+          {sourceViewer === undefined &&
+            components !== undefined && (
+              <ListFooter count={components.length} total={total} loadMore={this.handleLoadMore} />
+            )}
 
-          {sourceViewer != undefined && (
+          {sourceViewer !== undefined && (
             <div className="spacer-top">
               <SourceViewer branch={branchName} component={sourceViewer.key} />
             </div>

@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -17,6 +17,7 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
+/* eslint-disable import/order */
 import * as React from 'react';
 import { shallow } from 'enzyme';
 import { change } from '../../../../helpers/testUtils';
@@ -25,7 +26,8 @@ import LicenseEditionSet from '../LicenseEditionSet';
 jest.mock('../../../../api/marketplace', () => ({
   getLicensePreview: jest.fn(() =>
     Promise.resolve({ nextEditionKey: 'foo', previewStatus: 'NO_INSTALL' })
-  )
+  ),
+  getFormData: jest.fn(() => Promise.resolve({ serverId: 'foo', ncloc: 1000 }))
 }));
 
 jest.mock('lodash', () => {
@@ -55,6 +57,13 @@ it('should display correctly', () => {
   expect(getWrapper()).toMatchSnapshot();
 });
 
+it('should display the get license link with parameters', async () => {
+  const wrapper = getWrapper();
+  await new Promise(setImmediate);
+  wrapper.update();
+  expect(wrapper.find('a')).toMatchSnapshot();
+});
+
 it('should correctly display status message after checking license', async () => {
   let wrapper = await testLicenseStatus('NO_INSTALL', jest.fn());
   expect(wrapper.find('p.alert')).toMatchSnapshot();
@@ -72,7 +81,7 @@ it('should display terms of license checkbox', async () => {
 
   updateLicense = jest.fn();
   wrapper = await testLicenseStatus('AUTOMATIC_INSTALL', updateLicense);
-  let tosCheckbox = wrapper.find('.js-edition-tos');
+  const tosCheckbox = wrapper.find('.js-edition-tos');
   expect(tosCheckbox.find('a').exists()).toBeTruthy();
   expect(updateLicense).toHaveBeenLastCalledWith(undefined, 'AUTOMATIC_INSTALL');
   (tosCheckbox.find('Checkbox').prop('onCheck') as Function)(true);
@@ -100,10 +109,10 @@ async function testLicenseStatus(status: string, updateLicense: jest.Mock<any>) 
     Promise.resolve({ nextEditionKey: 'foo', previewStatus: status })
   );
   const wrapper = getWrapper({ updateLicense });
-  (wrapper.instance() as LicenseEditionSet).mounted = true;
   change(wrapper.find('textarea'), 'mylicense');
   expect(getLicensePreview).toHaveBeenCalled();
   await new Promise(setImmediate);
   expect(updateLicense).toHaveBeenCalled();
+  wrapper.update();
   return wrapper;
 }

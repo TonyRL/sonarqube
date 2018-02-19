@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -17,8 +17,8 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-import { getJSON, post } from '../helpers/request';
 import { findLastIndex } from 'lodash';
+import { getJSON, post } from '../helpers/request';
 import throwGlobalError from '../app/utils/throwGlobalError';
 
 export interface Plugin {
@@ -86,14 +86,12 @@ function getLastUpdates(updates: undefined | Update[]): Update[] {
   if (!updates) {
     return [];
   }
-  const lastUpdate = [
-    'COMPATIBLE',
-    'REQUIRES_SYSTEM_UPGRADE',
-    'DEPS_REQUIRE_SYSTEM_UPGRADE'
-  ].map(status => {
-    const index = findLastIndex(updates, update => update.status === status);
-    return index > -1 ? updates[index] : undefined;
-  });
+  const lastUpdate = ['COMPATIBLE', 'REQUIRES_SYSTEM_UPGRADE', 'DEPS_REQUIRE_SYSTEM_UPGRADE'].map(
+    status => {
+      const index = findLastIndex(updates, update => update.status === status);
+      return index > -1 ? updates[index] : undefined;
+    }
+  );
   return lastUpdate.filter(Boolean) as Update[];
 }
 

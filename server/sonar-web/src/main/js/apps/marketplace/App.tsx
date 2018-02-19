@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -109,17 +109,17 @@ export default class App extends React.PureComponent<Props, State> {
 
   fetchAllPlugins = () => {
     this.setState({ loadingPlugins: true });
-    Promise.all([
-      getInstalledPluginsWithUpdates(),
-      getAvailablePlugins()
-    ]).then(([installed, available]) => {
-      if (this.mounted) {
-        this.setState({
-          loadingPlugins: false,
-          plugins: sortBy(uniqBy([...installed, ...available.plugins], 'key'), 'name')
-        });
-      }
-    }, this.stopLoadingPlugins);
+    Promise.all([getInstalledPluginsWithUpdates(), getAvailablePlugins()]).then(
+      ([installed, available]) => {
+        if (this.mounted) {
+          this.setState({
+            loadingPlugins: false,
+            plugins: sortBy(uniqBy([...installed, ...available.plugins], 'key'), 'name')
+          });
+        }
+      },
+      this.stopLoadingPlugins
+    );
   };
 
   fetchUpdatesOnly = () => {

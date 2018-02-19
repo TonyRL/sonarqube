@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2017 SonarSource SA
+ * Copyright (C) 2009-2018 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -31,7 +31,7 @@ const DEFAULT_STATUS: EditionStatus = {
 it('should display installed badge', () => {
   expect(
     getWrapper({
-      editionStatus: {
+      status: {
         currentEditionKey: 'foo',
         nextEditionKey: '',
         installationStatus: 'NONE'
@@ -43,7 +43,7 @@ it('should display installed badge', () => {
 it('should display installing badge', () => {
   expect(
     getWrapper({
-      editionStatus: {
+      status: {
         currentEditionKey: 'foo',
         nextEditionKey: 'foo',
         installationStatus: 'AUTOMATIC_IN_PROGRESS'
@@ -55,7 +55,7 @@ it('should display installing badge', () => {
 it('should display pending badge', () => {
   expect(
     getWrapper({
-      editionStatus: {
+      status: {
         currentEditionKey: '',
         nextEditionKey: 'foo',
         installationStatus: 'AUTOMATIC_READY'
@@ -67,13 +67,13 @@ it('should display pending badge', () => {
 it('should not display a badge', () => {
   expect(
     getWrapper({
-      editionStatus: {
+      status: {
         currentEditionKey: '',
         nextEditionKey: 'bar',
         installationStatus: 'AUTOMATIC_READY'
       }
-    })
-  ).toMatchSnapshot();
+    }).type()
+  ).toBeNull();
 });
 
 function getWrapper(props = {}) {
